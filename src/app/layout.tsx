@@ -17,8 +17,38 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Teesmile Portfolio",
+
+  metadataBase: new URL("https://teesmile.vercel.app"), 
+
+  title: {
+    default: "Teesmile Portfolio",
+    template: "%s | Teesmile", // This allows child pages to have "Projects | Teesmile"
+  },
   description: "Frontend Engineer and Creative web3 artist",
+  
+  openGraph: {
+    title: "Teesmile Portfolio",
+    description: "Frontend Engineer and Creative web3 artist",
+    url: "/",
+    siteName: "Teesmile Portfolio",
+    images: [
+      {
+        url: "/previewimg.png", // Next.js automatically looks in the 'public' folder
+        width: 1200,
+        height: 630,
+        alt: "Teesmile Portfolio Preview",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Teesmile",
+    description: "Frontend Engineer and Creative web3 artist",
+    images: ["/previewimg.png"], // Looks in 'public' folder
+  },
 };
 
 export default function RootLayout({
@@ -28,7 +58,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className={`${inter.className} min-h-screen flex flex-col antialiased transition-colors duration-500 bg-[radial-gradient(circle_at_center,_#f3e8ff_0%,_#ffffff_100%)] dark:bg-[radial-gradient(circle_at_center,_#4c0566_0%,_#000000_100%)] text-gray-900 dark:text-gray-100`}>
+      {/* I added geistMono.variable here so you can actually use the mono font if needed */}
+      <body className={`${inter.className} ${geistMono.variable} min-h-screen flex flex-col antialiased transition-colors duration-500 bg-[radial-gradient(circle_at_center,_#f3e8ff_0%,_#ffffff_100%)] dark:bg-[radial-gradient(circle_at_center,_#4c0566_0%,_#000000_100%)] text-gray-900 dark:text-gray-100`}>
         <ThemeProvider>
             <Navbar />
             <div className="flex-grow pt-16">
