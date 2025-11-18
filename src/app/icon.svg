@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="37" height="36" viewBox="0 0 37 36" fill="none">
+  <defs>
+    <!-- Dark Mode Gradient (Lighter Purples) -->
+    <linearGradient id="logo_gradient_dark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d8b4fe" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+
+    <!-- Light Mode Gradient (Darker Purples) -->
+    <linearGradient id="logo_gradient_light" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7" />
+      <stop offset="100%" stop-color="#6b21a8" />
+    </linearGradient>
+  </defs>
+
+  <style>
+    /* Default to Light Mode Gradient */
+    path {
+      fill: url(#logo_gradient_light);
+    }
+
+    /* Switch to Dark Mode Gradient if system is in Dark Mode */
+    @media (prefers-color-scheme: dark) {
+      path {
+        fill: url(#logo_gradient_dark);
+      }
+    }
+  </style>
+
+  <path
+    fill-rule="evenodd"
+    d="M36.35 20.05c.86-1.48.86-3.3 0-4.78L29.5 3.39A4.79 4.79 0 0025.35 1h-13.7c-1.72 0-3.3.91-4.15 2.4L.64 15.26a4.79 4.79 0 000 4.78L7.5 31.93a4.79 4.79 0 004.14 2.39h13.71c1.71 0 3.3-.91 4.15-2.4l6.85-11.87z M11.5 9h14v5h-4.5v13h-5v-13h-4.5V9z"
+    clip-rule="evenodd"
+  />
+</svg>
