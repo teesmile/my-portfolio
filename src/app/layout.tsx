@@ -59,7 +59,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       {/* I added geistMono.variable here so you can actually use the mono font if needed */}
-      <body className={`${inter.className} ${geistMono.variable} min-h-screen flex flex-col antialiased transition-colors duration-500 bg-[radial-gradient(circle_at_center,_#f3e8ff_0%,_#ffffff_100%)] dark:bg-[radial-gradient(circle_at_center,_#4c0566_0%,_#000000_100%)] text-gray-900 dark:text-gray-100`}>
+      <body className={`${inter.className} ${geistMono.variable} min-h-screen flex flex-col antialiased transition-colors duration-500 bg-[radial-gradient(circle_at_center,#f3e8ff_0%,#ffffff_100%)] dark:bg-[radial-gradient(circle_at_center,#4c0566_0%,#000000_100%)] text-gray-900 dark:text-gray-100`}>
         <ThemeProvider>
             <Navbar />
             <div className="flex-grow pt-16">
