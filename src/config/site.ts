@@ -50,7 +50,7 @@ export const portfolioConfig = {
       title: "Insta Spots",
       description: "A modern photo location sharing app. Discover photogenic spots, share your own discoveries, and view them on an interactive map.",
       tech: ["React", "Node.js", "MongoDB", "Google Maps API"],
-      link: "https://github.com/teesmile/insta-spots",
+      link: "https://insta-spots.vercel.app/",
       preview: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1000&auto=format&fit=crop",
       color: "from-pink-600 to-rose-600"
     },
