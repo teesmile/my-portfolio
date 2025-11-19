@@ -23,7 +23,7 @@ export const portfolioConfig = {
       name: "Twitter / X",
       url: "https://x.com/teesmilex",
       iconKey: "twitter"
-      
+
     }
   ],
   projects: [
@@ -45,14 +45,14 @@ export const portfolioConfig = {
       preview: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1000&auto=format&fit=crop",
       color: "from-orange-500 to-amber-500"
     },
-    {
+   {
       id: 3,
-      title: "Interactive Card Form",
-      description: "Real-time credit card detail validation form. Updates the card visualization instantly as the user types with error handling.",
-      tech: ["TypeScript", "React", "Validation"],
-      link: "https://interactive-card-details-ebon-eight.vercel.app/",
-      preview: "https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=1000&auto=format&fit=crop",
-      color: "from-violet-600 to-fuchsia-600"
+      title: "Insta Spots",
+      description: "A modern photo location sharing app. Discover photogenic spots, share your own discoveries, and view them on an interactive map.",
+      tech: ["React", "Node.js", "MongoDB", "Google Maps API"],
+      link: "https://github.com/teesmile/insta-spots",
+      preview: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=1000&auto=format&fit=crop",
+      color: "from-pink-600 to-rose-600"
     },
     {
       id: 4,
