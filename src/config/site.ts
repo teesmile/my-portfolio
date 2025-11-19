@@ -21,8 +21,9 @@ export const portfolioConfig = {
     },
     { 
       name: "Twitter / X",
-      url: "https://x.com/tonysmile_1",
+      url: "https://x.com/teesmilex",
       iconKey: "twitter"
+      
     }
   ],
   projects: [
