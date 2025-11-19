@@ -49,7 +49,7 @@ export default function HeroBackground() {
                     y: Math.random() * canvas.height,
                     vx: (Math.random() - 0.5) * 0.5,
                     vy: (Math.random() - 0.5) * 0.5,
-                    size: Math.random() * 2 + 1,
+                    size: Math.random() * 3 + 2,
                     color: Math.random() > 0.5 ? color1 : color2
                 });
             }
