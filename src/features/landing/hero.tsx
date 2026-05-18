@@ -81,7 +81,7 @@ export default function Hero() {
 
                  {/* Subtitle - GSAP Controlled Entrance */}
                 <div ref={subtitleRef} className="mx-auto mb-4 max-w-3xl text-lg font-medium leading-8 text-zinc-700 dark:text-zinc-300 md:text-2xl">
-                    A seasoned <span className="bg-linear-to-r from-[#5b5cff] to-[#8b5cf6] bg-clip-text text-transparent">Frontend Developer</span> and AI code evaluator turning ideas into reliable digital experiences.
+                    A seasoned <span className="bg-linear-to-r from-[#5b5cff] to-[#8b5cf6] bg-clip-text text-transparent">TypeScript-focused Frontend Developer</span> and AI code evaluator turning ideas into reliable digital experiences.
                 </div>
 
                 {/* Bio - GSAP Controlled Entrance */}
