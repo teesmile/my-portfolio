@@ -49,7 +49,7 @@ Key areas explored:
 
 - Replace the generated local project preview graphics with real screenshots from each deployed project.
 - Add exact GitHub repository links for each project instead of profile-level placeholders.
-- Keep professional social handles consistent across the portfolio. Current public links use GitHub `@Tony-smile`, X/Twitter `@tonysmile_1`, and LinkedIn `tonysmile`.
+- Keep professional social handles consistent across the portfolio. Current public links use GitHub `@teesmile`, X/Twitter `@tonysmile_1`, and LinkedIn `tonysmile`.
 - Add project detail pages with mini case studies: problem, approach, technical decisions, tradeoffs, and outcome.
 - Add an ATS-friendly PDF resume at `public/Anthony-Ugwuja-Resume.pdf`.
 - Add a contact form only if it has a real backend or email service integration.
