@@ -1,80 +1,96 @@
-
 'use client';
 
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React from 'react';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { portfolioConfig } from '@/config/site';
-import { socialIcons } from '@/components/ui/icons';
 
 interface ProjectCardProps {
   project: typeof portfolioConfig.projects[0];
   index: number;
 }
 
-export default function ProjectCard({ project, index }: ProjectCardProps) {
-    const ref = useRef(null);
-    
-    const { scrollYProgress } = useScroll({
-        target: ref,
-        offset: ["start end", "end start"]
-    });
-
-    const yParallax = useTransform(
-        scrollYProgress,
-        [0, 1],
-        index % 2 === 0 ? [0, -50] : [0, -20] 
-    );
-
+export default function ProjectCard({ project }: ProjectCardProps) {
     return (
-        <div ref={ref} className="h-full">
-            <motion.div 
-                style={{ y: yParallax }} 
-                className="group relative bg-white/60 dark:bg-purple-900/20 hover:bg-white/80 dark:hover:bg-purple-900/40 border border-purple-200 dark:border-fuchsia-900/30 hover:border-fuchsia-500/50 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/10 dark:hover:shadow-fuchsia-500/20 hover:-translate-y-1 flex flex-col h-full backdrop-blur-sm"
+        <motion.article
+            whileHover={{ y: -4 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-violet-400/20 bg-white shadow-sm transition-colors duration-300 hover:border-violet-300/70 dark:bg-[#191919]"
+        >
+            <a
+                href={project.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative block h-64 overflow-hidden bg-zinc-100 dark:bg-zinc-900"
+                aria-label={`Open ${project.title} live project`}
             >
-                {/* Project Preview Image Container */}
-                <a href={project.link} target="_blank" rel="noopener noreferrer" className="block h-48 w-full relative overflow-hidden bg-gray-100 dark:bg-gray-900">
-                    <div className="absolute inset-0 bg-fuchsia-100/20 dark:bg-fuchsia-900/20 z-10 group-hover:bg-transparent transition-colors duration-300"></div>
-                    
-                    {/* Image */}
-                    <img 
-                        src={project.preview} 
-                        alt={`${project.title} preview`} 
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 dark:opacity-80 group-hover:opacity-100"
-                    />
-                    
-                    {/* External Link Overlay */}
-                    <div className="absolute top-3 right-3 z-20 bg-white/80 dark:bg-black/50 p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm border border-gray-200 dark:border-white/10">
-                        <div className="text-gray-800 dark:text-white">
-                            {socialIcons.externalLink}
-                        </div>
-                    </div>
-                </a>
+                <div className="absolute inset-0 z-10 bg-black/10 transition-colors duration-300 group-hover:bg-transparent" />
+                <Image
+                    src={project.preview}
+                    alt={`${project.title} preview`}
+                    fill
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    className="h-full w-full object-cover opacity-85 transition-transform duration-500 group-hover:scale-[1.03] group-hover:opacity-100"
+                />
+            </a>
 
-                {/* Card Content */}
-                <div className="p-6 flex flex-col flex-grow">
-                    <div className="flex justify-between items-start mb-3">
-                        <h4 className="text-xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-fuchsia-600 dark:group-hover:text-fuchsia-300 transition-colors">
-                            {project.title}
-                        </h4>
-                    </div>
-                    
-                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-6 flex-grow">
-                        {project.description}
+            <div className="flex flex-grow flex-col p-7">
+                <div className="mb-6 flex items-center justify-between gap-4">
+                    <p className="bg-linear-to-r from-[#5b5cff] to-[#8b5cf6] bg-clip-text text-xs font-semibold uppercase tracking-[0.2em] text-transparent">
+                        {project.role}
                     </p>
-                    
-                    {/* Tech Stack Tags */}
-                    <div className="flex flex-wrap gap-2 mt-auto">
-                        {project.tech.map((tech) => (
-                            <span 
-                                key={tech} 
-                                className="px-2.5 py-1 text-xs font-medium bg-fuchsia-50 dark:bg-fuchsia-900/20 text-fuchsia-700 dark:text-fuchsia-200/90 rounded-full border border-fuchsia-200 dark:border-fuchsia-700/30 group-hover:border-fuchsia-300 dark:group-hover:border-fuchsia-500/40 transition-colors"
-                            >
-                                {tech}
-                            </span>
-                        ))}
-                    </div>
+                    <span className="rounded-full border border-white/10 px-2.5 py-1 text-xs font-semibold text-zinc-500">
+                        {project.year}
+                    </span>
                 </div>
-            </motion.div>
-        </div>
+
+                <h4 className="text-2xl font-semibold text-zinc-950 transition-colors group-hover:text-violet-700 dark:text-white dark:group-hover:text-violet-300">
+                    {project.title}
+                </h4>
+
+                <p className="mt-4 text-sm leading-7 text-zinc-600 dark:text-zinc-400">
+                    {project.description}
+                </p>
+
+                <ul className="mt-6 space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
+                    {project.highlights.map((highlight) => (
+                        <li key={highlight} className="flex gap-2">
+                            <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-violet-400" />
+                            <span>{highlight}</span>
+                        </li>
+                    ))}
+                </ul>
+
+                <div className="mt-6 flex flex-wrap gap-2">
+                    {project.tech.map((tech) => (
+                        <span
+                            key={tech}
+                            className="rounded-full border border-violet-400/20 bg-violet-50 px-2.5 py-1 text-xs font-medium text-zinc-700 transition-colors group-hover:border-violet-300/50 dark:bg-white/[0.03] dark:text-zinc-300"
+                        >
+                            {tech}
+                        </span>
+                    ))}
+                </div>
+
+                <div className="mt-auto flex gap-4 pt-8">
+                    <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-semibold text-zinc-950 transition hover:text-violet-700 dark:text-white dark:hover:text-violet-300"
+                    >
+                        Live demo
+                    </a>
+                    <a
+                        href={project.repo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-semibold text-zinc-500 transition hover:text-violet-300"
+                    >
+                        Source
+                    </a>
+                </div>
+            </div>
+        </motion.article>
     );
 }
