@@ -2,22 +2,33 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTheme } from '@/providers/theme-provider';
 import { portfolioConfig } from '@/config/site';
 import ThemeToggle from './theme-toggle';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("Home");
-  const { theme } = useTheme();
 
   useEffect(() => {
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
+      window.addEventListener("keydown", closeOnEscape);
     } else {
       document.body.style.overflow = 'unset';
     }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+      window.removeEventListener("keydown", closeOnEscape);
+    };
   }, [isMobileMenuOpen]);
 
   const toggleMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -28,83 +39,94 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/70 dark:bg-black/20 border-b border-gray-200 dark:border-white/10 transition-colors duration-300">
-      <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-        <span className="font-bold text-lg text-fuchsia-500 dark:text-fuchsia-400 tracking-tight relative z-50">
-          <svg xmlns="http://www.w3.org/2000/svg" width="37" height="36" fill="none" viewBox="0 0 37 36">
-            <defs>
-              <linearGradient id="logo_gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#d8b4fe" />
-                <stop offset="100%" stopColor="#a855f7" />
-              </linearGradient>
-              <linearGradient id="logo_gradient_light" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#a855f7" />
-                <stop offset="100%" stopColor="#6b21a8" />
-              </linearGradient>
-            </defs>
-            <path
-              fill={theme === 'dark' ? "url(#logo_gradient)" : "url(#logo_gradient_light)"}
-              fillRule="evenodd"
-              d="M36.35 20.05c.86-1.48.86-3.3 0-4.78L29.5 3.39A4.79 4.79 0 0025.35 1h-13.7c-1.72 0-3.3.91-4.15 2.4L.64 15.26a4.79 4.79 0 000 4.78L7.5 31.93a4.79 4.79 0 004.14 2.39h13.71c1.71 0 3.3-.91 4.15-2.4l6.85-11.87z M11.5 9h14v5h-4.5v13h-5v-13h-4.5V9z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </span>
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-200/70 bg-white/80 backdrop-blur-xl transition-colors duration-300 dark:border-white/10 dark:bg-black/45">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        <Link href="/#home" className="relative z-50 text-lg font-bold tracking-tight text-zinc-950 dark:text-white">
+          Anthony<span className="bg-linear-to-r from-[#5b5cff] to-[#8b5cf6] bg-clip-text text-transparent">.</span>
+        </Link>
         
         <div className="flex items-center gap-4">
             {/* Desktop Navigation */}
-            <ul className="hidden md:flex space-x-6 text-sm font-medium text-gray-600 dark:text-gray-300">
+            <ul className="hidden items-center gap-6 text-sm font-medium text-zinc-600 dark:text-zinc-200 md:flex">
             {portfolioConfig.navLinks.map((link) => (
                 <li key={link.name}>
-                <a 
+                <Link 
                     href={link.href} 
                     onClick={() => handleNavClick(link.name)}
-                    className={`px-3 py-1.5 rounded-full transition-all duration-300 ${
+                    className={`transition-all duration-300 ${
                     activeSection === link.name 
-                        ? "text-fuchsia-700 dark:text-fuchsia-200 bg-fuchsia-100 dark:bg-fuchsia-900/20 border border-fuchsia-300 dark:border-fuchsia-500/50 shadow-[0_0_15px_rgba(192,132,252,0.3)]" 
-                        : "hover:text-fuchsia-600 dark:hover:text-fuchsia-300 hover:bg-black/5 dark:hover:bg-white/5"
+                        ? "bg-linear-to-r from-[#5b5cff] to-[#8b5cf6] bg-clip-text text-transparent" 
+                        : "hover:text-violet-300"
                     }`}
                 >
                     {link.name}
-                </a>
+                </Link>
                 </li>
             ))}
             </ul>
             
-            {/* Theme Toggle (Desktop) */}
+            <Link
+              href="/resume"
+              className="hidden rounded-sm bg-linear-to-r from-[#5b5cff] to-[#8b5cf6] px-5 py-3 text-sm font-semibold text-white transition hover:brightness-110 md:inline-flex"
+            >
+              View Resume
+            </Link>
+
             <div className="hidden md:block">
-                <ThemeToggle />
+              <ThemeToggle />
             </div>
             
             {/* Mobile Hamburger Toggle */}
             <div className="flex items-center gap-2 md:hidden z-[60]">
-                <ThemeToggle />
                 <button 
                     onClick={toggleMenu} 
-                    className="p-2 text-2xl hover:scale-110 transition-transform focus:outline-none select-none"
+                    className="rounded-full border border-zinc-200 bg-white p-2 text-zinc-950 transition hover:border-violet-300 hover:text-violet-600 focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:text-violet-300"
                     aria-label="Toggle menu"
+                    aria-expanded={isMobileMenuOpen}
+                    aria-controls="mobile-menu"
                 >
                     <AnimatePresence mode="wait" initial={false}>
                         {isMobileMenuOpen ? (
-                            <motion.div
+                            <motion.svg
                                 key="close"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                                 initial={{ opacity: 0, rotate: -180, scale: 0.5 }}
                                 animate={{ opacity: 1, rotate: 0, scale: 1 }}
                                 exit={{ opacity: 0, rotate: 180, scale: 0.5 }}
                                 transition={{ duration: 0.3, type: "spring", bounce: 0.4 }}
                             >
-                                😠
-                            </motion.div>
+                                <path d="M18 6 6 18" />
+                                <path d="m6 6 12 12" />
+                            </motion.svg>
                         ) : (
-                            <motion.div
+                            <motion.svg
                                 key="open"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                                 initial={{ opacity: 0, rotate: 180, scale: 0.5 }}
                                 animate={{ opacity: 1, rotate: 0, scale: 1 }}
                                 exit={{ opacity: 0, rotate: -180, scale: 0.5 }}
                                 transition={{ duration: 0.3, type: "spring", bounce: 0.4 }}
                             >
-                                😛
-                            </motion.div>
+                                <path d="M4 6h16" />
+                                <path d="M4 12h16" />
+                                <path d="M4 18h16" />
+                            </motion.svg>
                         )}
                     </AnimatePresence>
                 </button>
@@ -120,7 +142,7 @@ export default function Navbar() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="fixed inset-0 z-[50] bg-black/60 backdrop-blur-sm md:hidden h-[100dvh]"
+                className="fixed inset-0 z-[50] h-[100dvh] bg-black/50 backdrop-blur-sm md:hidden"
                 onClick={() => setIsMobileMenuOpen(false)}
             />
         )}
@@ -130,13 +152,17 @@ export default function Navbar() {
       <AnimatePresence>
         {isMobileMenuOpen && (
             <motion.div 
+                id="mobile-menu"
                 initial={{ x: "100%" }}
                 animate={{ x: 0 }}
                 exit={{ x: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="fixed top-0 right-0 bottom-0 z-[55] w-[65vw] h-[100dvh] bg-white/90 dark:bg-black/80 backdrop-blur-2xl border-l border-gray-200 dark:border-fuchsia-900/30 shadow-2xl shadow-purple-900/20 dark:shadow-purple-900/50 flex flex-col pt-32 md:hidden"
+                className="fixed top-0 right-0 bottom-0 z-[55] flex h-[100dvh] w-[72vw] flex-col border-l border-zinc-200 bg-white/95 pt-32 shadow-2xl shadow-black/20 backdrop-blur-2xl dark:border-white/10 dark:bg-[#111111]/95 md:hidden"
             >
-                <ul className="flex flex-col items-start px-8 space-y-8 text-xl font-medium text-gray-700 dark:text-gray-300">
+                <div className="absolute right-8 top-20">
+                  <ThemeToggle />
+                </div>
+                <ul className="flex flex-col items-start space-y-8 px-8 text-xl font-medium text-zinc-800 dark:text-zinc-200">
                     {portfolioConfig.navLinks.map((link, i) => (
                         <motion.li 
                             key={link.name}
@@ -145,17 +171,17 @@ export default function Navbar() {
                             transition={{ delay: i * 0.1 + 0.2 }}
                             className="w-full"
                         >
-                            <a 
+                            <Link 
                                 href={link.href} 
                                 onClick={() => handleNavClick(link.name)}
-                                className={`block w-full py-2 transition-colors border-b border-gray-200 dark:border-white/10 ${
+                                className={`block w-full border-b border-zinc-200 py-2 transition-colors dark:border-white/10 ${
                                     activeSection === link.name 
-                                    ? "text-fuchsia-600 dark:text-fuchsia-400 border-fuchsia-500/50" 
-                                    : "hover:text-fuchsia-500 dark:hover:text-fuchsia-300"
+                                    ? "border-violet-400/40 text-violet-300" 
+                                    : "hover:text-violet-300"
                                 }`}
                             >
                                 {link.name}
-                            </a>
+                            </Link>
                         </motion.li>
                     ))}
                 </ul>

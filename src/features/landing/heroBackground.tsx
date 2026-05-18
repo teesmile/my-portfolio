@@ -25,7 +25,7 @@ export default function HeroBackground() {
 
         let animationFrameId: number;
         let particles: Particle[] = [];
-        let mouse = { x: -1000, y: -1000 };
+        const mouse = { x: -1000, y: -1000 };
 
         // Resize handler
         const resize = () => {
