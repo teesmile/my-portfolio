@@ -1,6 +1,6 @@
 # Anthony Ugwuja Portfolio
 
-Personal portfolio for **Anthony Ugwuja**, an AI Training Evaluator and JavaScript / Frontend Developer. The site is built with Next.js, TypeScript, Tailwind CSS, Framer Motion, GSAP, and a small custom design system.
+Personal portfolio for **Anthony Ugwuja**, an AI Training Evaluator and TypeScript / Frontend Developer. The site is built with Next.js, TypeScript, Tailwind CSS, Framer Motion, GSAP, and a small custom design system.
 
 Live domain target: [anthonyugwuja.dev](https://anthonyugwuja.dev)
 

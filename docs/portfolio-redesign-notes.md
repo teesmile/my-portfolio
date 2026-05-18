@@ -39,7 +39,7 @@ Chosen approach:
 - `Anthony Ugwuja` became the main name.
 - `Teesmile` remained as a secondary brand name.
 - The domain was updated in metadata to `anthonyugwuja.dev`.
-- The title became `AI Training Evaluator | JavaScript / Frontend Developer`.
+- The title became `AI Training Evaluator | TypeScript / Frontend Developer`.
 
 Alternative approach:
 
