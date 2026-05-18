@@ -98,7 +98,7 @@ export const portfolioConfig = {
   socials: [
     { 
       name: "GitHub",
-      url: "https://github.com/teesmile",
+      url: "https://github.com/Tony-smile",
       iconKey: "github"
     },
     { 
@@ -108,7 +108,7 @@ export const portfolioConfig = {
     },
     { 
       name: "Twitter / X",
-      url: "https://x.com/teesmilex",
+      url: "https://x.com/tonysmile_1",
       iconKey: "twitter"
 
     }
@@ -122,7 +122,7 @@ export const portfolioConfig = {
       year: "2025",
       tech: ["React", "TypeScript", "TanStack Router", "TanStack Form", "Zod", "Tailwind CSS"],
       link: "https://todo-app-tsc-mauve.vercel.app/",
-      repo: "https://github.com/teesmile",
+      repo: "https://github.com/Tony-smile",
       preview: "/projects/todo-productivity.svg", 
       color: "from-indigo-900 to-slate-900",
       highlights: ["Reusable Home, TodoItem, and Pagination components", "Validation and stateful interactions", "Responsive layout with Tailwind CSS and icons"]
@@ -135,7 +135,7 @@ export const portfolioConfig = {
       year: "2025",
       tech: ["Vite", "JavaScript", "HTML", "CSS", "Tailwind CSS"],
       link: "https://e-commerce-product-page-one-ashy.vercel.app/",
-      repo: "https://github.com/teesmile",
+      repo: "https://github.com/Tony-smile",
       preview: "/projects/ecommerce-product.svg",
       color: "from-orange-500 to-amber-500",
       highlights: ["Product gallery and thumbnail states", "Cart behavior and UI controls", "Validation against empty or invalid actions"]
@@ -148,7 +148,7 @@ export const portfolioConfig = {
       year: "2025",
       tech: ["Vercel", "DNS", "GitHub", "Google Search Console"],
       link: "https://teesmile.vercel.app/",
-      repo: "https://github.com/teesmile",
+      repo: "https://github.com/Tony-smile",
       preview: "/projects/deployment-workflow.svg",
       color: "from-pink-600 to-rose-600",
       highlights: ["Vercel deployment workflow", "Domain and DNS configuration", "HTTPS and search verification checks"]
@@ -161,7 +161,7 @@ export const portfolioConfig = {
       year: "2025",
       tech: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
       link: "https://space-tourism-toni.vercel.app/",
-      repo: "https://github.com/teesmile",
+      repo: "https://github.com/Tony-smile",
       preview: "/projects/space-tourism.svg",
       color: "from-blue-500 to-cyan-500",
       highlights: ["Multi-page navigation", "Responsive layout system", "Animated content transitions"]
