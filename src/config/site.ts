@@ -2,10 +2,10 @@
 export const portfolioConfig = {
   name: "Anthony Ugwuja",
   brandName: "Teesmile",
-  title: "AI Training Evaluator | JavaScript / Frontend Developer",
+  title: "AI Training Evaluator | TypeScript / Frontend Developer",
   headline: "I build, debug, and evaluate frontend experiences with clarity and precision.",
-  bio: "JavaScript-focused developer with practical experience building React interfaces, reusable components, form validation, responsive layouts, and frontend logic. I also evaluate model-generated code and written responses for accuracy, instruction following, edge cases, clarity, and technical correctness.",
-  phone: "09032570130",
+  bio: "TypeScript-focused developer with practical experience building React interfaces, reusable components, form validation, responsive layouts, and frontend logic. I also evaluate model-generated code and written responses for accuracy, instruction following, edge cases, clarity, and technical correctness.",
+  phone: "+234 903 257 0130",
   email: "anthonyugwuja.dev@gmail.com",
   location: "Abuja, Nigeria",
   availability: "Remote",
@@ -35,7 +35,7 @@ export const portfolioConfig = {
   ],
   skills: [
     {
-      label: "Required skills",
+      label: "Core Skills",
       items: ["React", "Node.js", "JavaScript", "Angular", "HTML", "CSS"]
     },
     {
@@ -53,7 +53,7 @@ export const portfolioConfig = {
   ],
   resume: {
     summary:
-      "AI training and JavaScript-focused developer with practical experience building, debugging, and reviewing React/Vite interfaces, reusable components, form validation, responsive layouts, and frontend logic.",
+      "AI training and TypeScript-focused developer with practical experience building, debugging, and reviewing React/Vite interfaces, reusable components, form validation, responsive layouts, and frontend logic.",
     highlights: [
       "Skilled at evaluating model-generated code and written responses for accuracy, instruction following, edge cases, clarity, and technical correctness.",
       "Strong working knowledge of React, Node.js, JavaScript, Angular, HTML, CSS, TypeScript, Tailwind CSS, Git, GitHub, and browser debugging tools.",
