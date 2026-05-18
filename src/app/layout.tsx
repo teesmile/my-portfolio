@@ -18,25 +18,25 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
 
-  metadataBase: new URL("https://teesmile.vercel.app"), 
+  metadataBase: new URL("https://anthonyugwuja.dev"), 
 
   title: {
-    default: "Teesmile Portfolio",
-    template: "%s | Teesmile", // This allows child pages to have "Projects | Teesmile"
+    default: "Anthony Ugwuja | Frontend Engineer",
+    template: "%s | Anthony Ugwuja",
   },
-  description: "Frontend Engineer and Creative web3 artist",
+  description: "Frontend engineer building polished, performant React and Next.js interfaces.",
   
   openGraph: {
-    title: "Teesmile Portfolio",
-    description: "Frontend Engineer and Creative web3 artist",
+    title: "Anthony Ugwuja | Frontend Engineer",
+    description: "Frontend engineer building polished, performant React and Next.js interfaces.",
     url: "/",
-    siteName: "Teesmile Portfolio",
+    siteName: "Anthony Ugwuja Portfolio",
     images: [
       {
-        url: "/previewimg.png", // Next.js automatically looks in the 'public' folder
+        url: "/previewimg.png",
         width: 1200,
         height: 630,
-        alt: "Teesmile Portfolio Preview",
+        alt: "Anthony Ugwuja Portfolio Preview",
       },
     ],
     locale: "en_US",
@@ -45,9 +45,9 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "Teesmile",
-    description: "Frontend Engineer and Creative web3 artist",
-    images: ["/previewimg.png"], // Looks in 'public' folder
+    title: "Anthony Ugwuja",
+    description: "Frontend engineer building polished, performant React and Next.js interfaces.",
+    images: ["/previewimg.png"],
   },
 };
 
@@ -58,8 +58,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
-      {/* I added geistMono.variable here so you can actually use the mono font if needed */}
-      <body className={`${inter.className}  bg-[radial-gradient(circle_at_center,#f3e8ff_0%,#ffffff_100%)] dark:bg-[radial-gradient(circle_at_center,#4c0566_0%,#000000_100%)] text-gray-900 dark:text-gray-100`}>
+      <body className={`${inter.className} ${inter.variable} ${geistMono.variable} bg-zinc-50 text-zinc-950 dark:bg-[#111111] dark:text-zinc-100`}>
         <ThemeProvider>
             <Navbar />
             <div className="flex-grow pt-16">

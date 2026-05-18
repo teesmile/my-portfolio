@@ -24,19 +24,19 @@ const SocialLink = ({ name, url, icon }: { name: string; url: string; icon: Reac
           hover: { opacity: 1, y: -35, scale: 1 }
         }}
         transition={{ duration: 0.2, ease: "easeOut" }}
-        className="absolute px-3 py-1.5 bg-white dark:bg-fuchsia-950 text-xs text-fuchsia-900 dark:text-fuchsia-100 font-medium rounded-md shadow-lg border border-fuchsia-200 dark:border-fuchsia-800 whitespace-nowrap pointer-events-none z-10"
+        className="pointer-events-none absolute z-10 whitespace-nowrap rounded-md border border-violet-400/20 bg-white px-3 py-1.5 text-xs font-medium text-zinc-950 shadow-lg dark:bg-[#202020] dark:text-zinc-100"
       >
         {name}
-        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white dark:bg-fuchsia-950 border-b border-r border-fuchsia-200 dark:border-fuchsia-800 rotate-45"></div>
+        <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 border-b border-r border-violet-400/20 bg-white dark:bg-[#202020]"></div>
       </motion.div>
 
       {/* Icon */}
       <motion.div
         variants={{
           initial: { color: "#9CA3AF", scale: 1 },
-          hover: { color: "#e879f9", scale: 1.2 }
+          hover: { color: "#e879f9", scale: 1.12 }
         }}
-        className="text-gray-400 dark:text-gray-400 group-hover:text-fuchsia-500 dark:group-hover:text-fuchsia-400 transition-colors"
+        className="text-zinc-500 transition-colors group-hover:text-violet-300"
       >
         {icon}
       </motion.div>
@@ -46,8 +46,11 @@ const SocialLink = ({ name, url, icon }: { name: string; url: string; icon: Reac
 
 export default function Footer() {
   return (
-    <footer id="footer" className="w-full py-12 px-4 border-t border-gray-200 dark:border-white/5 mt-20 bg-white/40 dark:bg-black/20 backdrop-blur-sm scroll-mt-24">
-      <div className="flex flex-col items-center gap-6">
+    <footer id="footer" className="w-full scroll-mt-24 border-t border-zinc-200 bg-white px-4 py-12 dark:border-white/10 dark:bg-[#1b1b1b]">
+      <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 md:flex-row">
+        <p className="text-xl font-bold text-zinc-950 dark:text-white">
+          {portfolioConfig.brandName}<span className="bg-linear-to-r from-[#5b5cff] to-[#8b5cf6] bg-clip-text text-transparent">.</span>
+        </p>
         <div className="flex gap-4">
           {portfolioConfig.socials.map((social) => (
             <SocialLink 
@@ -58,7 +61,7 @@ export default function Footer() {
             />
           ))}
         </div>
-        <p className="text-sm italic text-gray-600 dark:text-gray-500 font-medium">
+        <p className="text-sm font-medium text-zinc-500">
           © {new Date().getFullYear()} {portfolioConfig.name}.
         </p>
       </div>
