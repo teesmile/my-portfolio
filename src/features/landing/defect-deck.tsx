@@ -35,7 +35,7 @@ export default async function DefectDeck() {
       {cards.map((card, index) => (
         <article
           key={card.context}
-          className={`absolute inset-x-0 top-0 h-full origin-top-left overflow-hidden border border-line bg-raised p-5 ${fan[index]}`}
+          className={`absolute inset-x-0 top-0 h-full origin-top-left cursor-pointer overflow-hidden border border-line bg-raised p-5 ${fan[index]}`}
         >
           <p className="font-display text-2xs text-muted">{card.context}</p>
 

@@ -7,6 +7,13 @@ export const metadata: Metadata = {
   description: `${portfolioConfig.name} — frontend development and AI code evaluation.`,
 };
 
+/* The one place a rule carries the accent. CLAUDE.md states the exception:
+   the resume is read as a document rather than navigated, and the rules are
+   what separate its parts. */
+function SectionRule() {
+  return <div className="mb-3 h-0.5 w-10 bg-accent-strong" aria-hidden="true" />;
+}
+
 export default function ResumePage() {
   const { resume, skills, projects } = portfolioConfig;
 
@@ -40,7 +47,10 @@ export default function ResumePage() {
             {/* Hierarchy: role in display type, company and dates quieter and
                 smaller, bullets smaller again. The accent appears once, as the
                 present marker, and never on a rule. */}
-            <h2 className="mt-20 text-2xs text-muted">Experience</h2>
+            <div className="mt-20">
+              <SectionRule />
+              <h2 className="text-2xs text-muted">Experience</h2>
+            </div>
             <div className="mt-6 flex flex-col gap-12">
               {resume.experience.map((item) => (
                 <article key={`${item.role}-${item.period}`}>
@@ -68,7 +78,10 @@ export default function ResumePage() {
               ))}
             </div>
 
-            <h2 className="mt-20 text-2xs text-muted">Selected projects</h2>
+            <div className="mt-20">
+              <SectionRule />
+              <h2 className="text-2xs text-muted">Selected projects</h2>
+            </div>
             <div className="mt-6 flex flex-col gap-6">
               {projects.map((project) => (
                 <article key={project.slug}>
@@ -87,7 +100,10 @@ export default function ResumePage() {
           </div>
 
           <aside className="lg:col-span-4 lg:col-start-9">
-            <h2 className="text-2xs text-muted">Education</h2>
+            <div className="">
+              <SectionRule />
+              <h2 className="text-2xs text-muted">Education</h2>
+            </div>
             <div className="mt-5 flex flex-col gap-8">
               {resume.education.map((item) => (
                 <div key={item.title}>
@@ -104,7 +120,10 @@ export default function ResumePage() {
               ))}
             </div>
 
-            <h2 className="mt-14 text-2xs text-muted">Licensure</h2>
+            <div className="mt-14">
+              <SectionRule />
+              <h2 className="text-2xs text-muted">Licensure</h2>
+            </div>
             <dl className="mt-5 flex flex-col gap-3">
               {resume.credentials.map((credential) => (
                 <div key={credential.label} className="flex justify-between gap-4 text-sm">
@@ -114,7 +133,10 @@ export default function ResumePage() {
               ))}
             </dl>
 
-            <h2 className="mt-14 text-2xs text-muted">Skills</h2>
+            <div className="mt-14">
+              <SectionRule />
+              <h2 className="text-2xs text-muted">Skills</h2>
+            </div>
             <dl className="mt-5 flex flex-col gap-4">
               {skills.map((group) => (
                 <div key={group.label}>
