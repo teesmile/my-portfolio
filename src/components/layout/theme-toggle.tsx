@@ -1,65 +1,54 @@
-
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTheme } from '@/providers/theme-provider';
-
+/* No React state and no context: the class on <html> is the source of truth,
+   and CSS picks the icon. That keeps server and client markup identical, which
+   is what removes the whole hydration-mismatch class of bug from theming. */
 export default function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
+  const toggle = () => {
+    const root = document.documentElement;
+    const nowLight = root.classList.toggle('light');
+    try {
+      localStorage.setItem('theme', nowLight ? 'light' : 'dark');
+    } catch {
+      /* private mode, storage blocked: the toggle still works for this visit */
+    }
+  };
 
   return (
     <button
-      onClick={toggleTheme}
-      className="p-2 rounded-full text-gray-600 hover:text-violet-600 dark:text-gray-300 dark:hover:text-violet-400 transition-colors focus:outline-none"
-      aria-label="Toggle Theme"
+      type="button"
+      onClick={toggle}
+      aria-label="Switch between light and dark"
+      className="-m-2 p-2 text-muted transition-colors hover:text-ink"
     >
-      <AnimatePresence mode="wait" initial={false}>
-        {theme === 'dark' ? (
-          <motion.svg
-            key="moon"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24" height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            initial={{ rotate: -90, opacity: 0 }}
-            animate={{ rotate: 0, opacity: 1 }}
-            exit={{ rotate: 90, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-          </motion.svg>
-        ) : (
-          <motion.svg
-            key="sun"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24" height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            initial={{ rotate: 90, opacity: 0 }}
-            animate={{ rotate: 0, opacity: 1 }}
-            exit={{ rotate: -90, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <circle cx="12" cy="12" r="5" />
-            <line x1="12" y1="1" x2="12" y2="3" />
-            <line x1="12" y1="21" x2="12" y2="23" />
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-            <line x1="1" y1="12" x2="3" y2="12" />
-            <line x1="21" y1="12" x2="23" y2="12" />
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-          </motion.svg>
-        )}
-      </AnimatePresence>
+      <svg
+        className="block light:hidden"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="4.5" />
+        <path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19" />
+      </svg>
+      <svg
+        className="hidden light:block"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M20.5 13.5A8.5 8.5 0 1 1 10.5 3.5a6.8 6.8 0 0 0 10 10z" />
+      </svg>
     </button>
   );
 }

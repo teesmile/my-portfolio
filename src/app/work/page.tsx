@@ -1,0 +1,34 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { portfolioConfig } from "@/config/site";
+import WorkEntry from "@/features/work/work-entry";
+
+export const metadata: Metadata = {
+  title: "Work",
+  description:
+    "Interfaces built with React, TypeScript and Tailwind, with the decisions behind them.",
+};
+
+export default function WorkPage() {
+  return (
+    <section className="px-6 py-20 md:py-24">
+      <div className="mx-auto max-w-(--container-view)">
+        <h1 className="max-w-[18ch] text-xl text-ink md:text-2xl">
+          {portfolioConfig.copy.workHeading}
+        </h1>
+        <div className="mt-16 flex flex-col gap-20">
+          {portfolioConfig.projects.map((project, index) => (
+            <WorkEntry key={project.slug} project={project} index={index} />
+          ))}
+        </div>
+
+        <Link
+          href="/work/archive"
+          className="mt-20 inline-block border-t border-line pt-6 text-sm text-muted transition-colors hover:text-ink"
+        >
+          {portfolioConfig.copy.workArchiveLink} &rarr;
+        </Link>
+      </div>
+    </section>
+  );
+}
