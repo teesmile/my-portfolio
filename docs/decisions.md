@@ -15,6 +15,16 @@ Study: <one concept, with a link or a search term>
 
 ---
 
+## 2026-11-06 — Phase 0, clear the ground (6ded612)
+Codex challenged: nothing. Adversarial review of the working tree returned approve with no material findings; lint and tsc passed in its sandbox, and it flagged only that the build was unverified there (read-only workspace) and that profile.webp needed staging. Both were already handled here: `pnpm lint && pnpm build` pass locally and the image is in the commit.
+Verdict: AGREE (nothing to contest)
+Because: an empty review is only worth logging for what it does not cover. It read the working tree, so it never saw the one judgement call worth a second opinion — removing the four profile URLs before you supplied real ones, which traded four mislabelled "Source" links for no link at all. You confirmed the real URLs afterwards and all three return 200. The first `--base main` run also returned approve on a diff that excluded every Phase 0 file, which is a reminder that an approve verdict is scoped to what was actually diffed.
+Changed: nothing from this review. Phase 0's ten tasks are in 6ded612.
+Study: why a review's scope matters more than its verdict — compare `git diff main...HEAD` with `git diff HEAD` and note which one contains your uncommitted work.
+
+Not done for Phase 0: the throttled DevTools scroll test in the phase gate. Phase 0 touched no motion code, so the frame budget is unchanged; the first real measurement is the Phase 1 static frame and the Phase 2 motion gate. Flagging it rather than quietly skipping it.
+
+
 ## 2026-11-06 — Phase 1 Work links pointed at a route Phase 3 creates (pending commit, `redesign`)
 Codex challenged: Task 1.12 links every Work entry to `/work/[slug]`, but that route is only scheduled for Phase 3, so Phase 1 ships 404s and Phase 2 has no destination to animate into. Lint and build do not prove a link resolves.
 Verdict: AGREE
