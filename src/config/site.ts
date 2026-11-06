@@ -1,38 +1,255 @@
 
+export type Project = {
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  role: string;
+  year: string;
+  tech: string[];
+  link: string;
+  /** The repository itself, never the profile. Omit it when a project has no
+   *  public repo — the card hides the "Source" link rather than linking to
+   *  something that is not the source. */
+  repo?: string;
+  /** A real capture of the running project. Absent until one exists — the
+   *  index renders a typographic frame rather than a mock interface. */
+  preview?: string;
+  highlights: string[];
+  /** Filled once a project has a server. Phase 3's flagship is the first. */
+  architecture?: {
+    dataModel: string;
+    api: string;
+    auth: string;
+    hosting: string;
+  };
+};
+
+const projects: Project[] = [
+  {
+    id: 1,
+    slug: "todo-app",
+    preview: "/work/todo-app.webp",
+    title: "React Todo / Productivity App",
+    description:
+      "A todo app I built to learn TanStack Router and Form properly. Typed routes, inputs validated with Zod, and pagination that keeps its place when you come back to it.",
+    role: "Frontend implementation",
+    year: "2025",
+    tech: ["React", "TypeScript", "TanStack Router", "TanStack Form", "Zod", "Tailwind CSS"],
+    link: "https://todo-app-tsc-mauve.vercel.app/",
+    repo: "https://github.com/teesmile/todo-app-tsc", 
+    highlights: [
+      "Home, TodoItem and Pagination split so each one does a single job",
+      "Form validation with Zod, so bad input fails before it reaches state",
+      "Layout built mobile first, with Tailwind doing the spacing",
+    ]
+  },
+  {
+    id: 2,
+    slug: "ecommerce-product-page",
+    preview: "/work/ecommerce-product-page.webp",
+    title: "E-Commerce Product Page",
+    description:
+      "A product page built from a design file. Gallery thumbnails, a cart that counts correctly, and one layout that works on a phone without a separate mobile build.",
+    role: "Frontend implementation",
+    year: "2025",
+    tech: ["Vite", "JavaScript", "HTML", "CSS", "Tailwind CSS"],
+    link: "https://e-commerce-product-page-one-ashy.vercel.app/",
+    repo: "https://github.com/teesmile/e-commerce-product-page",
+    highlights: [
+      "Gallery and thumbnail states wired to one source of truth",
+      "Cart that refuses empty and invalid quantities",
+      "Desktop and mobile from the same markup, not two templates",
+    ]
+  },
+  {
+    id: 3,
+    slug: "space-tourism",
+    preview: "/work/space-tourism.webp",
+    title: "Space Tourism Website",
+    description:
+      "A four-section site I used to practise layout systems and page transitions. Same shell, four content types, no page that looks bolted on.",
+    role: "Frontend implementation",
+    year: "2025",
+    tech: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
+    link: "https://space-tourism-toni.vercel.app/",
+    repo: "https://github.com/teesmile/space-tourism",
+    highlights: [
+      "Four content types sharing one navigation shell",
+      "A spacing and type system reused across every page",
+      "Transitions between pages instead of hard cuts",
+    ]
+  }
+];
+
 export const portfolioConfig = {
   name: "Anthony Ugwuja",
   brandName: "Teesmile",
-  title: "AI Training Evaluator | TypeScript / Frontend Developer",
-  headline: "I build, debug, and evaluate frontend experiences with clarity and precision.",
-  bio: "TypeScript-focused developer with practical experience building React interfaces, reusable components, form validation, responsive layouts, and frontend logic. I also evaluate model-generated code and written responses for accuracy, instruction following, edge cases, clarity, and technical correctness.",
+  title: "Frontend developer and AI code evaluator",
   phone: "+234 903 257 0130",
   email: "anthonyugwuja.dev@gmail.com",
   location: "Abuja, Nigeria",
-  availability: "Remote",
-  resumePdf: "/Anthony-Ugwuja-Resume.pdf",
+  availability: "Remote, anywhere",
+  takingWork: true,
+  currently:
+    "Reading model-written code most of the week, and building the next thing with a real server behind it.",
+  statement:
+    "Pharmacist by training, engineer by choice. I ship across the stack and catch what AI gets wrong.",
+  // The dated spine on /about. Two tracks running in parallel, not one career
+  // replacing another — which is the actual story.
+  timeline: [
+    { period: "2017 — 2025", label: "Pharmacy degree", track: "pharmacy" },
+    { period: "2020", label: "First code, written during pharmacy school", track: "code" },
+    { period: "2022", label: "Zuri and I4G training programmes", track: "code" },
+    { period: "2024 — 2025", label: "Software engineering diploma, AltSchool Africa", track: "code" },
+    { period: "2025", label: "Provisional pharmacist licence", track: "pharmacy" },
+    { period: "2025 — 2026", label: "Pharmacy internship", track: "pharmacy" },
+    { period: "2025 — now", label: "Frontend development and code evaluation", track: "code" },
+    { period: "2026", label: "Full pharmacist licence", track: "pharmacy" },
+  ] as { period: string | null; label: string; track: "pharmacy" | "code" }[],
+  // The deck on /. Every example is written for this purpose, never taken from
+  // paid evaluation work, and every bug is real enough to verify by reading.
+  defects: [
+    {
+      language: "tsx" as const,
+      context: "React — a price-sorted product list",
+      lines: [
+        "function ProductList({ items }: { items: Product[] }) {",
+        "  const sorted = useMemo(",
+        "    () => items.sort((a, b) => a.price - b.price),",
+        "    [items],",
+        "  );",
+        "",
+        "  return <ul>{sorted.map(renderRow)}</ul>;",
+        "}",
+      ],
+      markedLine: 3,
+      verdict:
+        "sort() orders in place, so this reorders the caller's array as a side effect of rendering. Every other component holding that prop silently changes order too.",
+      fix: ["() => [...items].sort((a, b) => a.price - b.price),"],
+    },
+    {
+      language: "python" as const,
+      context: "Django — an order list page",
+      lines: [
+        "def order_list(request):",
+        "    orders = Order.objects.all()",
+        "    rows = []",
+        "    for order in orders:",
+        "        rows.append((order.id, order.customer.name))",
+        "    return render(request, 'orders.html', {'rows': rows})",
+      ],
+      markedLine: 5,
+      verdict:
+        "order.customer is a separate query per row. One hundred orders means one hundred and one queries, and the page gets slower in production exactly as the data grows.",
+      fix: ["    orders = Order.objects.select_related('customer')"],
+    },
+    {
+      language: "python" as const,
+      context: "SQL — a product search",
+      lines: [
+        "def search(request):",
+        "    term = request.GET['q']",
+        "    with connection.cursor() as cursor:",
+        "        cursor.execute(",
+        "            \"SELECT id, name FROM product WHERE name LIKE '%\" + term + \"%'\"",
+        "        )",
+        "        return cursor.fetchall()",
+      ],
+      markedLine: 5,
+      verdict:
+        "The search box is concatenated straight into SQL. A quote in the query string ends the literal and the rest executes, which is how a product search becomes a database dump.",
+      fix: [
+        "        cursor.execute(",
+        "            'SELECT id, name FROM product WHERE name LIKE %s',",
+        "            [f'%{term}%'],",
+        "        )",
+      ],
+    },
+    {
+      language: "tsx" as const,
+      context: "Async — a search-as-you-type field",
+      lines: [
+        "useEffect(() => {",
+        "  fetch(`/api/search?q=${query}`)",
+        "    .then((res) => res.json())",
+        "    .then(setResults);",
+        "}, [query]);",
+      ],
+      markedLine: 4,
+      verdict:
+        "Responses resolve in whatever order the network returns them. Type quickly and a slow answer for an old query lands after the fast one, so the list shows results for something you already stopped typing.",
+      fix: [
+        "  let current = true;",
+        "  fetch(`/api/search?q=${query}`)",
+        "    .then((res) => res.json())",
+        "    .then((data) => { if (current) setResults(data); });",
+        "  return () => { current = false; };",
+      ],
+    },
+  ],
+  // /lab exists as a route but stays out of the nav until it holds one
+  // experiment. An empty page linked from the nav is worse than no link.
+  // /work/archive. TODO(human): the other projects — year, stack, and links if
+  // they are still up. The two training rows below are what the spine already
+  // establishes; everything else needs your list.
+  archive: [
+    {
+      year: "2022",
+      title: "Zuri and I4G training projects",
+      stack: ["HTML", "CSS", "JavaScript"],
+      training: true,
+      link: null,
+    },
+    {
+      year: "2020",
+      title: "First projects, written during pharmacy school",
+      stack: ["HTML", "CSS"],
+      training: true,
+      link: null,
+    },
+  ] as { year: string; title: string; stack: string[]; training: boolean; link: string | null }[],
+  // Grouped by layer, and only tools that appear in a listed project or role.
+  // The data row is empty on purpose: nothing I have shipped has a database
+  // yet, and pretending otherwise is the easiest lie on a portfolio.
+  stack: [
+    {
+      layer: "Frontend",
+      items: ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "Vite", "HTML", "CSS"],
+    },
+    { layer: "Backend", items: ["Node.js"] },
+    { layer: "Data", items: [] },
+    { layer: "Infrastructure", items: ["Git", "GitHub", "Vercel", "pnpm", "Linux"] },
+  ] as { layer: string; items: string[] }[],
+  // Page prose lives here so it can be edited in one file.
+  copy: {
+    heroSupport:
+      "Bugs from code a model wrote. Every one is real, and every one would survive a quick read.",
+    aboutHeading: "I read other people's code for a living. Mine included.",
+    aboutParagraphs: [
+      "I trained as a pharmacist at the University of Nigeria, Nsukka. I wrote my first code in 2020, partway through the degree, and kept going after it: HTML and CSS first, then JavaScript, then React.",
+      "Now I build interfaces in React and TypeScript, and I use AI tools while I do it. In the same week I get paid to read code a model wrote and say exactly what is wrong with it — the bug, why it bites, and the version that works.",
+      "The second job changed how I do the first. Read enough confident, broken answers and you stop trusting code that merely looks right. Including your own.",
+      "I am moving across the stack. The frontend is where I am strongest today. The next thing I build has a server, a database and real sign-in, because that is the part I cannot prove yet.",
+    ],
+    aboutStackHeading: "What I work with",
+    aboutDataEmpty: "Nothing I have shipped has a database yet.",
+    workHeading: "Things I\u2019ve built, and what each one taught me.",
+    workArchiveLink: "Everything else, including the training work",
+    writingHeading: "Decisions, and what they cost.",
+    contactHeading: "Open to remote frontend work and code evaluation.",
+    contactNote: "Email reaches me fastest.",
+    labHeading: "Interaction experiments, one at a time.",
+    labIntro:
+      "Where I try the things a client project would not pay for, and where I settle arguments with a measurement instead of an opinion.",
+    archiveHeading: "Everything else.",
+  },
   navLinks: [
-    { name: "Home", href: "/#home" },
-    { name: "Featured projects", href: "/#projects" },
-    { name: "About me", href: "/#about" },
-    { name: "Contact me", href: "/#contact" },
-  ],
-  services: [
-    {
-      title: "Frontend Development",
-      description:
-        "Building responsive React, Vite, and Next.js interfaces with reusable components, clean state handling, and practical UI behavior.",
-    },
-    {
-      title: "Code Evaluation",
-      description:
-        "Reviewing model-generated code and written responses for correctness, missing requirements, edge cases, and technical clarity.",
-    },
-    {
-      title: "UI Implementation",
-      description:
-        "Translating interface ideas into polished layouts with Tailwind CSS, accessible states, visual hierarchy, and motion that supports usability.",
-    },
-  ],
+    { name: "Work", href: "/work" },
+    { name: "Writing", href: "/writing" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
+  ] as const,
   skills: [
     {
       label: "Core Skills",
@@ -40,7 +257,7 @@ export const portfolioConfig = {
     },
     {
       label: "Frontend",
-      items: ["TypeScript", "Vite", "Tailwind CSS", "Responsive design", "Component architecture", "Form validation", "DOM manipulation"]
+      items: ["TypeScript", "Vite", "Tailwind CSS", "Responsive design", "Component architecture", "Form validation"]
     },
     {
       label: "AI training",
@@ -48,52 +265,66 @@ export const portfolioConfig = {
     },
     {
       label: "Tools",
-      items: ["Git", "GitHub", "VS Code", "Chrome DevTools", "Vercel", "npm", "pnpm", "Linux/Ubuntu", "JSON", "REST API fundamentals"]
+      items: ["Git", "GitHub", "Chrome DevTools", "Vercel", "pnpm", "Linux/Ubuntu", "REST API fundamentals"]
     }
   ],
   resume: {
     summary:
-      "AI training and TypeScript-focused developer with practical experience building, debugging, and reviewing React/Vite interfaces, reusable components, form validation, responsive layouts, and frontend logic.",
+      "I build frontend interfaces in React and TypeScript, and I get paid to read code a model wrote and say what's wrong with it. I trained as a pharmacist first, which is where I picked up the habit of checking things twice before they reach someone else.",
     highlights: [
-      "Skilled at evaluating model-generated code and written responses for accuracy, instruction following, edge cases, clarity, and technical correctness.",
-      "Strong working knowledge of React, Node.js, JavaScript, Angular, HTML, CSS, TypeScript, Tailwind CSS, Git, GitHub, and browser debugging tools.",
-      "Comfortable writing direct technical feedback that explains bugs, stronger implementations, safer UI behavior, and clearer response structure."
+      "I build React and TypeScript interfaces: components that get reused, forms validated with Zod, layouts that hold on a phone.",
+      "I review model-written code and answers for correctness, missing requirements, edge cases and clarity, then write the feedback that explains the fix.",
+      "I work in Git, GitHub, Vercel, pnpm and Linux every day, and I debug in the browser rather than guessing.",
     ],
     experience: [
       {
-        role: "Independent Frontend Developer / AI Code Evaluation Contributor",
-        company: "Remote",
+        role: "Frontend developer and AI code evaluator",
+        company: "Independent, remote",
         period: "2025 - Present",
+        present: true,
+        tech: ["React", "Vite", "TypeScript", "JavaScript", "Tailwind CSS", "Git", "GitHub", "Vercel", "pnpm", "Linux"],
         bullets: [
-          "Built and refined React/Vite interfaces using component-based architecture, hooks, state management, Tailwind CSS, and reusable UI patterns.",
-          "Debugged JavaScript and TypeScript issues involving form validation, conditional rendering, routing, event handlers, async data flow, and responsive layout behavior.",
-          "Reviewed model-generated code and written outputs for correctness, readability, missing requirements, user intent alignment, and edge-case handling.",
-          "Wrote direct technical feedback explaining bugs, stronger implementations, safer UI behavior, and clearer response structure.",
-          "Used Git, GitHub, Vercel, npm/pnpm workflows, Linux tooling, and browser developer tools to build, test, and troubleshoot web projects."
-        ]
+          "Build React and Vite interfaces with reusable components, hooks and Tailwind CSS.",
+          "Debug form validation, conditional rendering, routing, async data and responsive layout problems in JavaScript and TypeScript.",
+          "Read model-written code and answers, and judge them for correctness, instruction-following, edge cases and what the user actually asked for.",
+          "Write feedback that names the bug, explains why it bites and shows the version that works.",
+        ],
       },
       {
-        role: "Software Engineering Intern",
+        role: "Software engineering intern",
         company: "AltSchool Africa",
         period: "2024 - 2025",
+        present: false,
+        tech: ["JavaScript", "React", "Node.js", "HTML", "CSS", "Git", "GitHub"],
         bullets: [
-          "Completed practical software engineering tasks using JavaScript, React, Node.js, HTML, CSS, Git, GitHub, and modern frontend workflows.",
-          "Built and reviewed web interfaces with attention to responsive layouts, reusable components, accessibility, clean code structure, and technical accuracy.",
-          "Practiced debugging, code review, task interpretation, documentation, and feedback writing, skills directly aligned with AI training and model evaluation work."
-        ]
-      }
+          "Worked through engineering tasks in JavaScript, React, Node.js, HTML and CSS.",
+          "Built and reviewed interfaces with attention to responsive layout, reusable components and accessibility.",
+          "Practised debugging, code review and technical writing, which is the same work the evaluation job pays for now.",
+        ],
+      },
     ],
     education: [
       {
-        title: "Diploma in Software Engineering",
+        title: "B.Pharm, Pharmacy",
+        institution: "University of Nigeria, Nsukka",
+        period: "2017 - 2025",
+        details: [
+          "Pharmacology, pharmaceutics and clinical practice. I wrote my first code in 2020, partway through the degree.",
+        ],
+      },
+      {
+        title: "Diploma in software engineering",
         institution: "AltSchool Africa",
         period: "2024 - 2025",
         details: [
-          "Focus areas: JavaScript, React, Node.js, Angular, HTML, CSS, TypeScript, Git, GitHub, debugging, frontend engineering, and technical documentation.",
-          "AI training readiness: code review, response evaluation, prompt interpretation, bug identification, technical writing, and quality assurance."
-        ]
-      }
-    ]
+          "JavaScript, React, Node.js, Angular, HTML, CSS, TypeScript, Git and GitHub, with debugging and technical writing throughout.",
+        ],
+      },
+    ],
+    credentials: [
+      { label: "Provisional pharmacist licence", year: "2025" },
+      { label: "Full pharmacist licence", year: "2026" },
+    ],
   },
   socials: [
     { 
@@ -107,64 +338,11 @@ export const portfolioConfig = {
       iconKey: "linkedin"
     },
     { 
-      name: "Twitter / X",
-      url: "https://x.com/tonysmile_1",
+      name: "X",
+      url: "https://x.com/Tonysmile_1",
       iconKey: "twitter"
 
     }
   ],
-  projects: [
-    {
-      id: 1,
-      title: "React Todo / Productivity App",
-      description: "A productivity interface with reusable components, stateful interactions, validation, and clean component logic.",
-      role: "Frontend implementation",
-      year: "2025",
-      tech: ["React", "TypeScript", "TanStack Router", "TanStack Form", "Zod", "Tailwind CSS"],
-      link: "https://todo-app-tsc-mauve.vercel.app/",
-      repo: "https://github.com/teesmile",
-      preview: "/projects/todo-productivity.svg", 
-      color: "from-indigo-900 to-slate-900",
-      highlights: ["Reusable Home, TodoItem, and Pagination components", "Validation and stateful interactions", "Responsive layout with Tailwind CSS and icons"]
-    },
-    {
-      id: 2,
-      title: "E-Commerce Product Page",
-      description: "A responsive product interface with product data, image paths, pricing states, cart behavior, and mobile/desktop layout handling.",
-      role: "Frontend implementation",
-      year: "2025",
-      tech: ["Vite", "JavaScript", "HTML", "CSS", "Tailwind CSS"],
-      link: "https://e-commerce-product-page-one-ashy.vercel.app/",
-      repo: "https://github.com/teesmile",
-      preview: "/projects/ecommerce-product.svg",
-      color: "from-orange-500 to-amber-500",
-      highlights: ["Product gallery and thumbnail states", "Cart behavior and UI controls", "Validation against empty or invalid actions"]
-    },
-   {
-      id: 3,
-      title: "Portfolio Deployment Workflow",
-      description: "A personal developer portfolio workflow covering deployment, domain setup, DNS records, HTTPS checks, and search verification.",
-      role: "Deployment and frontend workflow",
-      year: "2025",
-      tech: ["Vercel", "DNS", "GitHub", "Google Search Console"],
-      link: "https://teesmile.vercel.app/",
-      repo: "https://github.com/teesmile",
-      preview: "/projects/deployment-workflow.svg",
-      color: "from-pink-600 to-rose-600",
-      highlights: ["Vercel deployment workflow", "Domain and DNS configuration", "HTTPS and search verification checks"]
-    },
-    {
-      id: 4,
-      title: "Space Tourism Website",
-      description: "A multi-page immersive space tourism experience for exploring destinations, crew members, and technology content.",
-      role: "Frontend implementation",
-      year: "2025",
-      tech: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
-      link: "https://space-tourism-toni.vercel.app/",
-      repo: "https://github.com/teesmile",
-      preview: "/projects/space-tourism.svg",
-      color: "from-blue-500 to-cyan-500",
-      highlights: ["Multi-page navigation", "Responsive layout system", "Animated content transitions"]
-    }
-  ]
+  projects,
 };
