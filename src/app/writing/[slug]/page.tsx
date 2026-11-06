@@ -6,6 +6,7 @@ import { writing, readingTime } from "@/config/writing";
 import OnThisPage from "@/features/writing/on-this-page";
 import Illustration from "@/features/writing/illustrations";
 import Figure from "@/features/writing/figures";
+import Reveals from "@/components/layout/reveals";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -38,6 +39,7 @@ export default async function WritingEntryPage({ params }: Params) {
 
   return (
     <article className="px-6 py-20 md:py-24">
+      <Reveals />
       <div className="mx-auto max-w-(--container-view)">
         <Link
           href="/writing"
@@ -60,7 +62,7 @@ export default async function WritingEntryPage({ params }: Params) {
               otherwise cram into the body. */}
           <div className="flex max-w-(--container-reading) flex-col gap-10 lg:col-span-7">
             {entry.sections.map((section) => (
-              <section key={section.id} id={section.id} className="scroll-mt-24">
+              <section key={section.id} id={section.id} data-reveal className="scroll-mt-24">
                 <h2 className="text-lg text-ink">{section.heading}</h2>
                 <div className="mt-4 flex flex-col gap-5 text-base text-ink">
                   {section.paragraphs.map((paragraph) => (
