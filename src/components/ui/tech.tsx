@@ -1,0 +1,70 @@
+import {
+  siAngular, siCloudflare, siCss, siDjango, siFramer, siGit, siGithub, siHtml5,
+  siJavascript, siLinux, siNextdotjs, siNodedotjs, siPnpm, siPython, siReact,
+  siTailwindcss, siTypescript, siVercel, siVite, siZod,
+} from "simple-icons";
+
+type Icon = { hex: string; path: string };
+
+const icons: Record<string, Icon> = {
+  "React": siReact, "TypeScript": siTypescript, "JavaScript": siJavascript,
+  "Tailwind CSS": siTailwindcss, "Vite": siVite, "Git": siGit,
+  "GitHub": siGithub, "Vercel": siVercel, "pnpm": siPnpm, "Linux": siLinux,
+  "Linux/Ubuntu": siLinux, "Node.js": siNodedotjs, "HTML": siHtml5,
+  "CSS": siCss, "Next.js": siNextdotjs, "Zod": siZod,
+  "Framer Motion": siFramer, "Angular": siAngular, "DNS": siCloudflare,
+  "Python": siPython, "Django": siDjango,
+};
+
+function luminance(hex: string) {
+  const channel = (value: number) => {
+    const c = value / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  };
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16));
+  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+}
+
+/* Logos carry their brand colour at rest. GitHub, Vercel and Next.js are
+   black, so on the dark surface they fall back to ink rather than disappearing
+   into the background. */
+function darkSafe(hex: string) {
+  const contrast = (luminance(hex) + 0.05) / (luminance("0c0d0f") + 0.05);
+  return contrast >= 3 ? `#${hex}` : "var(--ink)";
+}
+
+export function TechList({ items }: { items: string[] }) {
+  return (
+    <ul className="flex flex-wrap gap-x-4 gap-y-2 text-2xs text-muted">
+      {items.map((item) => {
+        const icon = icons[item];
+
+        return (
+          <li
+            key={item}
+            className="inline-flex items-center gap-1.5"
+            style={
+              icon
+                ? ({
+                    "--brand": `#${icon.hex}`,
+                    "--brand-dark": darkSafe(icon.hex),
+                  } as React.CSSProperties)
+                : undefined
+            }
+          >
+            {icon ? (
+              <svg
+                viewBox="0 0 24 24"
+                className="tech-mark h-3 w-3 shrink-0 fill-current"
+                aria-hidden="true"
+              >
+                <path d={icon.path} />
+              </svg>
+            ) : null}
+            {item}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
