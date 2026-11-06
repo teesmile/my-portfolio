@@ -3,10 +3,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { portfolioConfig } from '@/config/site';
+import type { Project } from '@/config/site';
 
 interface ProjectCardProps {
-  project: typeof portfolioConfig.projects[0];
+  project: Project;
   index: number;
 }
 
@@ -81,14 +81,16 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                     >
                         Live demo
                     </a>
-                    <a
-                        href={project.repo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm font-semibold text-zinc-500 transition hover:text-violet-300"
-                    >
-                        Source
-                    </a>
+                    {project.repo ? (
+                        <a
+                            href={project.repo}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm font-semibold text-zinc-500 transition hover:text-violet-300"
+                        >
+                            Source
+                        </a>
+                    ) : null}
                 </div>
             </div>
         </motion.article>
