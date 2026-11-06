@@ -15,6 +15,30 @@ Study: <one concept, with a link or a search term>
 
 ---
 
+## 2026-11-06 — Flip earns its cost on the case study and not in the deck (131de59)
+Decided by: measurement, during the Phase 2 gate.
+Claim: the brief asked for Flip in both places — the work card morphing into the case-study hero, and the deck bringing the next card forward.
+Verdict: KEPT on the case study, REPLACED in the deck
+Because: Flip measures layout for every element before animating, and that measurement is what you are paying for. On the case study it is unavoidable and worth it: the card lives on another route and unmounts the moment navigation happens, so the arriving hero has no way to know where it came from except from a recorded state. In the deck the slots are a pure function of position — I already know every start and end transform — so the measurement pass buys nothing. Measured at 4x CPU throttle: the Flip version produced a **33.4ms** frame against a **16.8ms** control; direct tweens to the known slot transforms measure **16.8ms**, at parity with doing nothing.
+Changed: deck reordering is now `gsap.to` per card with React owning order and z-index while GSAP owns transforms — if both wrote `style.transform` they would overwrite each other mid-tween. The case study keeps `Flip.from` with `scale: true`, the image only, and the heading cross-fading on its own tween. One gotcha cost a round of debugging and is worth recording: `Flip.from(state, vars)` falls back to `state.targets`, which are the elements that just unmounted, so the new element has to be passed explicitly as `vars.targets` for Flip to pair them by `data-flip-id`.
+Study: when a layout-reading animation is worth its forced reflow — the answer is "when you cannot compute the geometry yourself".
+
+## 2026-11-06 — The Phase 2 gate, and what the budget actually measures (131de59)
+Decided by: the five recorded traces in `docs/plan.md`, run with `pnpm frames` at 4x CPU throttle.
+Claim: every scenario must keep its longest frame under 16.7ms.
+Verdict: MOTION PASSES; the navigation scenarios exceed the budget for reasons motion cannot fix
+Because: the first run had all five over budget, which would normally mean simplifying the animation. Running the identical five with `prefers-reduced-motion` forced — every animation off — produced the same misses and a *worse* cold navigation (150.0ms against 83.3ms). The long frames are React rendering a new route under 4x throttle, not animation. The frame times are also quantised to multiples of ~16.65ms, which is the signature of skipped frames rather than one frame doing 83ms of work. Isolating the in-page animations against the same control settles it: hover tilt 16.8ms versus 16.8ms, idle 16.8ms versus 16.8ms, deck advance 16.8ms versus 16.8ms after the Flip change. Motion is at parity with doing nothing.
+Changed: `scripts/measure-frames.mjs` is now `pnpm frames`, with a `--reduced` control flag, because a performance number without a control is not evidence. Nothing in the offline trace is left stranded: template opacity 1, no scroll lock, no open drawer.
+Study: why a control run belongs in every performance measurement — without one, any number invites you to optimise the wrong thing.
+
+## 2026-11-06 — Reveals, and keeping the hidden state out of CSS (131de59)
+Decided by: Claude, per the rule that non-trivial motion ships with its reasoning.
+Claim: long views reveal their content as it comes into view, subtly, once.
+Verdict: SHIPPED
+Because: `ScrollTrigger.batch` gives dozens of marked nodes one shared trigger and one tween per group rather than dozens of each, and `once: true` kills the trigger after it fires so scrolling back up costs nothing and no paragraph arrives twice. The hidden state is set in JavaScript rather than CSS on purpose — a page whose script fails is then merely unanimated instead of invisible, which is the failure mode worth choosing. Reduced motion is handled by omission: neither matchMedia branch matches, so nothing is hidden and nothing animates. The contact clock's entrance carries a ref guard because the component re-renders every second; without it the digits would replay their arrival on every tick.
+Study: `ScrollTrigger.batch` versus per-element triggers, and why progressive enhancement means hiding things in script rather than in stylesheets.
+
+
 ## 2026-11-06 — Codex review 4: the clock was a hydration bug, not a warning (241c2b3)
 Codex challenged: `/contact` is prerendered, so `useState(readClock)` renders build-time digits into static HTML while the client initialises from the visitor's clock. `suppressHydrationWarning` on the parent does not cover text inside the child spans, so cold loads hit a real hydration failure and re-render, not a hidden warning. Separately, the copy button silently no-ops when the Clipboard API is denied, and the mailto link my comment promised had been removed in the rewrite.
 Verdict: AGREE on both, reproduced before fixing
