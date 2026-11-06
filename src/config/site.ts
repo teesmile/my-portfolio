@@ -1,4 +1,63 @@
 
+export type Project = {
+  id: number;
+  title: string;
+  description: string;
+  role: string;
+  year: string;
+  tech: string[];
+  link: string;
+  /** The repository itself, never the profile. Omit it when a project has no
+   *  public repo — the card hides the "Source" link rather than linking to
+   *  something that is not the source. */
+  repo?: string;
+  preview: string;
+  color: string;
+  highlights: string[];
+};
+
+const projects: Project[] = [
+  {
+    id: 1,
+    title: "React Todo / Productivity App",
+    description: "A productivity interface with reusable components, stateful interactions, validation, and clean component logic.",
+    role: "Frontend implementation",
+    year: "2025",
+    tech: ["React", "TypeScript", "TanStack Router", "TanStack Form", "Zod", "Tailwind CSS"],
+    link: "https://todo-app-tsc-mauve.vercel.app/",
+    repo: "https://github.com/teesmile/todo-app-tsc",
+    preview: "/projects/todo-productivity.svg", 
+    color: "from-indigo-900 to-slate-900",
+    highlights: ["Reusable Home, TodoItem, and Pagination components", "Validation and stateful interactions", "Responsive layout with Tailwind CSS and icons"]
+  },
+  {
+    id: 2,
+    title: "E-Commerce Product Page",
+    description: "A responsive product interface with product data, image paths, pricing states, cart behavior, and mobile/desktop layout handling.",
+    role: "Frontend implementation",
+    year: "2025",
+    tech: ["Vite", "JavaScript", "HTML", "CSS", "Tailwind CSS"],
+    link: "https://e-commerce-product-page-one-ashy.vercel.app/",
+    repo: "https://github.com/teesmile/e-commerce-product-page",
+    preview: "/projects/ecommerce-product.svg",
+    color: "from-orange-500 to-amber-500",
+    highlights: ["Product gallery and thumbnail states", "Cart behavior and UI controls", "Validation against empty or invalid actions"]
+  },
+  {
+    id: 3,
+    title: "Space Tourism Website",
+    description: "A multi-page immersive space tourism experience for exploring destinations, crew members, and technology content.",
+    role: "Frontend implementation",
+    year: "2025",
+    tech: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
+    link: "https://space-tourism-toni.vercel.app/",
+    repo: "https://github.com/teesmile/space-tourism",
+    preview: "/projects/space-tourism.svg",
+    color: "from-blue-500 to-cyan-500",
+    highlights: ["Multi-page navigation", "Responsive layout system", "Animated content transitions"]
+  }
+];
+
 export const portfolioConfig = {
   name: "Anthony Ugwuja",
   brandName: "Teesmile",
@@ -15,7 +74,7 @@ export const portfolioConfig = {
     { name: "Featured projects", href: "/#projects" },
     { name: "About me", href: "/#about" },
     { name: "Contact me", href: "/#contact" },
-  ],
+  ] as const,
   services: [
     {
       title: "Frontend Development",
@@ -40,7 +99,7 @@ export const portfolioConfig = {
     },
     {
       label: "Frontend",
-      items: ["TypeScript", "Vite", "Tailwind CSS", "Responsive design", "Component architecture", "Form validation", "DOM manipulation"]
+      items: ["TypeScript", "Vite", "Tailwind CSS", "Responsive design", "Component architecture", "Form validation"]
     },
     {
       label: "AI training",
@@ -48,7 +107,7 @@ export const portfolioConfig = {
     },
     {
       label: "Tools",
-      items: ["Git", "GitHub", "VS Code", "Chrome DevTools", "Vercel", "npm", "pnpm", "Linux/Ubuntu", "JSON", "REST API fundamentals"]
+      items: ["Git", "GitHub", "Chrome DevTools", "Vercel", "pnpm", "Linux/Ubuntu", "REST API fundamentals"]
     }
   ],
   resume: {
@@ -113,58 +172,5 @@ export const portfolioConfig = {
 
     }
   ],
-  projects: [
-    {
-      id: 1,
-      title: "React Todo / Productivity App",
-      description: "A productivity interface with reusable components, stateful interactions, validation, and clean component logic.",
-      role: "Frontend implementation",
-      year: "2025",
-      tech: ["React", "TypeScript", "TanStack Router", "TanStack Form", "Zod", "Tailwind CSS"],
-      link: "https://todo-app-tsc-mauve.vercel.app/",
-      repo: "https://github.com/teesmile",
-      preview: "/projects/todo-productivity.svg", 
-      color: "from-indigo-900 to-slate-900",
-      highlights: ["Reusable Home, TodoItem, and Pagination components", "Validation and stateful interactions", "Responsive layout with Tailwind CSS and icons"]
-    },
-    {
-      id: 2,
-      title: "E-Commerce Product Page",
-      description: "A responsive product interface with product data, image paths, pricing states, cart behavior, and mobile/desktop layout handling.",
-      role: "Frontend implementation",
-      year: "2025",
-      tech: ["Vite", "JavaScript", "HTML", "CSS", "Tailwind CSS"],
-      link: "https://e-commerce-product-page-one-ashy.vercel.app/",
-      repo: "https://github.com/teesmile",
-      preview: "/projects/ecommerce-product.svg",
-      color: "from-orange-500 to-amber-500",
-      highlights: ["Product gallery and thumbnail states", "Cart behavior and UI controls", "Validation against empty or invalid actions"]
-    },
-   {
-      id: 3,
-      title: "Portfolio Deployment Workflow",
-      description: "A personal developer portfolio workflow covering deployment, domain setup, DNS records, HTTPS checks, and search verification.",
-      role: "Deployment and frontend workflow",
-      year: "2025",
-      tech: ["Vercel", "DNS", "GitHub", "Google Search Console"],
-      link: "https://teesmile.vercel.app/",
-      repo: "https://github.com/teesmile",
-      preview: "/projects/deployment-workflow.svg",
-      color: "from-pink-600 to-rose-600",
-      highlights: ["Vercel deployment workflow", "Domain and DNS configuration", "HTTPS and search verification checks"]
-    },
-    {
-      id: 4,
-      title: "Space Tourism Website",
-      description: "A multi-page immersive space tourism experience for exploring destinations, crew members, and technology content.",
-      role: "Frontend implementation",
-      year: "2025",
-      tech: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
-      link: "https://space-tourism-toni.vercel.app/",
-      repo: "https://github.com/teesmile",
-      preview: "/projects/space-tourism.svg",
-      color: "from-blue-500 to-cyan-500",
-      highlights: ["Multi-page navigation", "Responsive layout system", "Animated content transitions"]
-    }
-  ]
+  projects,
 };

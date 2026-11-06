@@ -1,39 +1,22 @@
-import fs from "node:fs";
-import path from "node:path";
 import Image from "next/image";
 import { portfolioConfig } from "@/config/site";
 
-const profileImage = "/pfpnew.png";
-
-function hasProfileImage() {
-  return fs.existsSync(path.join(process.cwd(), "public", profileImage));
-}
+const profileImage = "/profile.webp";
 
 export default function AboutSection() {
-  const showProfileImage = hasProfileImage();
-
   return (
     <section id="about" className="scroll-mt-24 bg-white px-6 py-24 dark:bg-[#1b1b1b]">
       <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[0.9fr_1.1fr] md:items-center">
         <div className="relative mx-auto flex aspect-square w-full max-w-md items-center justify-center rounded-full border border-violet-500/20">
           <div className="absolute inset-8 rounded-full border border-indigo-500/20" />
           <div className="relative h-80 w-80 overflow-hidden rounded-full border border-violet-400/25 bg-linear-to-r from-[#5b5cff] to-[#8b5cf6] text-[#111111] shadow-2xl shadow-black/25">
-            {showProfileImage ? (
-              <Image
-                src={profileImage}
-                alt={`${portfolioConfig.name} portrait`}
-                fill
-                sizes="320px"
-                className="object-cover"
-                quality={100}
-                unoptimized
-                priority={false}
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-6xl font-bold">
-                AU
-              </div>
-            )}
+            <Image
+              src={profileImage}
+              alt={`${portfolioConfig.name} portrait`}
+              fill
+              sizes="320px"
+              className="object-cover"
+            />
           </div>
           {["JS", "TS", "React", "CSS"].map((item, index) => (
             <span
