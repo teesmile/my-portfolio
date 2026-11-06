@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { AnimatePresence, motion } from 'framer-motion';
 import { portfolioConfig } from '@/config/site';
 import ThemeToggle from './theme-toggle';
 
@@ -83,12 +82,12 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="relative z-60 -m-2 p-2 text-muted transition-colors hover:text-ink md:hidden"
-            aria-label="Toggle menu"
+            className="relative z-60 flex w-[5.25rem] items-center justify-center gap-2 border border-line px-3 py-1.5 text-2xs text-ink transition-colors hover:border-ink md:hidden"
+            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isMenuOpen}
             aria-controls="mobile-menu"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
               {isMenuOpen ? (
                 <>
                   <path d="M6 6l12 12" />
@@ -96,58 +95,48 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                  <path d="M4 8h16" />
-                  <path d="M4 16h16" />
+                  <path d="M4 7h16" />
+                  <path d="M4 12h16" />
+                  <path d="M4 17h16" />
                 </>
               )}
             </svg>
+            {isMenuOpen ? 'Close' : 'Menu'}
           </button>
         </div>
       </div>
 
       </nav>
 
-      <AnimatePresence>
-        {isMenuOpen ? (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
-              className="fixed inset-0 z-40 bg-ink/40 md:hidden"
-              onClick={() => setIsMenuOpen(false)}
-              aria-hidden="true"
-            />
-            <motion.div
-              id="mobile-menu"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
-              className="fixed inset-x-0 top-16 bottom-0 z-45 bg-surface px-6 pt-10 md:hidden"
-            >
-              <ul className="flex flex-col">
-                {[...portfolioConfig.navLinks, { name: 'Resume', href: '/resume' } as const].map((link) => (
-                  <li key={link.name} className="border-b border-line">
-                    <Link
-                      href={link.href}
-                      onClick={() => setIsMenuOpen(false)}
-                      className={
-                        isActive(link.href)
-                          ? 'block py-5 font-display text-lg text-ink'
-                          : 'block py-5 font-display text-lg text-muted'
-                      }
-                    >
-                      {link.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          </>
-        ) : null}
-      </AnimatePresence>
+      {isMenuOpen ? (
+        /* No enter or exit animation in Phase 1. framer-motion reset the
+           panel's opacity to the opposite extreme for a single frame as each
+           animation handed off, which is the blink — measured at 426.9ms on
+           open and 2059.8ms on close. Phase 2 designs this transition
+           properly; until then the panel simply is or is not there. */
+        <div
+          id="mobile-menu"
+          className="fixed inset-x-0 top-16 bottom-0 z-45 bg-surface px-6 pt-10 md:hidden"
+        >
+          <ul className="flex flex-col">
+            {[...portfolioConfig.navLinks, { name: 'Resume', href: '/resume' } as const].map((link) => (
+              <li key={link.name} className="border-b border-line">
+                <Link
+                  href={link.href}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`block py-5 font-display text-lg underline decoration-2 underline-offset-[6px] transition-colors ${
+                    isActive(link.href)
+                      ? 'text-ink decoration-accent'
+                      : 'text-muted decoration-transparent hover:text-ink hover:decoration-accent active:text-ink active:decoration-accent'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </>
   );
 }

@@ -5,6 +5,7 @@ import { pageMetadata } from "@/lib/metadata";
 import { writing, readingTime } from "@/config/writing";
 import OnThisPage from "@/features/writing/on-this-page";
 import Illustration from "@/features/writing/illustrations";
+import Figure from "@/features/writing/figures";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -66,6 +67,7 @@ export default async function WritingEntryPage({ params }: Params) {
                     <p key={paragraph.slice(0, 40)}>{paragraph}</p>
                   ))}
                 </div>
+                <Figure name={section.figure} />
               </section>
             ))}
           </div>

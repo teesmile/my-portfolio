@@ -89,9 +89,12 @@ export const portfolioConfig = {
   phone: "+234 903 257 0130",
   email: "anthonyugwuja.dev@gmail.com",
   location: "Abuja, Nigeria",
-  availability: "Remote",
+  availability: "Remote, anywhere",
+  takingWork: true,
+  currently:
+    "Reading model-written code most of the week, and building the next thing with a real server behind it.",
   statement:
-    "I trained as a pharmacist. Now I build React interfaces — and get paid to find what's wrong with AI-written code.",
+    "Pharmacist by training, engineer by choice. I ship across the stack and catch what AI gets wrong.",
   // The dated spine on /about. Two tracks running in parallel, not one career
   // replacing another — which is the actual story.
   timeline: [
@@ -221,7 +224,7 @@ export const portfolioConfig = {
   // Page prose lives here so it can be edited in one file.
   copy: {
     heroSupport:
-      "Four bugs from code a model wrote. Every one is real, and every one would survive a quick read.",
+      "Bugs from code a model wrote. Every one is real, and every one would survive a quick read.",
     aboutHeading: "I read other people's code for a living. Mine included.",
     aboutParagraphs: [
       "I trained as a pharmacist at the University of Nigeria, Nsukka. I wrote my first code in 2020, partway through the degree, and kept going after it: HTML and CSS first, then JavaScript, then React.",
@@ -231,10 +234,10 @@ export const portfolioConfig = {
     ],
     aboutStackHeading: "What I work with",
     aboutDataEmpty: "Nothing I have shipped has a database yet.",
-    workHeading: "Three things I built, and what each one taught me.",
+    workHeading: "Things I\u2019ve built, and what each one taught me.",
     workArchiveLink: "Everything else, including the training work",
     writingHeading: "Decisions, and what they cost.",
-    contactHeading: "I am open to remote frontend work and code evaluation.",
+    contactHeading: "Open to remote frontend work and code evaluation.",
     contactNote: "Email reaches me fastest.",
     labHeading: "Interaction experiments, one at a time.",
     labIntro:

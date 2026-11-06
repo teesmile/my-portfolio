@@ -2,10 +2,18 @@ export type Section = {
   id: string;
   heading: string;
   paragraphs: string[];
+  /** Drawn inline, at the point the section explains the thing. */
+  figure?: string;
 };
+
+/* A fixed vocabulary rather than free tags: five topics the site will
+   plausibly cover, so the filter row stays short and a new piece has to pick
+   a lane instead of inventing one. */
+export type Topic = "Engineering" | "AI" | "Pharmacy" | "Health" | "Notes";
 
 export type WritingEntry = {
   slug: string;
+  topic: Topic;
   title: string;
   date: string;
   standfirst: string;
@@ -15,6 +23,7 @@ export type WritingEntry = {
 export const writing: WritingEntry[] = [
   {
     slug: "every-section-is-a-route",
+    topic: "Engineering",
     title: "Every section is its own route",
     date: "2026-11-06",
     standfirst:
@@ -22,6 +31,7 @@ export const writing: WritingEntry[] = [
     sections: [
       {
         id: "the-shape-i-started-with",
+        figure: "anchors-vs-routes",
         heading: "The shape I started with",
         paragraphs: [
           "The site used to be one long page. Hero, services, projects, about, skills, contact, stacked in a column, with a nav that scrolled you to an anchor. It is the default shape for a portfolio and I had never questioned it.",
@@ -38,6 +48,7 @@ export const writing: WritingEntry[] = [
       },
       {
         id: "what-routes-fixed-for-free",
+        figure: "state-source",
         heading: "What routes fixed for free",
         paragraphs: [
           "Active state is now derived from the current path, so a deep link, a reload and a back button are all correct by construction. There is no scroll position to track and no observer to keep in sync.",
@@ -46,6 +57,7 @@ export const writing: WritingEntry[] = [
       },
       {
         id: "the-cost",
+        figure: "cut-vs-continuous",
         heading: "The cost",
         paragraphs: [
           "The transition is now load-bearing. On one page, a bad scroll animation is a small annoyance; between routes, a hard cut is the most visible flaw the site can have. I have moved work into the motion phase rather than removed it.",
@@ -56,6 +68,7 @@ export const writing: WritingEntry[] = [
   },
   {
     slug: "what-unoptimized-turns-off",
+    topic: "Engineering",
     title: "A 2.4 MB portrait, and what unoptimized actually turns off",
     date: "2026-11-06",
     standfirst:
@@ -63,6 +76,7 @@ export const writing: WritingEntry[] = [
     sections: [
       {
         id: "the-numbers",
+        figure: "oversized-box",
         heading: "The numbers",
         paragraphs: [
           "The portrait on my about page was 2,507,195 bytes: a 1254 by 1254 PNG at 16 bits per channel, displayed in a circle 320 pixels wide. Every visitor downloaded all of it to look at a thumbnail.",
@@ -70,6 +84,7 @@ export const writing: WritingEntry[] = [
       },
       {
         id: "what-the-prop-actually-does",
+        figure: "optimizer-bypass",
         heading: "What the prop actually does",
         paragraphs: [
           "The image was rendered with unoptimized set, and quality={100} sitting on the line above it. That pairing taught me something. unoptimized does not mean lower effort — it means the optimizer is skipped entirely, so no resizing, no format conversion, no generated srcset. Which also means quality is never read.",
@@ -86,6 +101,7 @@ export const writing: WritingEntry[] = [
       },
       {
         id: "the-part-i-nearly-got-wrong",
+        figure: "srcset-pick",
         heading: "The part I nearly got wrong",
         paragraphs: [
           "The sizes attribute is a description of your layout, not a request. The browser uses it to pick a candidate from the srcset before it knows anything about your CSS. My container is a fixed 320 pixels at every breakpoint, so sizes=\"320px\" is the truth. A responsive value copied from a tutorial would have described a layout I do not have, and the browser would have believed it.",
