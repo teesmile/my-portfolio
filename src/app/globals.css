@@ -77,12 +77,12 @@
   --text-3xl: 4.25rem;
   --text-3xl--line-height: 0.98;
   /* The hero statement. Both values come from /lab/type, which measures line
-     count at 1280 and 360 rather than leaving it to the eye: 44px wide / 22px
-     narrow, leading 1.05, Syne. 52px also passes on desktop; 44px is the
-     chosen size inside that range. */
-  --text-statement: 2.75rem;
+     count at 1280 and 360 rather than leaving it to the eye: 56px wide / 28px
+     narrow, leading 1.05, Syne. These are the largest sizes that pass with
+     the shipped statement. */
+  --text-statement: 3.5rem;
   --text-statement--line-height: 1.05;
-  --text-statement-sm: 1.375rem;
+  --text-statement-sm: 1.75rem;
   --text-statement-sm--line-height: 1.05;
 
   --radius-sm: 2px;
@@ -111,6 +111,24 @@
   h2,
   h3 {
     @apply font-display;
+  }
+
+  /* Tailwind 4 resets button cursors to `default` to match the UA spec. Every
+     interactive thing on this site should still say so on hover. */
+  button,
+  summary,
+  [role="button"],
+  a[href],
+  label[for],
+  select,
+  input[type="checkbox"],
+  input[type="radio"] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: default;
   }
 
   ::selection {

@@ -2,7 +2,7 @@ import { portfolioConfig } from "@/config/site";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-line px-6 py-10">
+    <footer className="border-t border-line px-6 py-6 md:py-10">
       <div className="mx-auto flex max-w-(--container-view) flex-col items-start gap-4 text-left text-2xs text-muted sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <p>
           &copy; {new Date().getFullYear()} {portfolioConfig.name}
