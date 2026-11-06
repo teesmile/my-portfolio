@@ -1,16 +1,212 @@
 @import "tailwindcss";
 
+/* Dark is the primary mode: the tokens below are the dark values, and `.light`
+   opts out. Because every colour utility reads a token, no `dark:` variant is
+   needed anywhere in the tree — the same class is correct in both themes. */
+@variant light (&:where(.light, .light *));
 
-@variant dark (&:where(.dark, .dark *));
-
-@theme {
-
+:root {
+  color-scheme: dark;
+  --surface: #0c0d0f;
+  --raised: #15171a;
+  --line: #23272d;
+  --ink: #edeff2;
+  --muted: #9ba3ad;
+  /* The one saturated hue: amber-gold, interaction only.
+     --accent is link text, 10.43:1 on this surface.
+     --accent-strong is the same bright gold in both modes, for fills and focus
+     rings, with --accent-ink on top at 10.43:1. */
+  --accent: #f0b429;
+  --accent-strong: #f0b429;
+  --accent-ink: #0c0d0f;
+  --focus-halo: transparent;
 }
 
+.light {
+  color-scheme: light;
+  --surface: #f5f6f8;
+  --raised: #ffffff;
+  --line: #dbdfe5;
+  --ink: #14171a;
+  --muted: #575f69;
+  /* Bronze-gold for link text, 6.58:1 on light --surface. The bright gold
+     stays the fill colour so a button looks identical in both modes.
+     The halo exists because bright gold against a near-white surface is only
+     1.72:1 — the ring reads as gold, the halo keeps it visible. */
+  --accent: #7a4f08;
+  --accent-strong: #f0b429;
+  --accent-ink: #0c0d0f;
+  --focus-halo: #14171a;
+}
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-strong: var(--accent-strong);
+
+  --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+  --font-text: var(--font-source-serif), ui-serif, Georgia, serif;
+  /* System stack, not a third downloaded family: code set in a serif is
+     unreadable, and a webfont for six lines of sample code is not worth it. */
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@theme {
+  /* Type scale. Seven steps, each with its own line height — the display steps
+     are tight because the display face is set large, the reading steps are open
+     because Source Serif carries long-form case studies. */
+  --text-2xs: 0.75rem;
+  --text-2xs--line-height: 1.5;
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.55;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.65;
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.75;
+  --text-lg: 1.375rem;
+  --text-lg--line-height: 1.5;
+  --text-xl: 2rem;
+  --text-xl--line-height: 1.18;
+  --text-2xl: 2.75rem;
+  --text-2xl--line-height: 1.06;
+  --text-3xl: 4.25rem;
+  --text-3xl--line-height: 0.98;
+  /* The hero statement. Both values come from /lab/type, which measures line
+     count at 1280 and 360 rather than leaving it to the eye: 44px wide / 22px
+     narrow, leading 1.05, Syne. 52px also passes on desktop; 44px is the
+     chosen size inside that range. */
+  --text-statement: 2.75rem;
+  --text-statement--line-height: 1.05;
+  --text-statement-sm: 1.375rem;
+  --text-statement-sm--line-height: 1.05;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+
+  --container-reading: 38rem;
+  --container-view: 74rem;
+}
 
 @layer base {
-  body {
-    @apply min-h-screen flex flex-col antialiased transition-colors duration-500;
-    
+  html {
+    background-color: var(--surface);
+    /* Short views have no scrollbar and tall ones do, so without a reserved
+       gutter the viewport changes width on every navigation and all centred
+       content jumps by half the scrollbar. Measured: 15px of width, 7.5px of
+       horizontal shift. Browsers without support behave as before. */
+    scrollbar-gutter: stable;
   }
+
+  body {
+    @apply flex min-h-dvh flex-col bg-surface font-text text-base text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent-strong);
+    outline-offset: 3px;
+    /* Transparent in dark, ink in light: see --focus-halo above. */
+    box-shadow: 0 0 0 1px var(--focus-halo);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Shiki renders both themes into every token as custom properties, so the
+   editor colours swap with the site without re-highlighting anything. */
+.shiki,
+.shiki span {
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
+}
+
+.light .shiki,
+.light .shiki span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+
+/* Shiki puts a newline between every line span. Inside a pre those newlines
+   render as extra breaks and the code ends up double-spaced; a grid container
+   discards whitespace-only text between its items, which removes them. */
+.shiki code {
+  display: grid;
+}
+
+.shiki .line {
+  padding-inline: 0.75rem 1rem;
+}
+
+.shiki .line::before {
+  content: " ";
+  display: inline-block;
+  width: 0.75rem;
+  color: var(--muted);
+  user-select: none;
+}
+
+.shiki .line-removed::before {
+  content: "-";
+}
+
+.shiki .line-added::before {
+  content: "+";
+}
+
+.shiki .line-removed,
+.shiki .line-added {
+  background-color: color-mix(in oklab, var(--ink) 9%, transparent);
+}
+
+.shiki {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  line-height: 1.7;
+  overflow-x: auto;
+  padding-block: 0.5rem;
+}
+
+/* Logos wear their brand colour at rest; the label beside them stays muted so
+   the row still reads as text rather than a sticker sheet. */
+.tech-mark {
+  color: var(--brand-dark, var(--muted));
+}
+
+.light .tech-mark {
+  color: var(--brand, var(--muted));
+}
+
+/* Tool logos sit monochrome and only take their brand colour on hover, so a
+   list of technologies does not become a colour chart. */
+.tech:hover {
+  color: var(--brand-dark, var(--ink));
+}
+
+.light .tech:hover {
+  color: var(--brand, var(--ink));
 }

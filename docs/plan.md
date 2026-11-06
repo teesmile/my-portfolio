@@ -67,7 +67,25 @@ Data at `src/config/site.ts:19-35`, rendered by `src/features/services/services-
 
 ## Target structure
 
-Hero → Work → About → Contact, one page, plus `/work/[slug]` case-study pages and `/resume`. Lab arrives in Phase 5. Services and Skills fold into About. The story is a pharmacist who moved into frontend and now reviews AI-generated code for a living; that's the angle nobody else in the pile has, and the copy should say it in the first screen.
+Six routes, not one scrolling page. Decided 6 Nov 2026, logged in `docs/decisions.md`.
+
+| Route | What it is |
+|---|---|
+| `/` | The hero view: the statement, one primary action, and the annotated defect |
+| `/work` | The projects as an editorial index |
+| `/work/[slug]` | One case study per project |
+| `/about` | The story, the dated spine, and the folded-in capabilities and stack |
+| `/lab` | Interaction experiments. Phase 5 fills it; it stays out of the nav until it holds one |
+| `/contact` | Short by design |
+| `/resume` | Already exists |
+
+Four rules follow from the structure, and every later phase is judged against them:
+1. **Navigation replaces the whole view.** Phase 1 does it instantly, Phase 2 makes it continuous with the incoming content animating in.
+2. **A view scrolls only if its own content is taller than the viewport.** No filler to manufacture scroll.
+3. **In a scrolling view, content reveals as you scroll** — never all at once on load.
+4. **A short view arrives and stays put.** `/contact` does not reveal, does not scroll, does not animate on a timer.
+
+The story is a pharmacist who moved into frontend and now reviews AI-generated code for a living. `/` says it in one sentence and shows it with a real defect.
 
 ---
 
@@ -94,16 +112,17 @@ Accepted from Codex regardless of mechanism: the transition has to be tested for
 
 Still not verified: no spike was built on either mechanism. I disagree with building both before settling — the reasoning is in `docs/decisions.md`. Phase 5 is where View Transitions get tried.
 
-### Q2. Work on the home page as a scroll sequence, or a grid that links out? — Neither. An editorial layout that links out; the choreography lives on the case-study page.
+### Q2. Work on the home page as a scroll sequence, or a grid that links out? — Superseded 6 Nov 2026: Work is its own route.
 
-Decision: the home page's Work section is a deliberately asymmetric, scannable layout (varying column spans and image sizes, type doing the hierarchy, no uniform card grid) where each entry links to `/work/[slug]`. The pinned, scrubbed sequence moves to the case-study page.
-Reasoning, against the bar:
-1. Bar 2 says one orchestrated moment per page. The home page's moment is the hero reveal. A pinned, scrubbed Work sequence in the same scroll would be a second, competing moment.
-2. Bar 1 says the static frame has to hold up. A pinned sequence hides the design in motion the screenshot doesn't capture; an asymmetric editorial layout is art direction visible in a still frame.
-3. Bar 4 is where a pin most likely fails. Pinning plus scrubbing four items, each with an image, on a mid-range Android at 4x CPU throttle, is the single most expensive thing in the whole plan. Spending that budget on the page a recruiter may never reach is the wrong trade.
-4. Reader behaviour: a pinned sequence puts items 2-4 behind scroll distance and makes "show me the pharmacy app" a scroll hunt. A layout shows all of it at once and gets the click.
-5. Bar 3 is still satisfied, and better: continuity comes from the card-to-header Flip transition into `/work/[slug]`, which is a stronger continuous moment than a pin.
-Consequence: Phase 2's wording below is amended — Work choreography is scoped to the case-study page, and the home Work section gets layout only.
+The original answer was an asymmetric editorial layout on the home page linking to `/work/[slug]`, with the pinned choreography moved to the case study. The route-per-view decision makes the question moot — there is no home page Work section to place. `/work` *is* that editorial layout, as a view of its own.
+
+What survives from the original reasoning, and still governs `/work`:
+1. No uniform card grid. The layout is asymmetric and type-led, so the view holds up as a still frame (bar 1).
+2. No pinned, scrubbed sequence. `/work` reveals its entries as you scroll if it is taller than the viewport, and does nothing if it is not (structure rule 3 and 4).
+3. The expensive choreography belongs on `/work/[slug]`, where one case study justifies it, not on an index a reader is scanning.
+4. Continuity comes from the card-to-header transition into the case study, which is now the same mechanism as every other navigation rather than a special case.
+
+What changed: "one orchestrated moment per page" is now literally per view, and the moment is the transition into the view rather than a section entrance inside it.
 
 ---
 
@@ -142,88 +161,107 @@ I learn: what `unoptimized` actually bypasses (and why `quality` next to it is d
 
 Why: the juror's first test is the static frame. This phase decides whether the site looks made on purpose. Phase 1 ends with a site that has **no motion at all** — every existing animation comes out here, so the static frame is judged honestly and Phase 2 adds motion deliberately rather than inheriting it.
 
-**1a. Type**
+Decisions 1.1, 1.4, 1.8 and 1.18 were settled by Anthony on 6 Nov 2026 and are recorded, not asked.
+
+**1a. Type, tokens, palette**
 
 | # | Task | Files | Owner |
 |---|---|---|---|
-| 1.1 | Pick one display family and one text family, two maximum, never Inter/Geist/Roboto, and write the justification in `docs/decisions.md`. Three starting points: **(A)** Instrument Serif display + IBM Plex Sans text — editorial, suits long case studies, lowest taste risk; **(B)** Bricolage Grotesque display + Source Serif 4 text — the braver inversion, grotesque headline over serif body, most memorable, hardest to keep tidy; **(C)** IBM Plex Sans + IBM Plex Mono — engineering-forward and on-message for code evaluation, but the least distinctive. Recommendation: A, with B as the one to try if you want the site to be remembered | `docs/decisions.md` | **Anthony** |
-| 1.2 | Wire the choice: load the two families, delete `Inter` and the unused `Geist_Mono`, apply via token not class | `src/app/layout.tsx:2`, `:9-17`, `:61` | Claude |
-| 1.3 | `@theme` type tokens: `--font-display`, `--font-text`, and a type scale of 7 steps with paired line-heights and tracking | `src/app/globals.css:6-8` | Claude |
+| 1.1 | **Decided:** Bricolage Grotesque (display, variable, `opsz`/`wdth` axes) over Source Serif 4 (body, variable). The inverted pairing — grotesque headline, serif body — is the deliberate half of the options, and a serif body is better for case-study reading | — | **Anthony**, done |
+| 1.2 | Load both families, delete `Inter` and the unused `Geist_Mono`, apply through tokens rather than a class | `src/app/layout.tsx` | Claude |
+| 1.3 | `@theme` type tokens and a 7-step scale with paired line-heights | `src/app/globals.css` | Claude |
+| 1.4 | **Decided:** colour as a rule, not a value. Dark is the primary mode and light is built from the same tokens. Surfaces are cold neutral, never cream. Exactly one cold saturated hue, reserved for interaction — links, focus rings, the primary action — and never decoration. Accent is ice-cyan `#58D0E0` on dark (10.66:1) and `#046277` on light (6.43:1), both measured past AA; azure `#6FB4FF`/`#0B5FC2` (8.93:1/5.66:1) is the runner-up and a one-token swap | — | **Anthony**, done |
+| 1.5 | Colour tokens with `@theme inline` over CSS variables that flip on `:root` (dark) and `.light`, so no `dark:` utility is needed anywhere. Delete `@variant dark` and invert the theme provider: dark is the default, `.light` is the opt-in | `src/app/globals.css`, `src/providers/theme-provider.tsx`, `src/components/layout/theme-toggle.tsx` | Claude |
+| 1.6 | Spacing and radii tokens; one radius scale replacing ad-hoc `rounded-lg`/`rounded-sm`/`rounded-full` | `src/app/globals.css` | Claude |
+| 1.7 | Replace every hex literal in class names with tokens across the tree | all of `src/` | Claude |
 
-**1b. Tokens**
-
-| # | Task | Files | Owner |
-|---|---|---|---|
-| 1.4 | Decide the accent hue and whether the identity keeps a gradient at all. My recommendation: one solid accent, no two-stop gradient — 58 of the 76 hex literals in the tree are the two gradient stops, and the gradient is the single loudest template tell | `docs/decisions.md` | **Anthony** |
-| 1.5 | `@theme` color tokens: 4 to 6 named roles (surface, raised, ink, muted, accent, line), each defined once for light and once for dark, replacing the four competing near-blacks | `src/app/globals.css` | Claude |
-| 1.6 | `@theme` spacing and radii tokens; one radius scale instead of `rounded-lg`/`rounded-sm`/`rounded-full` chosen ad hoc | `src/app/globals.css` | Claude |
-| 1.7 | Replace every hex literal in class names with tokens | `src/app/layout.tsx:61`; `src/features/landing/hero.tsx:59-62,67,77,84,107,124,133,141`; `src/features/about/about-section.tsx:16,20,41,61`; `src/features/projects/projects-section.tsx:32,43`; `src/features/projects/project-card.tsx:18,39,68`; `src/features/contact/contact-section.tsx:11,18,26,32,46`; `src/components/layout/navbar.tsx:42,45,58,70,160`; `src/components/layout/footer.tsx:27,30,36-37`; `src/app/resume/page.tsx` (12 occurrences) | Claude |
-
-**1c. Structure and copy**
+**1b. Routes, with instant navigation. No transitions, no motion — Phase 2 adds both.**
 
 | # | Task | Files | Owner |
 |---|---|---|---|
-| 1.8 | Write the hero statement: one sentence, specific, pharmacist → frontend → AI code evaluation, no "seasoned", no "turning ideas into". Two drafts to react to or reject: *"I'm Anthony. I left pharmacy for frontend, and now I get paid to find what's wrong with AI-written code."* / *"Pharmacist turned frontend developer. I build React interfaces, and I review AI-generated code for a living."* Marked `TODO(human)` in the file; what it must do: say the thing nobody else in the pile can say, in one screen, without a second paragraph | `src/features/landing/hero.tsx`, `src/config/site.ts:6-7` | **Anthony** |
-| 1.9 | Rebuild the hero structure around that statement and one primary action. Delete the brand pill, the gradient name span, the duplicate bio paragraph, and the three-button row; one primary link to Work plus one quiet text link; socials stay in the footer only. Delete the GSAP timeline — Phase 2 rebuilds it | `src/features/landing/hero.tsx:20-56`, `:64-146` | Claude |
-| 1.10 | Restructure the page to Hero → Work → About → Contact | `src/app/page.tsx` | Claude |
-| 1.11 | Rename the feature folder to match the structure: `src/features/projects/` → `src/features/work/`, `projects-section.tsx` → `work-section.tsx`, `project-card.tsx` → `work-card.tsx`; update imports | `src/features/work/*`, `src/app/page.tsx:4` | Claude |
-| 1.12 | Rebuild Work as the asymmetric editorial layout settled in Q2 — varying spans, type-led hierarchy, no uniform card grid. **Entries keep linking to the live project URL in this phase**; the switch to `/work/[slug]` happens in task 2.0, in the same commit that creates the route. Strip the two framer variants and the hover-lift | `src/features/work/work-section.tsx:10-29,35-45,51-63`, `src/features/work/work-card.tsx:15-19` | Claude |
-| 1.13 | Fold Services and Skills into About: one short capability line and one condensed stack line in About prose; delete both sections and the now-unused `services` data. Keep the `skills` array — `/resume` consumes it | delete `src/features/services/services-section.tsx` and `src/features/skills/skills-section.tsx`; edit `src/features/about/about-section.tsx:56-76`; `src/config/site.ts:19-35` | Claude |
-| 1.14 | Remove every banned pattern that survives: eyebrows at `about-section.tsx:57-59`, `contact-section.tsx:14-16`, `work-card.tsx:39`, `resume/page.tsx:35,82,98,124,141,174`; gradient words at `hero.tsx:77`, `work-section.tsx:43`, `about-section.tsx:61`, `contact-section.tsx:18`, `navbar.tsx:45`; the 01/02/03 markers leave with the Services file; hover-lift at `contact-section.tsx:46,53,62,72` | as listed | Claude |
-| 1.15 | Rework the About portrait frame: the double ring plus four floating `JS`/`TS`/`React`/`CSS` bubbles is the same template vocabulary as the card grids | `src/features/about/about-section.tsx:18-53` | Claude |
-| 1.16 | Fix the three nav labels that read as section headings rather than navigation ("Featured projects", "About me", "Contact me" → "Work", "About", "Contact") and drop the duplicate resume CTA now that the hero has one primary action | `src/config/site.ts:13-18`, `src/components/layout/navbar.tsx:68-73` | Claude |
-| 1.17 | Replace the mock preview artwork with real captures of the three live projects. The existing SVGs are not neutral placeholders: all four hardcode `font-family="Inter"` and the two banned gradient stops `#5b5cff`/`#8b5cf6`, so leaving them in would put the old typeface and the old gradient inside the largest images of the new design. I can capture them in Chrome; framing and crop are your call | `public/projects/*.svg` (delete), new WebP captures in `public/work/`, `src/config/site.ts:126,139,152,165` | Claude captures, **Anthony** approves |
-| 1.18 | Add one visual element that could only be on your site. The acceptance test is not "looks deliberate" — it is that a stranger could not swap the name out and reuse the page. Candidates, your pick: an annotated screenshot of a real interface defect next to your correction (the code-evaluation job made visible); the pharmacy-to-frontend move as a dated two-line timeline; your own handwriting or signature as the single display accent. Reject all three and propose your own, but Phase 1 does not pass without one | `src/features/landing/hero.tsx`, `src/features/about/about-section.tsx` | **Anthony** decides, Claude builds |
+| 1.8 | **Decided:** the hero statement is *"I trained as a pharmacist. Now I build React interfaces — and get paid to find what's wrong with AI-written code."* | — | **Anthony**, done |
+| 1.9 | Route skeleton with per-route `metadata`, each view a composition with one job | `src/app/page.tsx`, `src/app/work/page.tsx`, `src/app/work/[slug]/page.tsx`, `src/app/about/page.tsx`, `src/app/lab/page.tsx`, `src/app/contact/page.tsx` | Claude |
+| 1.10 | Rewrite the nav: route links instead of anchors, active state from `usePathname()` (this is audit finding 10 fixed by construction), drop the duplicate resume CTA. `/lab` stays out of the nav until it holds one experiment | `src/components/layout/navbar.tsx`, `src/config/site.ts` | Claude |
+| 1.11 | `/` — the statement, one primary action, and the annotated defect beside it. Fits one screen on desktop; scrolls on small screens, which rule 2 allows | `src/app/page.tsx`, `src/features/landing/*` | Claude |
+| 1.12 | `/work` — asymmetric editorial index, type-led, no card grid, each entry linking to its case study | `src/features/work/work-section.tsx`, `src/features/work/work-card.tsx` | Claude |
+| 1.13 | `/work/[slug]` — case study from the `projects` data with `generateStaticParams`. Thin but honest in this phase; Phase 3 deepens it | `src/app/work/[slug]/page.tsx` | Claude |
+| 1.14 | `/about` — Services and Skills folded in as prose plus a condensed stack, and the dated spine (pharmacy → AltSchool → frontend → evaluation) as typographic structure, not an icon row | `src/app/about/page.tsx`, `src/features/about/*`, `src/config/site.ts` | Claude |
+| 1.15 | `/contact` — short view that arrives and stays. No panel, no four stacked buttons | `src/app/contact/page.tsx`, `src/features/contact/*` | Claude |
+| 1.16 | `/lab` — the route exists and says honestly what it is for; Phase 5 fills it | `src/app/lab/page.tsx` | Claude |
+| 1.17 | Delete the old one-page sections and the now-unused `services` data. Keep `skills`, which `/resume` consumes | delete `src/features/services/`, `src/features/skills/`; `src/config/site.ts` | Claude |
+
+**1c. The things that make it Anthony's**
+
+| # | Task | Files | Owner |
+|---|---|---|---|
+| 1.18 | **Decided:** the annotated defect — a real bug in model-generated code shown next to the correction. Built from an example generated for the purpose, never from paid evaluation work, so there is no NDA question. The dated spine goes on `/about` as the secondary device | — | **Anthony**, done |
+| 1.19 | Build the defect composition: the snippet, the marked line, and one sentence of why it is wrong. It has to be a real bug that a reader can verify by reading | `src/features/landing/*` | Claude builds, **Anthony** approves the example |
+| 1.20 | Replace the mock preview artwork with real captures of the three live projects. The existing SVGs hardcode `font-family="Inter"` and the two banned gradient stops, so they would smuggle the old identity into the new design | `public/projects/*.svg` (delete), captures in `public/work/`, `src/config/site.ts` | Claude captures, **Anthony** approves |
+| 1.21 | Redesign the site mark from the display face — a letterform or a shape from its terminals, never a geometric badge. Must read at 16px in a browser tab: no hairlines, no gradient. Keep the `prefers-color-scheme` swap using token values. `icon.svg` is a standalone document with no access to `@theme`, so its two colours are hand-copied | `src/app/icon.svg` | Claude drafts 2-3, **Anthony** picks |
+| 1.22 | Regenerate the OG image from the new design, preferring `opengraph-image.tsx` with `ImageResponse` over a static PNG so it rebuilds with the design. Note `ImageResponse` supports a flexbox CSS subset, cannot read `@theme` tokens, and needs the font as an `ArrayBuffer`; the file convention wires the metadata itself, so the hand-written `images` entries come out of `layout.tsx`. Also fix the lie: `previewimg.png` is 872x531 while `layout.tsx` declares it 1200x630 | `src/app/opengraph-image.tsx` (new), `public/previewimg.png` (delete), `src/app/layout.tsx` | Claude |
+| 1.23 | Strip every banned pattern and all remaining motion, so Phase 1 ends with a site that does not move: eyebrows, gradient words, the 01/02/03 markers, hover-lift, the framer entrance variants and the hero GSAP timeline | across `src/` | Claude |
+| 1.24 | `/lab/type` — the hero statement set in Bricolage at `wdth` 80 with tighter leading, Bricolage at `wdth` 100 (current), Syne, and Big Shoulders (Google merged "Big Shoulders Display" into "Big Shoulders"), each at two line-heights, in both themes. The page measures itself and reports pass/fail, so the choice is settled by the rule rather than by taste. **Decision rule:** ship the first in that order whose statement fits three lines at 1280 and five at 360, with leading between 0.95 and 1.05 and no mid-word breaks | `src/app/lab/type/page.tsx` | Claude builds and runs it, **Anthony** confirms |
+| 1.25 | The defect block becomes a deck of four cards, fanned slightly, top card fully visible, with a restrained syntax palette (now permitted — `CLAUDE.md` allows colour inside content). Static in this phase. Cards: a React `.sort()` mutation, a Django N+1, a SQL injection in a raw query, an async race in a fetch | `src/features/landing/defect-deck.tsx`, `src/lib/highlight.ts`, `src/config/site.ts` | Claude |
+| 1.26 | `/about` gains an Experience timeline listing the tech used in each role, built from the resume data already in `site.ts` — no new claims, only what the existing bullets name | `src/app/about/page.tsx`, `src/config/site.ts` | Claude |
+| 1.27 | `/work/archive` — a plain table of every other project: year, stack, links, with the 2020–2022 training work labelled as training. Explicit non-goals: no colophon, and no talks, sponsors or testimonials until they exist | `src/app/work/archive/page.tsx`, `src/config/site.ts` | Claude builds, **Anthony** supplies the rows |
+| 1.28 | Generate the archive rows from GitHub once `zuristack`, `whatsApp-bot`, `drf-api`, `react-blog-app`, `Altschool` and `miniapps` are transferred into `teesmile`: `gh repo list teesmile --json name,description,primaryLanguage,createdAt,url` feeds year, stack and description, each row classified **project**, **training** or **experiment**, left for Anthony to review before it ships. Blocked until the transfer | `scripts/archive-from-gh.mjs`, `src/config/site.ts` | Claude, **blocked** |
 
 Done when, every line checkable:
 - `pnpm lint && pnpm build` pass.
-- `grep -rn "#[0-9a-fA-F]\{3,8\}" src/ public/work | grep -v globals.css` returns nothing — the path now includes the artwork, which is where the banned gradient was hiding.
+- `grep -rn "#[0-9a-fA-F]\{3,8\}" src/ public/work | grep -v globals.css | grep -v icon.svg` returns nothing. `icon.svg` and `opengraph-image.tsx` are the two allowed exceptions: a standalone SVG document and a Satori render both run outside the browser, so neither can read `@theme` tokens and both carry hand-copied values that must be updated with the palette.
 - `grep -rniE "inter|geist|roboto" src/ public/work` returns nothing.
 - `grep -rn "framer-motion\|useGSAP\|from 'gsap'" src/` returns only `navbar.tsx` and `footer.tsx`.
-- Every Work image is a capture of a screen that exists. Zero generated mock interfaces remain.
-- Task 1.18 shipped: one element on the page that cannot be reused by another developer with a name swap.
+- Every route in the table above resolves, and `typedRoutes` proves it at build time rather than by clicking.
+- Every Work image is a capture of a screen that exists.
+- `/contact` does not scroll at 1280x800. `/work` and `/about` scroll only because their content is genuinely taller.
 - At 360x640 the hero statement fits three lines or fewer and the primary action is above the fold.
-- Light and dark full-page screenshots with motion disabled, viewed side by side, read as one design in two palettes rather than two designs.
+- The mark is legible at 16px in a real browser tab and carries no gradient.
+- Light and dark screenshots of each view, side by side, read as one design in two palettes rather than two designs.
 
 I learn: Tailwind 4 `@theme` and how a token becomes a utility class, building a type scale that holds at 360px and 1440px, laying out an asymmetric grid with a point of view, and why one bold element with a quiet surround beats decoration everywhere.
 
 ### Phase 2 — Motion system (3 to 4 days)
 
-Amended by Q1, Q2 and Codex review 1 (6 Nov 2026). The ordering rule for this phase: **nothing links to or animates into a route that does not exist yet.**
+Rebuilt 6 Nov 2026 for the route-per-view structure. Phase 1 left every route working with instant navigation; this phase makes navigation continuous and teaches tall views to reveal as they scroll. Nothing else moves.
 
 | # | Task | Files | Owner |
 |---|---|---|---|
-| 2.0 | Create `/work/[slug]` with `generateStaticParams` from the existing `projects` data, and switch the Work entries from live URLs to the route **in the same commit**. Content stays thin here — role, year, tech, highlights, live link — and Phase 3 turns it into a real case study. This also unblocks 2.3 and 2.4, which both need a destination to exist | `src/app/work/[slug]/page.tsx`, `src/features/work/work-section.tsx`, `src/config/site.ts` | Claude |
-| 2.1 | `SmoothScroll` provider: Lenis driven from `gsap.ticker`, `ScrollTrigger.update` on the Lenis scroll event, and `scroll-smooth` deleted from `src/app/layout.tsx:60` in the same commit | `src/providers/smooth-scroll.tsx`, `src/app/layout.tsx:60`, `src/app/page.tsx` | Claude |
-| 2.2 | The hero reveal with SplitText (`node_modules/gsap/SplitText.js` ships with 3.13). What it must do: one statement arriving as one gesture, finished inside 1.2s, with the primary action readable the whole time. How you'll know it works: disable JS and the hero still reads; set reduced motion and the text is simply there | `src/features/landing/hero.tsx` | **Anthony** `TODO(human)`, Claude scaffolds |
-| 2.3 | Card-to-header transition: GSAP overlay plus `Flip`. **`scale: true` is mandatory** — without it `node_modules/gsap/Flip.js:695-712` sets `tweenVars.width` and `tweenVars.height` in px, which is exactly what the hard rule forbids. Flip the image only; never Flip text, because scaling type blurs it and its metrics lie — cross-fade the heading on its own tween instead | `src/features/work/work-card.tsx`, `src/app/work/[slug]/page.tsx`, `src/lib/transition.ts` | Claude plumbing, timeline `TODO(human)` |
-| 2.4 | Case-study scroll choreography (pinned, scrubbed) with an explicit fallback per branch of `gsap.matchMedia()`, because moving the pin off the home page does not make it cheap — it just moves the cost. `(min-width: 768px)` gets the pinned sequence; `(max-width: 767px)` gets ordinary document flow with one short reveal per section and **no pin and no scrub**; `(prefers-reduced-motion: reduce)` gets no timeline at all, final states only | `src/app/work/[slug]/page.tsx`, `src/features/work/case-study-choreography.ts` | **Anthony** timelines, Claude matchMedia scaffold |
-| 2.5 | Settle whether `framer-motion` stays. By now its only remaining users are the mobile drawer's `AnimatePresence` exit (`navbar.tsx:138-190`) and the footer tooltip (`footer.tsx:21-39`). Either port both to GSAP and drop the dependency, or keep it and rename to `motion` (`pnpm remove framer-motion && pnpm add motion`, imports become `motion/react`) | `src/components/layout/navbar.tsx`, `src/components/layout/footer.tsx`, `package.json` | Claude recommends, **Anthony** decides |
+| 2.0 | `SmoothScroll` provider: Lenis driven from `gsap.ticker`, `ScrollTrigger.update` on the Lenis scroll event, and `scroll-smooth` deleted from `layout.tsx` in the same commit. It only has work to do on views that actually scroll | `src/providers/smooth-scroll.tsx`, `src/app/layout.tsx` | Claude |
+| 2.1 | The view transition itself — the one orchestrated moment. A `template.tsx` re-mounts per navigation (a `layout.tsx` deliberately does not), which is the hook for the incoming view's content to animate in. The outgoing view leaves, the incoming content arrives choreographed, and there is never a frame where the page is simply blank | `src/app/template.tsx`, `src/lib/transition.ts` | Claude plumbs, timeline is `TODO(human)` |
+| 2.2 | The `/` statement reveal with SplitText, as part of the arrival rather than a separate entrance. What it must do: one gesture, done inside 1.2s, the primary action readable throughout. How you know it works: with JS disabled the statement still reads; with reduced motion it is simply there | `src/features/landing/*` | **Anthony** `TODO(human)` |
+| 2.3 | `/work` → `/work/[slug]`: the entry's image becomes the case-study header via `Flip`. **`scale: true` is mandatory** — without it `node_modules/gsap/Flip.js:695-712` animates `width`/`height` in px, the exact thing the hard rules forbid. Flip the image only; cross-fade the heading separately, because scaled text blurs and its metrics lie | `src/features/work/*`, `src/app/work/[slug]/page.tsx` | Claude plumbs, timeline `TODO(human)` |
+| 2.4 | In-view scroll reveals for tall views only (`/work`, `/work/[slug]`, `/about`), with `ScrollTrigger.batch` so entries reveal in groups rather than one timeline per element. Short views are explicitly excluded — `/contact` arrives and stays. Branch with `gsap.matchMedia()`: desktop gets the full reveal, `(max-width: 767px)` gets a shorter one with no pin and no scrub, `(prefers-reduced-motion: reduce)` gets final states and no timeline | `src/features/**`, `src/lib/reveal.ts` | **Anthony** writes the reveal, Claude scaffolds matchMedia |
+| 2.5 | Settle whether `framer-motion` stays. By then its only users are the mobile drawer's `AnimatePresence` and the footer tooltip — either port both to GSAP and drop the dependency, or rename to `motion` | `src/components/layout/*`, `package.json` | Claude recommends, **Anthony** decides |
+| 2.6 | The defect deck becomes interactive: scroll or click brings the next card to the front with `Flip`, the fan re-settling behind it. Same `scale: true` rule as 2.3. The timeline is Anthony's to write | `src/features/landing/defect-deck.tsx` | **Anthony** `TODO(human)`, Claude scaffolds |
 
-Why: choreographed motion is the second juror test, and this is the skill that separates a frontend dev from a template user.
+Why: the transition is now load-bearing. With six routes, a hard cut between views is the most visible flaw the site could have, and a choreographed arrival is the single thing a juror will remember.
 
-Gate for this phase, in addition to the standard one. Recorded in the DevTools Performance panel at CPU 4x and Fast 3G, and on the real mid-range Android if one is to hand — not eyeballed:
-1. Cold `/` → `/work/[slug]`.
-2. Browser Back out of a case study.
-3. Mid-flight cancellation: start the transition, then immediately navigate away or hit Back.
-4. Case-study scroll, top to bottom.
-5. Destination failure: go offline mid-navigation and confirm the overlay resolves instead of stranding a fixed element over the page.
+Gate for this phase, recorded in the DevTools Performance panel at CPU 4x and Fast 3G, not eyeballed:
+1. Every navigation in the nav, cold.
+2. `/work` → `/work/[slug]` and browser Back out of it.
+3. Mid-flight cancellation: start a navigation, immediately trigger another.
+4. Scrolling `/work/[slug]` top to bottom.
+5. Destination failure: go offline mid-navigation and confirm nothing is left stranded mid-transition.
 
-Pass means: longest frame under 16.7 ms in each trace, no layout or recalc entries attributable to the transition, no stranded overlay, and reduced motion verified by toggling the OS setting rather than by reading the code. Anything that misses the budget gets simplified, not shipped.
+Pass means: longest frame under 16.7 ms in every trace, no layout or recalc entries attributable to the transition, no stranded overlay, and reduced motion verified by toggling the OS setting rather than by reading the code.
 
-I learn: the ticker/rAF sync, ScrollTrigger pin and scrub, SplitText, `Flip` and why its `scale` option is the difference between transform-only and per-frame layout, matchMedia as a fallback mechanism rather than a switch, and why you never animate width/height/top/left.
+I learn: the ticker/rAF sync, `template.tsx` versus `layout.tsx` and why re-mounting is the hook for per-view animation, `ScrollTrigger.batch`, SplitText, `Flip` and why its `scale` option is the difference between transform-only and per-frame layout, matchMedia as a fallback mechanism rather than a switch.
 
 ### Phase 3 — Work as case studies (1 to 2 weeks, runs alongside the flagship build)
 
 What: deepen the `/work/[slug]` pages created in task 2.0 into real case studies — problem, decisions, trade-offs, result, and the screenshots captured in task 1.17; the first flagship is a new app in its own repo, a pharmacy inventory and dispensing tool with email+password and OAuth sign-in, pharmacist/attendant roles, protected routes, expiry alerts and an audit log; its `docs/decisions.md` feeds the case study.
 
+The flagship is also what fills the **Architecture** block in the case-study template (`data model, API, auth, hosting`). The block ships empty in Phase 1 and says so plainly on every frontend-only project; it stays that way until a project has a server.
+
 Why: project proof is the biggest gap, and an auth app with roles is what interviewers poke at.
+
+Also in this phase: **Writing.** `/writing` carries decision-log entries rewritten as short public write-ups — the reasoning behind a choice, in plain language, as engineering writing rather than a changelog. The route and the first two pieces landed in Phase 1; Phase 3 keeps converting entries as they accumulate.
 
 I learn: dynamic routes and `generateStaticParams`, sessions and role-based access, server-side route protection, writing a case study that reads like engineering.
 
 ### Phase 4 — Performance and accessibility pass (2 days)
 
-What: Lighthouse at 95+ on mobile for performance and accessibility; the throttled test on the whole page; reduced-motion audit of every timeline; visible focus states; the nav active state rebuilt on IntersectionObserver so it tracks scroll and survives a deep link (audit finding 10); OG image regenerated from the new design (`public/previewimg.png`, used at `src/app/layout.tsx:36,50`); and the resume decision — either `public/Anthony-Ugwuja-Resume.pdf` exists or `resumePdf` and the "PDF pending" badge come out (`src/config/site.ts:12`, `src/app/resume/page.tsx:53-65`).
+What: Lighthouse at 95+ on mobile for performance and accessibility; the throttled test on the whole page; reduced-motion audit of every timeline; visible focus states; (audit finding 10 is already fixed by the route structure — nav state comes from `usePathname()`, so there is no IntersectionObserver to build); and the resume decision — either `public/Anthony-Ugwuja-Resume.pdf` exists or `resumePdf` and the "PDF pending" badge come out (`src/config/site.ts:12`, `src/app/resume/page.tsx:53-65`).
 
 Why: the third juror test, and the one most "nice" sites fail.
 
