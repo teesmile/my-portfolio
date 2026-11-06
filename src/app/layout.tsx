@@ -4,6 +4,7 @@ import "./globals.css";
 
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
+import SmoothScroll from "@/providers/smooth-scroll";
 import { portfolioConfig } from "@/config/site";
 
 const display = Syne({
@@ -58,9 +59,11 @@ export default function RootLayout({
     <html lang="en" className={`${display.variable} ${text.variable}`}>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        <Navbar />
-        <main className="flex flex-1 flex-col pt-16">{children}</main>
-        <Footer />
+        <SmoothScroll>
+          <Navbar />
+          <main className="flex flex-1 flex-col pt-16">{children}</main>
+          <Footer />
+        </SmoothScroll>
       </body>
     </html>
   );

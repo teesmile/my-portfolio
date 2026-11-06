@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Lenis needs the document to size itself naturally while it interpolates. */
+@import "lenis/dist/lenis.css";
 
 /* Dark is the primary mode: the tokens below are the dark values, and `.light`
    opts out. Because every colour utility reads a token, no `dark:` variant is
