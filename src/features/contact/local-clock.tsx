@@ -1,6 +1,8 @@
 'use client';
 
-import { useSyncExternalStore } from 'react';
+import { useRef, useSyncExternalStore } from 'react';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { MoonIcon, SunIcon } from '@/components/ui/icons';
 
 const ZONE = 'Africa/Lagos';
@@ -48,14 +50,41 @@ const digit = 'text-[clamp(3.5rem,10vw,5.5rem)] leading-none';
 export default function LocalClock() {
   const tick = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const clock = tick === 0 ? null : readClock();
+  const scope = useRef<HTMLDivElement>(null);
+  const arrived = useRef(false);
+
+  /* The digits settle into place once, on the first real time. The guard
+     matters because this component re-renders every second: without it the
+     entrance would replay on every tick, which is a clock having a seizure
+     rather than a clock. */
+  useGSAP(
+    () => {
+      if (!clock || arrived.current) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        arrived.current = true;
+        return;
+      }
+
+      arrived.current = true;
+
+      gsap.from(scope.current!.querySelectorAll('[data-digit]'), {
+        yPercent: 35,
+        opacity: 0,
+        duration: 0.5,
+        ease: 'power3.out',
+        stagger: 0.07,
+      });
+    },
+    { scope, dependencies: [clock !== null] },
+  );
 
   return (
-    <div>
+    <div ref={scope}>
       <div className="flex items-baseline gap-1 font-display tabular-nums text-ink">
-        <span className={digit}>{clock ? clock.hour : '--'}</span>
-        <span className={`${digit} text-muted`}>:</span>
-        <span className={digit}>{clock ? clock.minute : '--'}</span>
-        <span className="ml-1 text-lg leading-none text-muted">
+        <span data-digit className={digit}>{clock ? clock.hour : '--'}</span>
+        <span data-digit className={`${digit} text-muted`}>:</span>
+        <span data-digit className={digit}>{clock ? clock.minute : '--'}</span>
+        <span data-digit className="ml-1 text-lg leading-none text-muted">
           {clock ? clock.second : '--'}
         </span>
       </div>

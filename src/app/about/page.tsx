@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
 import { TechList } from "@/components/ui/tech";
+import Reveals from "@/components/layout/reveals";
 
 export const metadata: Metadata = {
   title: "About",
@@ -15,6 +16,7 @@ export default function AboutPage() {
 
   return (
     <section className="px-6 py-20 md:py-24">
+      <Reveals />
       <div className="mx-auto max-w-(--container-view)">
         <div className="grid gap-16 lg:grid-cols-12 lg:gap-20">
           <div className="lg:col-span-7">
@@ -24,7 +26,7 @@ export default function AboutPage() {
 
             <div className="mt-10 flex max-w-(--container-reading) flex-col gap-6 text-base text-ink">
               {copy.aboutParagraphs.map((paragraph) => (
-                <p key={paragraph.slice(0, 40)}>{paragraph}</p>
+                <p key={paragraph.slice(0, 40)} data-reveal>{paragraph}</p>
               ))}
             </div>
 
@@ -37,6 +39,7 @@ export default function AboutPage() {
               {timeline.map((entry) => (
                 <li
                   key={entry.label}
+                  data-reveal
                   className="grid grid-cols-[6.5rem_1fr_auto] items-baseline gap-4 border-t border-line py-4 text-sm"
                 >
                   <span className="text-2xs text-muted tabular-nums">
@@ -55,7 +58,7 @@ export default function AboutPage() {
             <h2 className="mt-16 text-lg text-ink">Experience</h2>
             <div className="mt-6 flex max-w-(--container-reading) flex-col gap-8">
               {resume.experience.map((role) => (
-                <article key={`${role.role}-${role.period}`} className="border-t border-line pt-5">
+                <article key={`${role.role}-${role.period}`} data-reveal className="border-t border-line pt-5">
                   <p className="text-2xs text-muted tabular-nums">{role.period}</p>
                   <h3 className="mt-2 font-display text-base text-ink">{role.role}</h3>
                   <p className="mt-1 text-sm text-muted">{role.company}</p>
