@@ -15,6 +15,47 @@ Study: <one concept, with a link or a search term>
 
 ---
 
+## 2026-11-06 — Codex review 4: the clock was a hydration bug, not a warning (241c2b3)
+Codex challenged: `/contact` is prerendered, so `useState(readClock)` renders build-time digits into static HTML while the client initialises from the visitor's clock. `suppressHydrationWarning` on the parent does not cover text inside the child spans, so cold loads hit a real hydration failure and re-render, not a hidden warning. Separately, the copy button silently no-ops when the Clipboard API is denied, and the mailto link my comment promised had been removed in the rewrite.
+Verdict: AGREE on both, reproduced before fixing
+Because: the built HTML carried `22:48:30` — hours stale for anyone loading later — and `grep mailto` over the same file returned nothing. I was wrong twice: wrong that the choice was "warning versus flash" when it was actually a failed hydration, and wrong in a comment that described a fallback the page did not have.
+Changed: the clock moved to `useSyncExternalStore`, whose third argument exists exactly for this — the server snapshot renders `--:--`, hydration uses that same value so the markup matches by construction, and the real time arrives on the first client tick. The address is now a real `mailto:` link with a separate Copy button beside it, so it works with JavaScript off and when the clipboard is blocked, and failures are announced through a live region. Verified: prerendered HTML contains `--`, the mailto is present, the clock reads real time after hydration, and the console is clean where it previously logged a mismatch.
+Study: `useSyncExternalStore` and why its `getServerSnapshot` is the correct tool for anything whose value is time-dependent.
+
+## 2026-11-06 — The drawer blink, found on the second attempt (241c2b3)
+Decided by: Anthony reported the blink persisted on a real phone after the first fix.
+Claim: reproduce in dark mode with a mobile user agent, touch emulation and DPR 3, and check three suspects the first run could not see — a mount flash, the panel resizing when the browser bar hides, and an icon crossfade.
+Verdict: REPRODUCED and fixed; my first fix had been incomplete, not wrong
+Because: 60ms screenshot sampling cannot see a one-frame event. Driving the page with `Page.startScreencast` plus a per-animation-frame logger of computed opacity found it: opening climbed `0 → 0.9926` and then **dropped to 0 for a single frame** at 426.9ms before settling at 1; closing fell to `0.0144` and **jumped back to 1 for one frame** at 2059.8ms, immediately before unmount. Both are framer-motion handing off between its animated value and the committed style. The other two suspects were cleared by the same run: at `vh` 788 the panel resized to 724 with `top` still 64 — no gap, no flash — and the icon does not crossfade, though the Menu/Close label was changing the button width by 1.7px and nudging the row.
+Changed: framer-motion removed from the drawer entirely — with no animation there is no handoff to flash — and the button given a fixed width. Re-measured: the panel goes absent → opacity 1 → absent with no intermediate frame, and the screencast shows two steady states (71.26 closed, 14.47 open) with nothing in between. `src/` now has zero framer-motion imports, so Phase 2's task 2.5 is a straight removal of the dependency.
+Study: why a single-frame visual defect needs frame-rate instrumentation — any sampling slower than the display cannot prove absence.
+
+
+## 2026-11-06 — The drawer blink was the backdrop, not the icon (241c2b3)
+Decided by: measurement, after Anthony reported a blink on open and close.
+Claim: the mobile drawer flickers on a phone; find the cause before fixing it.
+Verdict: FIXED, cause identified by frame capture
+Because: I drove Chromium over CDP at 390x844, captured a screenshot every 60ms through open and close, and took the mean brightness of each frame. Opening went 239.5 → **228.9** → 243.6; closing went 243.6 → **225.3** → 239.4. A dark frame at both ends. The cause: the `bg-ink/40` backdrop and the opaque `bg-surface` panel faded independently, and since the panel covers the whole viewport below the nav, the backdrop was only ever visible *during* the fade. It dimmed nothing and existed only to produce the flash. The icon swap and the `backdrop-blur` repaint were both innocent.
+Changed: backdrop deleted; the panel keeps its own short fade. Re-measured: 239.4 → 243.5 → 244.5 opening and the reverse closing, monotonic, no dip below either steady state. The drawer links now have three distinct states (muted, hover/pressed ink with accent underline, active held), and the hamburger is a bordered button labelled Menu/Close.
+Study: compositing order for overlapping animated layers — when two layers cross-fade, the one underneath is visible for exactly the duration of the transition.
+
+## 2026-11-06 — Contact state: a clock that renders on the server, a copy button that forgets (241c2b3)
+Decided by: Claude, per the new rule that non-trivial state ships with its reasoning.
+Claim: the contact view needs a live Lagos clock, a copy-to-clipboard email that says "Copied" for two seconds, and no scrollbar at 1280x800 or 390x844.
+Verdict: SHIPPED
+Because: the clock computes real time during render and marks the output `suppressHydrationWarning`. The alternative — render blank until mount — avoids a warning nobody sees at the cost of a visible flash on every load, so the warning is the cheaper thing to suppress. `Intl.DateTimeFormat` with `timeZone: 'Africa/Lagos'` does the zone conversion, which means no offset arithmetic and no DST assumptions baked into the code. The copy button holds its timeout in a ref so a second tap restarts the timer instead of stacking timeouts, and clears it on unmount so a quick navigation cannot leave a timer holding a `setState` for a component that no longer exists.
+Changed: the view measured 116px too tall at 390x844; mobile-only rhythm trims brought it to exactly 0 overflow at both sizes, with the desktop composition untouched.
+Study: `Intl.DateTimeFormat.formatToParts` as a way to read a time zone without a date library.
+
+## 2026-11-06 — Hero statement, writing topics and inline figures (241c2b3)
+Decided by: Anthony chose the statement and the rules; the sizes came from the lab.
+Claim: ship the first of two candidate statements that passes the type rule; give every Writing piece a topic with a filter; every piece carries inline diagrams where the explanation happens.
+Verdict: SHIPPED
+Because: "Pharmacist by training, engineer by choice. I ship across the stack and catch what AI gets wrong." is first in order and passes, so it ships — and because it is shorter than the previous statement it also passes at larger sizes, so `--text-statement` moved from 44px to **56px** and the mobile step from 22px to **28px**, both measured as the largest that fit. Topics are a fixed five-value union rather than free tags, so the filter row stays short and a new piece has to pick a lane; filtering runs in the client because the whole list is already in the payload and a round trip would lose the scroll position. Only topics with pieces get a button — a filter that always returns nothing is worse than no filter. Counts describing output are gone from the copy, because "three things I built" expires the day the fourth ships.
+Changed: six inline figures across the two pieces, drawn from tokens; per-piece share images for `/writing/[slug]` and `/work/[slug]` from one shared renderer so an article and a case study cannot drift apart.
+Study: why a closed vocabulary beats free tagging on a small site — the filter row is the user-visible consequence of the type.
+
+
 ## 2026-11-06 — Codex review 3: menu state, mobile overflow, share metadata (6288a72)
 Codex challenged: three defects — the mobile drawer stays open and keeps the body scroll locked when the wordmark navigates home; the contact email overflows the viewport at 320px; and articles and case studies publish the homepage's OpenGraph title and URL because Next merges metadata shallowly.
 Verdict: AGREE on all three, each reproduced before fixing
