@@ -230,3 +230,8 @@
 .light .tech:hover {
   color: var(--brand, var(--ink));
 }
+
+/* The code line under the cursor, raised out of the muted body of the card. */
+.shiki .line-hover {
+  background-color: color-mix(in oklab, var(--ink) 14%, transparent);
+}
