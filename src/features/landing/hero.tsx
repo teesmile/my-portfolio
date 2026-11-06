@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
 import DefectDeck from "./defect-deck";
+import Statement from "./statement";
 
 export default function Hero() {
   return (
@@ -9,9 +10,10 @@ export default function Hero() {
         {/* Full container width is not a style choice: at the hero size the
             statement only fits three lines at 1280 across the whole container,
             which /lab/type measures rather than guesses. */}
-        <h1 className="text-statement-sm text-ink lg:text-statement">
-          {portfolioConfig.statement}
-        </h1>
+        <Statement
+          text={portfolioConfig.statement}
+          className="text-statement-sm text-ink lg:text-statement"
+        />
 
         <div className="mt-14 grid gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-4">

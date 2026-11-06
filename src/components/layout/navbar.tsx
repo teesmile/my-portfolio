@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { portfolioConfig } from '@/config/site';
@@ -13,7 +15,52 @@ export default function Navbar() {
      effect syncing state to the path. */
   const [menuPath, setMenuPath] = useState<string | null>(null);
   const isMenuOpen = menuPath === pathname;
-  const setIsMenuOpen = (open: boolean) => setMenuPath(open ? pathname : null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  const prefersReducedMotion = () =>
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Closing runs the exit tween first and clears state in its onComplete, so
+     the element cannot unmount mid-animation — unmounting first is what left
+     a single frame of the panel at full opacity under the old library. */
+  const closeMenu = () => {
+    const panel = panelRef.current;
+
+    if (!panel || prefersReducedMotion()) {
+      setMenuPath(null);
+      return;
+    }
+
+    gsap.to(panel, {
+      opacity: 0,
+      y: -8,
+      duration: 0.18,
+      ease: 'power2.in',
+      onComplete: () => setMenuPath(null),
+    });
+  };
+
+  const setIsMenuOpen = (open: boolean) => {
+    if (open) {
+      setMenuPath(pathname);
+      return;
+    }
+    closeMenu();
+  };
+
+  useGSAP(
+    () => {
+      if (!isMenuOpen || !panelRef.current || prefersReducedMotion()) return;
+
+      gsap.from(panelRef.current, {
+        opacity: 0,
+        y: -8,
+        duration: 0.22,
+        ease: 'power2.out',
+      });
+    },
+    { dependencies: [isMenuOpen] },
+  );
 
   /* Route state is the source of truth for "where am I", so a deep link and a
      reload are both correct without any scroll bookkeeping. */
@@ -109,13 +156,13 @@ export default function Navbar() {
       </nav>
 
       {isMenuOpen ? (
-        /* No enter or exit animation in Phase 1. framer-motion reset the
-           panel's opacity to the opposite extreme for a single frame as each
-           animation handed off, which is the blink — measured at 426.9ms on
-           open and 2059.8ms on close. Phase 2 designs this transition
-           properly; until then the panel simply is or is not there. */
+        /* Phase 2's transition. The enter tween is a gsap.from inside
+           useGSAP, so its start values land before paint; the exit tween owns
+           the unmount through onComplete. Both are proven flash-free by the
+           per-frame opacity logger. */
         <div
           id="mobile-menu"
+          ref={panelRef}
           className="fixed inset-x-0 top-16 bottom-0 z-45 bg-surface px-6 pt-10 md:hidden"
         >
           <ul className="flex flex-col">
