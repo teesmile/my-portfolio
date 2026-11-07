@@ -264,3 +264,11 @@ Verdict: AGREE on all three. Two were mine to fix, the third was already fixed i
 **3. The redirecting canonical.** AGREE it was a genuine blocker; it is resolved and verified above.
 
 Study: why "it is not linked anywhere" is not an access control — search "forced browsing OWASP" — and why a layout constant derived from a measurement should be measured rather than written down.
+
+## 2026-11-06 — Three more lines on a page with nine pixels left
+Feature: a reviewer-scale bullet, a dispensing line for the NYSC post, and a summary that names the clinical catch — on a master resume that had about nine pixels of slack.
+Verdict: AGREE with spending spacing rather than type size, and with buying one gap back afterwards.
+Because: the additions pushed exactly one line — Languages — onto a second page, and the warning added last round said so out loud instead of letting it happen quietly. The sweep then showed spacing alone was enough: holding 8.3pt/1.30 and tightening only the four spacing values fits with 21px to spare, so the type and the leading never had to move. That is the right order to spend in — a reader notices the size of the letters long before the gap between two blocks.
+Tightening every gap to the same degree was wrong, though, and the render showed it: with all flex gaps at 0.05rem, a role's last bullet ran straight into the next role's title, and the eye read a job title as one more bullet. Every other collapsed gap sits between things a reader already tells apart; that one sits between a list and a heading. The experience list gets 0.3rem back, which costs 12px of the 21 and leaves 6px.
+The summary kept its two lines by trading length for the new claim rather than adding to it: the stack list and the clinical catch both survive at 200 characters, down from 211, because "accuracy, instruction following and safety" is already in the role's own bullets and the skills line.
+Study: why uniform spacing is not the same as good spacing — search "proximity principle gestalt grouping" — and the difference between space that separates and space that merely pads.
