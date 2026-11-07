@@ -1,6 +1,5 @@
 import { TechList } from "@/components/ui/tech";
-
-type Layer = { layer: string; items: string[] };
+import type { StackLayer as Layer } from "@/config/site";
 
 /**
  * The stack as drifting rows, one per layer.
@@ -25,19 +24,41 @@ function merge(layers: Layer[]) {
   for (const layer of filled) {
     const previous = rows[rows.length - 1];
 
-    if (layer.items.length < MIN_FOR_OWN_ROW && previous) {
+    /* Tools merge with tools only: folding a practice into a row of logos
+       would put "fact verification" beside Git as if it were software. */
+    if (
+      layer.items.length < MIN_FOR_OWN_ROW &&
+      previous &&
+      (previous.kind ?? "tool") === (layer.kind ?? "tool")
+    ) {
       previous.layer = `${previous.layer} and ${layer.layer.toLowerCase()}`;
       previous.items = [...previous.items, ...layer.items];
       continue;
     }
 
-    rows.push({ layer: layer.layer, items: [...layer.items] });
+    rows.push({ ...layer, items: [...layer.items] });
   }
 
   return rows;
 }
 
 const speeds = ["52s", "64s", "58s", "70s"];
+
+/* Practice rows are text chips: a hairline frame stands in for the logo, so
+   the row keeps the rhythm of the tool rows without inventing an icon. */
+function List({ row }: { row: Layer }) {
+  if (row.kind !== "practice") return <TechList items={row.items} />;
+
+  return (
+    <ul className="flex flex-wrap gap-2 text-2xs text-muted">
+      {row.items.map((item) => (
+        <li key={item} className="border border-line px-2 py-0.5">
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export default function StackRows({ layers }: { layers: Layer[] }) {
   const rows = merge(layers);
@@ -59,11 +80,11 @@ export default function StackRows({ layers }: { layers: Layer[] }) {
                 } as React.CSSProperties
               }
             >
-              <TechList items={row.items} />
+              <List row={row} />
               {/* The second copy exists only so the loop has something to run
                   into; a screen reader should hear the list once. */}
               <div aria-hidden="true">
-                <TechList items={row.items} />
+                <List row={row} />
               </div>
             </div>
           </div>

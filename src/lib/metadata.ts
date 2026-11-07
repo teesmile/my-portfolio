@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { portfolioConfig } from "@/config/site";
 
 /**
  * Next merges metadata shallowly: a route that sets only `title` and
@@ -13,6 +14,17 @@ import type { Metadata } from "next";
  * layout would silently become every page's canonical the moment a route
  * forgot its own. No canonical is a weak signal; the wrong canonical tells a
  * crawler to drop the page.
+ *
+ * Two more things the shallow merge costs, and this restores:
+ *
+ * - The share image. The root's `opengraph-image` reaches a child route only
+ *   through the root's `openGraph` block, which the child's block replaces,
+ *   so /about, /work and the rest were shared with no image at all. A route
+ *   that generates its own card (a case study, an article) passes `image`,
+ *   because once `images` is set here it is what Next publishes, ahead of
+ *   the segment's own `opengraph-image` file.
+ * - The name. The `%s — Anthony Ugwuja` template applies to `<title>` only,
+ *   so a shared /about card was titled just "About".
  */
 export function pageMetadata({
   title,
@@ -20,6 +32,7 @@ export function pageMetadata({
   path,
   type = "website",
   noindex = false,
+  image = "/opengraph-image",
 }: {
   title: string;
   description: string;
@@ -34,13 +47,18 @@ export function pageMetadata({
    * linked from elsewhere, it should still say which address it lives at.
    */
   noindex?: boolean;
+  /** The share card. Defaults to the site's; routes with their own pass it. */
+  image?: string;
 }): Metadata {
+  const shareTitle = `${title} — ${portfolioConfig.name}`;
+  const images = [image];
+
   return {
     title,
     description,
     alternates: { canonical: path },
-    openGraph: { title, description, url: path, type },
-    twitter: { card: "summary_large_image", title, description },
+    openGraph: { title: shareTitle, description, url: path, type, images },
+    twitter: { card: "summary_large_image", title: shareTitle, description, images },
     ...(noindex ? { robots: { index: false, follow: true } } : {}),
   };
 }

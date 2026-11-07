@@ -1,7 +1,7 @@
 import { portfolioConfig } from "@/config/site";
 import { renderShareImage, shareImageSize } from "@/lib/share-image";
 
-export const alt = "Anthony Ugwuja — frontend developer";
+export const alt = portfolioConfig.seo.title;
 export const size = shareImageSize;
 export const contentType = "image/png";
 

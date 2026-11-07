@@ -1,3 +1,12 @@
+import { resumeContent } from "@/content/resume";
+
+
+export type StackLayer = {
+  layer: string;
+  items: string[];
+  /** "tool" rows carry logos; "practice" rows are text chips. */
+  kind?: "tool" | "practice";
+};
 
 export type Project = {
   id: number;
@@ -84,11 +93,38 @@ const projects: Project[] = [
 export const portfolioConfig = {
   name: "Anthony Ugwuja",
   brandName: "Teesmile",
-  title: "Frontend developer and AI code evaluator",
+  /* The resume's own title line, not a copy of it: the share cards and the
+     document a recruiter downloads should never describe two people. */
+  title: resumeContent.titles.default,
+  /* Search and social copy. One title and one description for the home page,
+     used by the root layout for <title>, Open Graph and Twitter alike, so the
+     three cannot drift apart the way they did when each was typed out. */
+  seo: {
+    title: "Anthony Ugwuja — full-stack developer and AI evaluator",
+    description:
+      "Full-stack developer (React, Next.js, TypeScript, Node.js) and registered pharmacist. I build product interfaces and evaluate AI models, catching what they get wrong in code and in clinical and scientific answers.",
+  },
   phone: "+234 903 257 0130",
   email: "anthonyugwujac@gmail.com",
   location: "Abuja, Nigeria",
   availability: "Remote, anywhere",
+  /* The second track on /work. Not a Project: there is no live link, no
+     screenshot and no case study, because the real tasks are under NDA. The
+     sample is an original task built the same way, and it is the only thing
+     the entry links to. */
+  evaluation: {
+    title: "AI evaluation",
+    period: "Nov 2025 – Present",
+    role: "Self-employed, remote",
+    body: "I evaluate and stress-test AI models. I author expert-level tasks built to stump frontier models in chemistry, biology and clinical pharmacy, including terminal-based benchmarks where an agent must reconcile messy synthetic patient records and carry out pharmacokinetic calculations. I also annotate image, video and audio data, verify facts, and rate and compare model responses against detailed guidelines. Every task I author ships with evidence that its grading is sound. Client and task details stay under NDA; the sample below is an original task built the same way.",
+    sample: {
+      title: "Renal dosing task",
+      /* Placeholder until the repository has a README: edit freely. */
+      summary:
+        "An original terminal-based task: an agent works through a synthetic patient record and has to get a renal dose adjustment right.",
+      repo: "https://github.com/teesmile/renal-dosing-task",
+    },
+  },
   takingWork: true,
   resumePdf: "/Anthony-Ugwuja-Resume.pdf",
   currently:
@@ -307,24 +343,38 @@ export const portfolioConfig = {
     { layer: "Backend", items: ["Node.js", "Python", "Django"] },
     { layer: "Data", items: [] },
     { layer: "Infrastructure", items: ["Git", "GitHub", "Vercel", "pnpm", "Linux"] },
-  ] as { layer: string; items: string[] }[],
+    /* Practices rather than tools: no logos exist for them, so the row draws
+       them as text chips instead of borrowing an icon that means something
+       else. */
+    {
+      layer: "AI evaluation",
+      kind: "practice",
+      items: [
+        "LLM evaluation",
+        "Adversarial task authoring",
+        "Image, video and audio annotation",
+        "Fact verification",
+        "Response rating",
+      ],
+    },
+  ] as StackLayer[],
   // Page prose lives here so it can be edited in one file.
   copy: {
     heroSupport:
-      "Bugs from code a model wrote. Every one is real, and every one would survive a quick read.",
+      "Bugs from code a model wrote. I read its clinical and scientific answers the same way, looking for the mistake that survives a quick read.",
     aboutHeading: "I read other people's code for a living. Mine included.",
     aboutParagraphs: [
       "I trained as a pharmacist at the University of Nigeria, Nsukka. I wrote my first code in 2020, partway through the degree, and kept going after it: HTML and CSS first, then JavaScript, then React.",
       "Now I build interfaces in React and TypeScript. In the same week I get paid to read code a model wrote and say exactly what is wrong with it — the bug, why it bites, and the version that works.",
       "The second job changed how I do the first. Read enough confident, broken answers and you stop trusting code that merely looks right. Including your own.",
-      "I am moving across the stack. The frontend is where I am strongest today. The next thing I build has a server, a database and real sign-in, because that is the part I cannot prove yet.",
+      "I am working across the whole stack now. The app I am building has a server, a database and real sign-in, and it goes on the Work page the day it ships.",
     ],
     aboutStackHeading: "What I work with",
     aboutDataEmpty: "Nothing I have shipped has a database yet.",
     workHeading: "Things I\u2019ve built, and what each one taught me.",
     workArchiveLink: "Everything else, including the training work",
     writingHeading: "Decisions, and what they cost.",
-    contactHeading: "Open to remote frontend work and code evaluation.",
+    contactHeading: "Open to remote AI evaluation and full-stack work.",
     contactNote: "Email reaches me fastest.",
     labHeading: "Interaction experiments, one at a time.",
     labIntro:

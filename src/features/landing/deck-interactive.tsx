@@ -229,24 +229,19 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
           const isFront = position === 0;
 
           return (
+            /* The card is content, not a control. It used to be a
+               role="button" with an aria-label, and the label replaced
+               everything inside it: a screen reader heard the card's title
+               and never the code or the verdict. The pointer still taps the
+               card; keyboard and assistive tech use the button below.
+               Cards behind the front one are inert — out of the focus order
+               and the accessibility tree together. */
             <article
               key={card.context}
               data-card={cardIndex}
               onClick={isFront ? advance : undefined}
-              onKeyDown={
-                isFront
-                  ? (event) => {
-                      if (['Enter', ' ', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
-                        event.preventDefault();
-                        advance();
-                      }
-                    }
-                  : undefined
-              }
-              tabIndex={isFront ? 0 : -1}
-              role={isFront ? 'button' : undefined}
               aria-hidden={isFront ? undefined : true}
-              aria-label={isFront ? `${card.context}. Show the next bug.` : undefined}
+              inert={!isFront}
               className="absolute inset-x-0 top-0 h-full origin-top-left cursor-pointer touch-pan-y overflow-hidden border border-line bg-raised p-5 [transform-style:preserve-3d]"
             >
               <div data-body>
@@ -278,10 +273,23 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
             />
           ))}
         </div>
-        <p className="text-2xs text-muted tabular-nums">
+        <p aria-live="polite" className="text-2xs text-muted tabular-nums">
           {order[0] + 1} of {cards.length}
-          <span className="ml-3 text-muted">&middot; tap, swipe or use the arrow keys</span>
+          <span className="sr-only">: {cards[order[0]].context}</span>
         </p>
+        <button
+          type="button"
+          onClick={advance}
+          onKeyDown={(event) => {
+            if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+              event.preventDefault();
+              advance();
+            }
+          }}
+          className="ml-auto border border-line px-3 py-1.5 text-2xs text-ink transition-colors hover:border-ink"
+        >
+          Next bug
+        </button>
       </div>
     </div>
   );

@@ -112,7 +112,10 @@ export const resumeContent = {
       title: 'AI Training & Evaluation Specialist',
       company: 'Self-employed, remote · Outlier, Mercor, micro1 and similar platforms',
       period: 'Nov 2025 – Present',
-      tech: ['LLM evaluation', 'multimodal annotation', 'rubric-based grading', 'side-by-side model comparison'],
+      /* Empty on purpose: /about renders this role's bullets in full, and
+         the practices live in the stack's "AI evaluation" row. Four tags
+         under six bullets would say the same thing twice. */
+      tech: [],
       /* First in the AI version only: both this and the NYSC post are
          current, so dates can't order them and relevance does. */
       place: { default: 1, ai: 0, general: 1 },

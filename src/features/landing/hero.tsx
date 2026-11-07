@@ -8,13 +8,17 @@ export default function Hero() {
     <section className="editor-surface flex flex-1 flex-col justify-center px-6 py-16 md:py-20">
       <div className="editor-guides relative mx-auto w-full max-w-(--container-view)">
         <div className="flex gap-4 md:gap-6">
-          {/* The gutter: decorative, and the reader should not hear it. */}
+          {/* The gutter: decorative, so its numbers are not text at all.
+              aria-hidden kept them from screen readers but not from the
+              document — crawlers indexed "01 02 03 04 05" and a copied
+              headline brought them along. They are drawn by a CSS counter
+              now, which renders but is never part of the page's text. */}
           <div
             aria-hidden="true"
             className="editor-gutter hidden shrink-0 select-none font-mono text-2xs text-muted/50 sm:block"
           >
             {[1, 2, 3, 4, 5].map((line) => (
-              <div key={line}>{String(line).padStart(2, "0")}</div>
+              <div key={line} />
             ))}
           </div>
 
