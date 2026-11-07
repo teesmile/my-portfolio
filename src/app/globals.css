@@ -337,65 +337,48 @@
     margin-bottom: 0.05rem;
   }
 
-  /* One page is the target. Screen spacing is built for scrolling; paper is
-     not scrolled, so the document tightens up without changing a word. */
-  section {
-    padding-block: 0 !important;
-  }
+  /* Readable paper, up to two pages (CLAUDE.md, Resume rule). The sizes are
+     a floor, not a squeeze: body text at 11pt with open leading, and every
+     heading a clear step above it. Space between blocks is normal space;
+     the page count is managed by what goes in each version and by the
+     page breaks, never by shrinking the type.
 
+     `[data-fit='tight']` is set on <html> only by `pnpm resume`, and only
+     when the normal layout would leave a second page holding a few stray
+     lines. It tightens spacing and margins, and drops the body to the
+     10.5pt floor, so the document closes up onto one page instead. */
   h1 {
-    font-size: 18pt !important;
-    line-height: 1.05 !important;
+    font-size: 22pt !important;
+    line-height: 1.1 !important;
   }
 
+  /* A clear ladder: name 22, section 14, entry 12.5, body 11. Section
+     labels print in ink, not the screen's muted grey, because on paper they
+     are the structure a reader scans for. */
   h2 {
-    font-size: 8pt !important;
-    letter-spacing: 0.08em;
+    font-size: 14pt !important;
+    line-height: 1.2 !important;
+    color: var(--ink) !important;
   }
 
-  h3 {
-    font-size: 9.7pt !important;
-    line-height: 1.15 !important;
-  }
-
-  /* An education entry's title is a span inside its one-line paragraph, not a
-     heading, so none of the h3 rules above reach it — and it was printing
-     larger than the role titles because it kept the screen's `text-sm`. It is
-     an entry title like the others and takes the same size. */
+  h3,
   p .font-display {
-    font-size: 9.7pt !important;
+    font-size: 12.5pt !important;
+    line-height: 1.2 !important;
   }
 
-  /* 9pt, not the 7.9pt this was squeezed to while the print margins were
-     still wrong. The master is allowed two pages; a document nobody can
-     read comfortably is a worse outcome than a second page. */
-  /* 8.3pt/1.30, the largest of the combinations measured against a real
-     print that still fits the master on one page. Every value below was
-     swept the same way rather than guessed: type size, leading, and the four
-     spacing knobs.
-
-     When three more lines of content arrived, the spacing knobs were
-     tightened and the type was left alone — a reader notices the size of the
-     letters long before the gap between two blocks, so space between things
-     is the cheaper thing to spend. */
   p,
   li {
-    font-size: 8.3pt !important;
-    line-height: 1.3 !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
   }
 
   .flex {
-    gap: 0.05rem !important;
+    gap: 3pt !important;
   }
 
-  /* The exception, and the only gap worth paying for: the experience list.
-     Every other collapsed gap sits between things a reader already tells
-     apart — a skills line from a skills line, a project from its own heading.
-     Between two roles the thing above is a bullet list and the thing below is
-     a job title, and with no gap at all the eye reads the title as one more
-     bullet. Measured: this spends 12px of the 21px the page had spare. */
   [class*='gap-6'] {
-    gap: 0.3rem !important;
+    gap: 9pt !important;
   }
 
   [class*='mt-10'],
@@ -403,14 +386,57 @@
   [class*='mt-14'],
   [class*='mt-16'],
   [class*='mt-20'] {
-    margin-top: 0.16rem !important;
+    margin-top: 14pt !important;
   }
 
   [class*='mt-8'],
   [class*='mt-6'],
   [class*='mt-5'],
   [class*='mt-4'] {
-    margin-top: 0.3rem !important;
+    margin-top: 6pt !important;
+  }
+
+  [data-fit='tight'] p,
+  [data-fit='tight'] li {
+    font-size: 10.5pt !important;
+    line-height: 1.32 !important;
+  }
+
+  [data-fit='tight'] h1 {
+    font-size: 20pt !important;
+  }
+
+  [data-fit='tight'] h3,
+  [data-fit='tight'] p .font-display {
+    font-size: 12pt !important;
+  }
+
+  [data-fit='tight'] .flex {
+    gap: 1.5pt !important;
+  }
+
+  [data-fit='tight'] [class*='gap-6'] {
+    gap: 5pt !important;
+  }
+
+  [data-fit='tight'] [class*='mt-10'],
+  [data-fit='tight'] [class*='mt-12'] {
+    margin-top: 9pt !important;
+  }
+
+  [data-fit='tight'] [class*='mt-8'],
+  [data-fit='tight'] [class*='mt-6'],
+  [data-fit='tight'] [class*='mt-5'],
+  [data-fit='tight'] [class*='mt-4'] {
+    margin-top: 4pt !important;
+  }
+
+  /* A job, a project or a qualification is one unit: it moves to the next
+     page whole rather than splitting across the break. A section heading
+     travels with the first entry under it. */
+  h2,
+  [data-section-heading] {
+    break-after: avoid;
   }
 
   article,
