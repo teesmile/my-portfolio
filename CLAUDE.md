@@ -24,6 +24,7 @@ Next.js 16 App Router, React 19, Tailwind 4, TypeScript. Content lives in `src/c
 - No three.js until phases 0–4 in `docs/plan.md` are done and the throttled test passes.
 - Lenis is driven from `gsap.ticker`, and `ScrollTrigger.update` runs on the Lenis scroll event. Remove `scroll-smooth` from `<html>` when Lenis lands.
 - Run `pnpm lint && pnpm build` before calling any task done.
+- Commits and pull requests in this repo never carry AI attribution: no `Co-Authored-By: Claude …` trailer in commit messages and no "Generated with Claude Code" line in PR descriptions. `.claude/settings.json` turns Claude Code's attribution off; this rule holds even if that setting is missing or overridden.
 
 ## Codex review protocol
 When Codex reviews a change:
