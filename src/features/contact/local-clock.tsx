@@ -90,19 +90,20 @@ export default function LocalClock() {
         </span>
       </div>
 
+      {/* One label before and after the first tick, so hydration swaps an
+          icon in and nothing else moves. Abuja shares Lagos's zone: the IANA
+          name is Africa/Lagos, but the reader wants the city I am in. */}
       <p className="mt-4 flex items-center gap-2 text-2xs text-muted">
         {clock ? (
-          <>
-            {clock.isDay ? (
-              <SunIcon className="h-4 w-4" />
-            ) : (
-              <MoonIcon className="h-4 w-4" />
-            )}
-            {clock.isDay ? 'Daytime' : 'Night'} in Lagos
-          </>
+          clock.isDay ? (
+            <SunIcon className="h-4 w-4" />
+          ) : (
+            <MoonIcon className="h-4 w-4" />
+          )
         ) : (
-          <span className="h-4">Local time in Lagos</span>
+          <span aria-hidden="true" className="h-4 w-4" />
         )}
+        Local time in Abuja (WAT)
       </p>
     </div>
   );

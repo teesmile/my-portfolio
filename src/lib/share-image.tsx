@@ -43,8 +43,14 @@ export async function renderShareImage({
         <div style={{ display: "flex", fontSize: 64, lineHeight: 1.05, letterSpacing: "-0.02em", maxWidth: "960px" }}>
           {title}
         </div>
-        <div style={{ display: "flex", fontSize: 24, color: "#9ba3ad" }}>
-          {portfolioConfig.name}
+        {/* The byline carries the positioning on every card, so a case study
+            shared on its own still says who wrote it and what they do. The home
+            card already leads with that line, so it is not said twice. */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px", fontSize: 24, color: "#9ba3ad" }}>
+          <div style={{ display: "flex", color: "#edeff2" }}>{portfolioConfig.name}</div>
+          {kicker === portfolioConfig.title ? null : (
+            <div style={{ display: "flex" }}>{portfolioConfig.title}</div>
+          )}
         </div>
       </div>
     ),

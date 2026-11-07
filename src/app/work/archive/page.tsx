@@ -6,7 +6,7 @@ import { portfolioConfig } from "@/config/site";
 export const metadata: Metadata = pageMetadata({
   title: "Archive",
   description:
-    "Everything else, including the training work.",
+    "Every other project by a full-stack developer and AI evaluator, including the training work.",
   path: "/work/archive",
 });
 
