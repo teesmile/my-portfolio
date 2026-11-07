@@ -78,7 +78,7 @@ export const resumeContent = {
   /* `private: true` is kept out of the public document and off the site.
      `pnpm resume --private` puts it back for applications. */
   contact: [
-    { text: 'anthonyugwuja.dev@gmail.com', href: 'mailto:anthonyugwuja.dev@gmail.com' },
+    { text: 'anthonyugwujac@gmail.com', href: 'mailto:anthonyugwujac@gmail.com' },
     { text: '+234 903 257 0130', href: 'tel:+2349032570130', private: true },
     { text: 'Abuja, Nigeria', href: '' },
     { text: 'anthonyugwuja.dev', href: 'https://anthonyugwuja.dev' },
@@ -119,7 +119,7 @@ export const resumeContent = {
       note: { text: 'Client and project details under NDA.', place: { default: 0, ai: 0, general: 0 } },
       bullets: [
         {
-          text: 'Author and review expert-level evaluation tasks benchmarking AI models across text, image, video and terminal-based formats.',
+          text: 'Author expert-level tasks designed to stump frontier models in chemistry, biology and clinical pharmacy, across text, image, video and terminal-based formats.',
           place: { default: 0, ai: 0, general: 0 },
         },
         {
@@ -127,18 +127,18 @@ export const resumeContent = {
           place: { default: 1, ai: 1, general: 1 },
         },
         {
-          text: 'Compare model outputs side by side and flag subtle factual and reasoning errors.',
+          text: 'Rate and compare model responses side by side, and verify factual claims against sources.',
           place: { default: 2, ai: 2, general: 2 },
         },
         {
           /* The differentiator for health and science evaluation, and dead
              weight on a fintech desk. */
           text: 'Apply pharmacy and chemistry knowledge to catch confident but incorrect answers in clinical and scientific content.',
-          place: { default: 3, ai: 3 },
+          place: { default: 4, ai: 4 },
         },
         {
-          text: 'Annotate audio-visual and multimodal data.',
-          place: { default: 4, ai: 4, general: 3 },
+          text: 'Annotate image, video and audio data.',
+          place: { default: 3, ai: 3, general: 3 },
         },
         {
           text: 'Consistently meet quality bars across concurrent projects, with tasks rated at the top of the reviewer scale.',
@@ -299,7 +299,7 @@ export const resumeContent = {
     },
     {
       label: 'AI evaluation',
-      items: ['LLM evaluation', 'multimodal annotation', 'data annotation', 'rubric-based grading', 'side-by-side model comparison'],
+      items: ['LLM evaluation', 'multimodal annotation', 'data annotation', 'image, video and audio annotation', 'fact verification', 'rubric-based grading', 'side-by-side model comparison'],
       place: { default: 2, ai: 0, general: 0 },
     },
     {
