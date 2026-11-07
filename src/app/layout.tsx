@@ -37,18 +37,18 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+const { seo } = portfolioConfig;
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://anthonyugwuja.dev"),
   title: {
-    default: "Anthony Ugwuja — frontend developer",
+    default: seo.title,
     template: "%s — Anthony Ugwuja",
   },
-  description:
-    "I trained as a pharmacist. Now I build React interfaces, and I review AI-generated code for a living.",
+  description: seo.description,
   openGraph: {
-    title: "Anthony Ugwuja — frontend developer",
-    description:
-      "I trained as a pharmacist. Now I build React interfaces, and I review AI-generated code for a living.",
+    title: seo.title,
+    description: seo.description,
     url: "/",
     siteName: `${portfolioConfig.name} portfolio`,
     locale: "en_US",
@@ -56,9 +56,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Anthony Ugwuja — frontend developer",
-    description:
-      "I trained as a pharmacist. Now I build React interfaces, and I review AI-generated code for a living.",
+    title: seo.title,
+    description: seo.description,
   },
 };
 

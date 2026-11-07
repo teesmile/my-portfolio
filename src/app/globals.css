@@ -496,6 +496,14 @@
    on the lines rather than near them. */
 .editor-gutter {
   line-height: calc(var(--text-headline-sm) * var(--text-headline-sm--line-height));
+  counter-reset: gutter;
+}
+
+/* Generated content is painted but is not document text: it never reaches
+   textContent, a copy or a crawler. decimal-leading-zero gives 01, 02… */
+.editor-gutter > div::before {
+  counter-increment: gutter;
+  content: counter(gutter, decimal-leading-zero);
 }
 
 @media (min-width: 1024px) {

@@ -9,7 +9,7 @@ import ContactEntrance from "@/features/contact/contact-entrance";
 export const metadata: Metadata = pageMetadata({
   title: "Contact",
   description:
-    "Open to remote frontend work and code evaluation.",
+    "Open to remote AI evaluation and full-stack work. Full-stack developer and AI evaluator, registered pharmacist, based in Abuja.",
   path: "/contact",
 });
 
@@ -36,13 +36,18 @@ export default function ContactPage() {
               <span className="text-muted">
                 <PinIcon className="h-4 w-4" />
               </span>
+              {/* Two lines on screen, two sentences in the text. Block styling
+                  only separates them visually: without the full stop the
+                  document reads "taking workRemote, anywhere" to a screen
+                  reader, a crawler and anyone who copies it. */}
               <span>
                 <span className="block text-2xs text-muted">
                   {portfolioConfig.location} &middot;{" "}
                   {portfolioConfig.takingWork
                     ? "taking work"
                     : "not taking work"}
-                </span>
+                  <span className="sr-only">.</span>
+                </span>{" "}
                 <span className="block text-sm text-ink">
                   {portfolioConfig.availability}
                 </span>

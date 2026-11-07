@@ -7,7 +7,7 @@ import { resumeFor, type Variant } from "@/content/resume";
 export const metadata: Metadata = pageMetadata({
   title: "Resume",
   description:
-    "Frontend development and AI evaluation.",
+    "Resume of Anthony Ugwuja: full-stack developer and AI evaluator, registered pharmacist.",
   path: "/resume",
 });
 
