@@ -60,6 +60,9 @@
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-accent-strong: var(--accent-strong);
+  /* Content only: the lint squiggle, and the misread cell in the renal
+     showcase's chart tables. Never chrome. */
+  --color-warn: var(--warn);
 
   --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
   --font-text: var(--font-source-serif), ui-serif, Georgia, serif;
@@ -424,7 +427,7 @@
 .marquee-track {
   display: flex;
   width: max-content;
-  gap: 1rem;
+  gap: var(--marquee-gap, 1rem);
   animation: marquee var(--marquee-duration, 60s) linear infinite;
 }
 
@@ -438,8 +441,17 @@
 }
 
 .marquee:hover .marquee-track,
-.marquee:focus-within .marquee-track {
+.marquee:focus-within .marquee-track,
+[data-held] .marquee-track {
   animation-play-state: paused;
+}
+
+/* The home page's tools row: logos stay the colour of the text beside them,
+   at rest and on hover. It sits under the work, and a strip of brand colours
+   would pull the eye away from it. */
+.quiet-marks .tech-mark,
+.light .quiet-marks .tech-mark {
+  color: currentColor;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -452,6 +464,39 @@
   .marquee-track > [aria-hidden='true'] {
     display: none;
   }
+}
+
+/* The deck's auto-advance clock. The fill under the current card scales
+   across over the dwell time and its animationend advances the deck (see
+   deck-interactive.tsx). Transform only, so the compositor runs it. Two
+   identical keyframes, swapped by data-lap, restart it without a reflow.
+   data-auto is only ever set outside reduced motion; without it the fill is
+   simply solid. */
+[data-auto] [data-fill] {
+  transform: scaleX(0);
+  animation: var(--deck-dwell, 5s) linear forwards;
+}
+
+[data-auto][data-lap='a'] [data-fill] {
+  animation-name: deck-dwell-a;
+}
+
+[data-auto][data-lap='b'] [data-fill] {
+  animation-name: deck-dwell-b;
+}
+
+[data-auto][data-paused] [data-fill] {
+  animation-play-state: paused;
+}
+
+@keyframes deck-dwell-a {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes deck-dwell-b {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
 /* The hero as a file open in an editor.
