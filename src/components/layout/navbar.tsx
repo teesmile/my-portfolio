@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { DURATION, EASE } from '@/lib/motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { portfolioConfig } from '@/config/site';
@@ -34,8 +35,8 @@ export default function Navbar() {
     gsap.to(panel, {
       opacity: 0,
       y: -8,
-      duration: 0.18,
-      ease: 'power2.in',
+      duration: DURATION.fast,
+      ease: EASE.in,
       onComplete: () => setMenuPath(null),
     });
   };
@@ -55,8 +56,8 @@ export default function Navbar() {
       gsap.from(panelRef.current, {
         opacity: 0,
         y: -8,
-        duration: 0.22,
-        ease: 'power2.out',
+        duration: DURATION.base,
+        ease: EASE.out,
       });
     },
     { dependencies: [isMenuOpen] },
@@ -83,7 +84,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed inset-x-0 top-0 z-50 border-b border-line bg-surface/85 backdrop-blur-md">
+      <nav className="fixed inset-x-0 top-0 z-50 border-b border-line bg-surface/85 pt-(--safe-top) backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-(--container-view) items-center justify-between px-6">
         <Link
           href="/"
@@ -129,12 +130,12 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="relative z-60 flex w-[5.25rem] items-center justify-center gap-2 border border-line px-3 py-1.5 text-2xs text-ink transition-colors hover:border-ink md:hidden"
+            className="relative z-60 -m-2 p-2 text-muted transition-colors hover:text-ink md:hidden"
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isMenuOpen}
             aria-controls="mobile-menu"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
               {isMenuOpen ? (
                 <>
                   <path d="M6 6l12 12" />
@@ -148,7 +149,6 @@ export default function Navbar() {
                 </>
               )}
             </svg>
-            {isMenuOpen ? 'Close' : 'Menu'}
           </button>
         </div>
       </div>
@@ -163,7 +163,7 @@ export default function Navbar() {
         <div
           id="mobile-menu"
           ref={panelRef}
-          className="fixed inset-x-0 top-16 bottom-0 z-45 bg-surface px-6 pt-10 md:hidden"
+          className="fixed inset-x-0 top-(--nav-height) bottom-0 z-45 bg-surface px-6 pt-10 md:hidden"
         >
           <ul className="flex flex-col">
             {[...portfolioConfig.navLinks, { name: 'Resume', href: '/resume' } as const].map((link) => (
