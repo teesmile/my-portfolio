@@ -51,7 +51,28 @@ function BytesToScale() {
   );
 }
 
+/* The benchmark in one drawing: a chart row goes in, two readings come out,
+   and the test keeps only the right one. */
+function ChartToVerdict() {
+  return (
+    <svg viewBox="0 0 220 120" className="w-full" role="img" aria-label="A chart row read two ways; the test passes one reading and fails the other">
+      <rect x="6" y="46" width="62" height="26" fill="none" stroke="var(--line)" />
+      <text x="12" y="62" fontSize="7" fill="var(--ink)" fontFamily="var(--font-mono)">150 µmol/L</text>
+      <path d="M68 59c20 0 20-30 40-30M68 59c20 0 20 30 40 30" stroke="var(--line)" fill="none" />
+      <text x="112" y="32" fontSize="7" fill="var(--ink)">CrCl 32.5</text>
+      <text x="112" y="92" fontSize="7" fill="var(--warn)">CrCl 0.4</text>
+      <path d="M156 29h16M156 89h16" stroke="var(--line)" />
+      <rect x="176" y="20" width="38" height="16" fill="none" stroke="var(--accent)" />
+      <text x="195" y="31" textAnchor="middle" fontSize="7" fill="var(--ink)">pass</text>
+      <rect x="176" y="80" width="38" height="16" fill="none" stroke="var(--line)" />
+      <text x="195" y="91" textAnchor="middle" fontSize="7" fill="var(--muted)">fail</text>
+      <text x="110" y="116" textAnchor="middle" fontSize="7" fill="var(--muted)">same row, two readings, one verdict</text>
+    </svg>
+  );
+}
+
 const drawings: Record<string, () => React.ReactElement> = {
+  "building-a-renal-dose-check-benchmark": ChartToVerdict,
   "every-section-is-a-route": OneLongPage,
   "what-unoptimized-turns-off": BytesToScale,
 };

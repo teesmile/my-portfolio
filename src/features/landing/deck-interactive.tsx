@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { Observer } from 'gsap/Observer';
 import { useGSAP } from '@gsap/react';
 import { DURATION, EASE, prefersReducedMotion } from '@/lib/motion';
+import { subscribe, want, whenSettled } from '@/lib/motion-lease';
 
 gsap.registerPlugin(Observer, useGSAP);
 
@@ -22,10 +23,14 @@ const slot = (index: number) => ({
 /** Past this fraction of the card's width, a drag becomes a dismissal. */
 const DRAG_RATIO = 0.25;
 const FLICK_VELOCITY = 450;
+/* A card holds for 5s before the deck moves on by itself: --deck-dwell in
+   globals.css, beside the keyframes that run it. */
 
 export default function DeckInteractive({ cards }: { cards: Card[] }) {
   const [order, setOrder] = useState(() => cards.map((_, index) => index));
   const container = useRef<HTMLDivElement>(null);
+  const root = useRef<HTMLDivElement>(null);
+  const auto = useRef<{ restart: () => void } | null>(null);
   const placed = useRef(false);
   const flying = useRef<HTMLElement | null>(null);
   const highlighted = useRef<Element | null>(null);
@@ -72,12 +77,15 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
         },
       })
       .set(front, { zIndex: 70 })
+      /* inOut rather than in: the card eases off its spot instead of
+         lurching, which matters now that the deck also moves on its own and
+         the reader did not cause the departure. */
       .to(front, {
-        xPercent: -130,
-        rotate: -8,
+        xPercent: -120,
+        rotate: -6,
         opacity: 0,
         duration: DURATION.base,
-        ease: EASE.in,
+        ease: EASE.inOut,
       })
       /* Re-enter from the right, at the back, where a returning card belongs. */
       .set(front, { xPercent: 0, x: back.x + 40, y: back.y, rotate: back.rotate, zIndex: back.zIndex })
@@ -137,6 +145,157 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
   useEffect(() => {
     latest.current = { advance, frontNode };
   });
+
+  /**
+   * Auto-advance, with the progress fill as the timer.
+   *
+   * The fill under the current card runs a 5s CSS animation on its
+   * transform, and its animationend advances the deck. Pausing the timer and
+   * freezing the indicator are then the same thing — animation-play-state —
+   * so the two can never disagree about how long is left. CSS rather than a
+   * GSAP tween because a tween ticks on the main thread every frame for as
+   * long as the page is open; a transform animation runs on the compositor.
+   * Measured: the tween version cost ~60ms of Total Blocking Time on a 4x
+   * throttled load, and doubled main-thread work while idle.
+   *
+   * It runs only when every condition holds: the hero entrance has
+   * finished (the page's one orchestrated moment plays alone), the deck is
+   * on screen, it owns
+   * the motion lease, the tab is visible, and nobody is touching it. Hover
+   * and focus are held states, released when the pointer or focus leaves.
+   * A touch holds until the finger lifts. A key press anywhere restarts the
+   * count, so someone reading with the keyboard is never moved on mid-read.
+   * Every release restarts from zero rather than resuming, so the card
+   * never leaves the instant a reader looks away.
+   *
+   * Everything lives inside gsap.matchMedia: under reduced motion none of it
+   * exists, data-auto never appears, and the current mark is simply solid.
+   */
+  useEffect(() => {
+    const element = root.current;
+    const stack = container.current;
+    if (!element || !stack) return;
+
+    const mm = gsap.matchMedia();
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      const state = { settled: false, visible: false, owned: false, hover: false, focus: false, touch: false };
+      /* Two identical keyframes, alternated: changing animation-name restarts
+         an animation without the forced reflow a remove-and-re-add needs. */
+      let lap: 'a' | 'b' = 'a';
+
+      const running = () =>
+        state.settled &&
+        state.visible && state.owned && !state.hover && !state.focus && !state.touch && !document.hidden;
+
+      const sync = () => element.toggleAttribute('data-paused', !running());
+
+      const restart = () => {
+        lap = lap === 'a' ? 'b' : 'a';
+        element.dataset.lap = lap;
+        sync();
+      };
+
+      const finished = (event: AnimationEvent) => {
+        if (!event.animationName.startsWith('deck-dwell')) return;
+        /* Mid-gesture or mid-flight: count again rather than skip. */
+        if (busy.current) restart();
+        else latest.current.advance();
+      };
+
+      const hold = (key: 'hover' | 'focus' | 'touch', on: boolean) => {
+        state[key] = on;
+        if (on) sync();
+        else restart();
+      };
+
+      const enter = (event: PointerEvent) => {
+        if (event.pointerType !== 'touch') hold('hover', true);
+      };
+      const leave = (event: PointerEvent) => {
+        if (event.pointerType !== 'touch') hold('hover', false);
+      };
+      const down = (event: PointerEvent) => {
+        if (event.pointerType === 'touch') hold('touch', true);
+      };
+      const up = (event: PointerEvent) => {
+        if (event.pointerType === 'touch' && state.touch) hold('touch', false);
+      };
+      const focusIn = () => hold('focus', true);
+      const focusOut = (event: FocusEvent) => {
+        if (!element.contains(event.relatedTarget as Node | null)) hold('focus', false);
+      };
+      const key = () => restart();
+
+      element.addEventListener('animationend', finished);
+      element.addEventListener('pointerenter', enter);
+      element.addEventListener('pointerleave', leave);
+      element.addEventListener('pointerdown', down);
+      window.addEventListener('pointerup', up);
+      window.addEventListener('pointercancel', up);
+      element.addEventListener('focusin', focusIn);
+      element.addEventListener('focusout', focusOut);
+      window.addEventListener('keydown', key);
+      document.addEventListener('visibilitychange', sync);
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          state.visible = entry.isIntersecting;
+          want('deck', state.visible);
+          sync();
+        },
+        { threshold: 0.6 },
+      );
+      observer.observe(stack);
+
+      const unsubscribe = subscribe((owner) => {
+        state.owned = owner === 'deck';
+        sync();
+      });
+
+      element.setAttribute('data-auto', '');
+      auto.current = { restart };
+      restart();
+
+      /* The count starts once the hero entrance has finished, or after 4s
+         if it never reports (fonts that never resolve, for instance). */
+      const begin = () => {
+        if (state.settled) return;
+        state.settled = true;
+        restart();
+      };
+      const cancelSettled = whenSettled(begin);
+      const fallback = window.setTimeout(begin, 4000);
+
+      return () => {
+        cancelSettled();
+        window.clearTimeout(fallback);
+        auto.current = null;
+        element.removeAttribute('data-auto');
+        element.removeAttribute('data-paused');
+        delete element.dataset.lap;
+        observer.disconnect();
+        unsubscribe();
+        want('deck', false);
+        element.removeEventListener('animationend', finished);
+        element.removeEventListener('pointerenter', enter);
+        element.removeEventListener('pointerleave', leave);
+        element.removeEventListener('pointerdown', down);
+        window.removeEventListener('pointerup', up);
+        window.removeEventListener('pointercancel', up);
+        element.removeEventListener('focusin', focusIn);
+        element.removeEventListener('focusout', focusOut);
+        window.removeEventListener('keydown', key);
+        document.removeEventListener('visibilitychange', sync);
+      };
+    });
+
+    return () => mm.revert();
+  }, []);
+
+  /* A new front card, however it got there, starts a fresh count. */
+  useEffect(() => {
+    auto.current?.restart();
+  }, [order]);
 
   /* Touch: the card follows the finger, then either leaves or springs back.
      A threshold on distance alone punishes a fast flick, and velocity alone
@@ -219,7 +378,7 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
   );
 
   return (
-    <div>
+    <div ref={root}>
       <div
         ref={container}
         className="relative h-[27rem] w-full overflow-x-clip [perspective:1200px] sm:h-[23rem]"
@@ -263,14 +422,19 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
       </div>
 
       <div className="mt-5 flex items-center gap-3">
+        {/* The position marks double as the progress indicator: the
+            current mark fills over the dwell time. Without auto-advance
+            (reduced motion, or no JavaScript) the fill is never scaled and
+            the current mark is simply solid, as it always was. */}
         <div className="flex gap-1.5" aria-hidden="true">
           {cards.map((card, index) => (
-            <span
-              key={card.context}
-              className={`h-1 w-4 transition-colors ${
-                index === order[0] ? 'bg-accent' : 'bg-line'
-              }`}
-            />
+            <span key={card.context} className="relative h-1 w-4 overflow-hidden bg-line">
+              {/* Only the current mark carries a fill, so a new card mounts a
+                  fresh element and its animation starts from zero. */}
+              {index === order[0] ? (
+                <span data-fill className="absolute inset-0 origin-left bg-accent" />
+              ) : null}
+            </span>
           ))}
         </div>
         <p aria-live="polite" className="text-2xs text-muted tabular-nums">

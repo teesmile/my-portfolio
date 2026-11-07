@@ -34,22 +34,30 @@ export type Project = {
   };
 };
 
+/* Ordered by the Projects rule in the working rules: strongest and newest first,
+   simpler ones further down. Nothing is ever deleted from this list; a
+   weaker project moves down here and comes off the resume instead. */
 const projects: Project[] = [
   {
     id: 1,
     slug: "todo-app",
     preview: "/work/todo-app.webp",
     title: "React Todo / Productivity App",
+    /* Only what the live app does today, from its README. Sign-in and sync
+       are being built in the repo; they go here the day they ship. */
     description:
-      "A Next.js todo app with TanStack Query hooks over an IndexedDB store, and editing in place from the list. It's being rebuilt as an offline-first task app with optional sync.",
+      "A local-first task list, built for a phone first. Tasks are grouped by when they're due and kept in IndexedDB on your device, with no account. Edit in place, delete with Undo, and search and filters that survive a reload.",
     role: "Frontend implementation",
-    year: "2025",
-    tech: ["Next.js", "React", "TypeScript", "TanStack Query", "IndexedDB", "Tailwind CSS"],
-    link: "https://todo-app-tsc-mauve.vercel.app/",
-    repo: "https://github.com/teesmile/todo-app-tsc", 
+    year: "2026",
+    tech: ["Next.js", "React", "TypeScript", "Dexie", "IndexedDB", "Tailwind CSS"],
+    link: "https://todo.anthonyugwuja.dev",
+    repo: "https://github.com/teesmile/todo-app-tsc",
     highlights: [
-      "TanStack Query hooks wrap an IndexedDB store, and each mutation invalidates the list it changed",
-      "Edit in place from the list: Enter saves, Escape cancels",
+      "Grouped by when it's due: Overdue, Today, Tomorrow, Upcoming, No date and Done, re-grouped at midnight",
+      "Add, edit in place, complete, and delete with Undo; Ctrl+Z works too",
+      "Vital tasks and colour labels, with search and filters that survive a reload",
+      "Local-first: tasks live in IndexedDB and are never overwritten, and edits made in two tabs at once don't silently replace each other",
+      "Keyboard and screen-reader friendly: n adds, / searches, a skip link, and no axe violations, contrast included",
     ]
   },
   {
@@ -62,7 +70,7 @@ const projects: Project[] = [
     role: "Frontend implementation",
     year: "2025",
     tech: ["Vite", "JavaScript", "HTML", "CSS", "Tailwind CSS"],
-    link: "https://e-commerce-product-page-one-ashy.vercel.app/",
+    link: "https://shop.anthonyugwuja.dev",
     repo: "https://github.com/teesmile/e-commerce-product-page",
     highlights: [
       "Gallery and thumbnail states wired to one source of truth",
@@ -80,7 +88,7 @@ const projects: Project[] = [
     role: "Frontend implementation",
     year: "2025",
     tech: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
-    link: "https://space-tourism-toni.vercel.app/",
+    link: "https://space.anthonyugwuja.dev",
     repo: "https://github.com/teesmile/space-tourism",
     highlights: [
       "Four content types sharing one navigation shell",
@@ -108,20 +116,22 @@ export const portfolioConfig = {
   email: "anthonyugwujac@gmail.com",
   location: "Abuja, Nigeria",
   availability: "Remote, anywhere",
-  /* The second track on /work. Not a Project: there is no live link, no
-     screenshot and no case study, because the real tasks are under NDA. The
-     sample is an original task built the same way, and it is the only thing
-     the entry links to. */
+  /* The first entry on /work, ahead of every project (the Projects rule).
+     Not a Project: the real tasks are under NDA, so there is no live link
+     and no screenshot. The sample is an original task built the same way,
+     and its showcase at /work/renal-dosing-task is what the entry links to. */
   evaluation: {
     title: "AI evaluation",
     period: "Nov 2025 – Present",
     role: "Self-employed, remote",
     body: "I evaluate and stress-test AI models. I author expert-level tasks built to stump frontier models in chemistry, biology and clinical pharmacy, including terminal-based benchmarks where an agent must reconcile messy synthetic patient records and carry out pharmacokinetic calculations. I also annotate image, video and audio data, verify facts, and rate and compare model responses against detailed guidelines. Every task I author ships with evidence that its grading is sound. Client and task details stay under NDA; the sample below is an original task built the same way.",
     sample: {
-      title: "Renal dosing task",
-      /* Placeholder until the repository has a README: edit freely. */
+      title: "Renal dose check",
       summary:
-        "An original terminal-based task: an agent works through a synthetic patient record and has to get a renal dose adjustment right.",
+        "An original terminal task. An agent checks fifteen synthetic patients' medication orders against renal dosing rules in a chart with mixed units, and 32 tests grade the result. Eight traps each change one answer; two valid look-alikes break blanket rules.",
+      /* One line, for the home page's Selected work card. */
+      teaser: "Building tasks that stump frontier models in clinical pharmacy.",
+      href: "/work/renal-dosing-task",
       repo: "https://github.com/teesmile/renal-dosing-task",
     },
   },

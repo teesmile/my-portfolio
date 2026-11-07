@@ -149,10 +149,16 @@ export default async function ResumePage({
                   {/* Scheme off, trailing slash off: the address a person
                       would type, and one character less to wrap. The href
                       keeps the URL exactly as the project config has it. */}
-                  <a className="whitespace-nowrap" href={project.url}>
-                    Live: {project.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
-                  </a>
-                  {" | "}
+                  {/* A benchmark task has no live deploy, only its source;
+                      the line shows what exists rather than a blank label. */}
+                  {project.url ? (
+                    <>
+                      <a className="whitespace-nowrap" href={project.url}>
+                        Live: {project.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                      </a>
+                      {" | "}
+                    </>
+                  ) : null}
                   <a className="whitespace-nowrap" href={project.repo}>
                     Code: {project.repo.replace(/^https?:\/\//, "")}
                   </a>

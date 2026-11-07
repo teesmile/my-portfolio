@@ -4,6 +4,8 @@ export type Section = {
   paragraphs: string[];
   /** Drawn inline, at the point the section explains the thing. */
   figure?: string;
+  /** Links set after the section's paragraphs. Paragraphs stay plain strings. */
+  links?: { text: string; href: string }[];
 };
 
 /* A fixed vocabulary rather than free tags: five topics the site will
@@ -18,9 +20,106 @@ export type WritingEntry = {
   date: string;
   standfirst: string;
   sections: Section[];
+  /**
+   * A draft is built and reachable at its URL, so it can be read in place
+   * before it goes out, but it is left out of /writing and the sitemap and
+   * carries noindex. Delete the line to publish.
+   */
+  draft?: true;
 };
 
 export const writing: WritingEntry[] = [
+  {
+    /* DRAFT, awaiting approval. Every fact is from the renal-dosing-task
+       repository (README, patient design table, evidence results). Edit the
+       words here; delete `draft: true` to publish it. */
+    slug: "building-a-renal-dose-check-benchmark",
+    topic: "AI",
+    title: "Ten ways to misread a ward chart, and proving the tests catch them",
+    date: "2026-11-07",
+    draft: true,
+    standfirst:
+      "I built a small benchmark where an AI agent checks drug doses against kidney function. The maths is handed over in the instruction. The hard part is reading the chart, and then proving the grading is fair.",
+    sections: [
+      {
+        id: "the-maths-is-the-easy-part",
+        heading: "The maths is the easy part",
+        paragraphs: [
+          "The task gives an agent a terminal and a small ward chart: fifteen synthetic adults, their creatinine results, their medication orders, and a rules file with a dose limit for each level of kidney function. For each patient it has to work out creatinine clearance with the Cockcroft–Gault formula, then flag every active order whose daily dose is over the limit. It writes one line per patient, and 32 tests grade the file.",
+          "I gave the formula away. The instruction states it, along with both unit conversions and the exact rules. So the task doesn't ask whether a model knows pharmacy. It asks whether it reads the chart properly, which is a different skill, and it's the one this task is about.",
+          "The drugs are invented, and so are the limits. Aldrovexin, Bremazotan, Cylvarone, Dorvatinex and Exalmizide don't exist, and none of this is dosing guidance.",
+        ],
+      },
+      {
+        id: "where-agents-go-wrong",
+        figure: "renal-one-row",
+        heading: "Where agents go wrong with clinical data",
+        paragraphs: [
+          "The mistakes I built this around aren't exotic. They're the ones a fast reader makes on a messy chart. A creatinine of 150 is in µmol/L, but it sits in the same column as values in mg/dL, and the unit is one column over. A weight of 176 is in pounds. An order that breaks the limit was stopped last week. BD and TDS are Latin abbreviations for twice and three times a day, and q8h means every eight hours, which is three doses, not eight. And labs.csv isn't sorted by time, so the last row for a patient isn't always their latest result.",
+          "Each of those looks like a small slip. None of them is small. Skip the µmol/L conversion and a patient whose clearance is 32.5 mL/min comes out at 0.4, which reads as kidneys that have stopped working. On a ward that means a drug gets withheld from someone who needs it.",
+        ],
+      },
+      {
+        id: "one-trap-one-answer",
+        figure: "renal-trap-isolation",
+        heading: "One trap, one answer",
+        paragraphs: [
+          "The design rule I cared about most: each trap changes exactly one patient's answer, or a small group built for the same trap, and no patient carries two. If a model fails on PT008, it counted the discontinued order. It can't be anything else, because nothing else about PT008 is hard.",
+          "That turns a score into a diagnosis. A benchmark that piles every difficulty onto every patient can tell you a model failed. It can't tell you why, and the why is what someone improving the model needs.",
+          "I didn't take the rule on trust. A script runs each mistake on its own and records which patients' answers move. Every mistake moves at least one patient, and each one moves only the patients designed for it. A trap that never changes an answer measures nothing, and that's an easy trap to build without noticing.",
+        ],
+      },
+      {
+        id: "look-alikes-that-punish-shortcuts",
+        figure: "renal-magnitude-rule",
+        heading: "Look-alikes that punish shortcuts",
+        paragraphs: [
+          "Traps alone reward a cheap trick. If every pound weight in the chart is a big number, a model can pass with a rule like \"anything over 140 must be pounds\" without ever reading the unit column. So two patients are there to break blanket rules.",
+          "PT007 really does weigh 150 kg, recorded in kg. The \"big number means pounds\" rule turns him into 68 kg, his clearance falls from 152 to 69, and a Cylvarone order that's fine gets flagged. PT004 is a frail 90-year-old weighing 38 kg with a creatinine of 16 µmol/L. Guess the unit from the size of the number and 16 becomes mg/dL, and she looks like she's in end-stage kidney failure.",
+          "Neither patient is a trick. People that size are common, and low muscle mass really does mean low creatinine. They're exactly the patients a shortcut fails, which is why the only rule that passes every patient is to read the unit column.",
+        ],
+      },
+      {
+        id: "is-the-answer-key-right",
+        heading: "Is the answer key right?",
+        paragraphs: [
+          "A benchmark grades against an answer key, and an answer key can be wrong. Mine comes from a reference solution in Python. To check it, I wrote a second implementation in SQL, against the instruction alone, sharing no code with the first: unit conversion in CASE expressions, the latest lab by MAX(collected_at), frequencies through a lookup table.",
+          "The two agree on all fifteen patients, to 0.1 mL/min and to the exact set of flagged orders. The key also records a SHA-256 hash of every input file, so the check fails if anyone changes the chart without rebuilding the answers.",
+        ],
+      },
+      {
+        id: "do-the-tests-tell-right-from-wrong",
+        figure: "renal-grading-evidence",
+        heading: "Do the tests tell right from wrong?",
+        paragraphs: [
+          "Then the tests themselves. A simulated agent runs under 25 configurations, and the real test file grades every one. The reference and a mistake-free run have to pass. So do six variants a careful agent might reasonably choose: 88.42 instead of 88.4, 2.2 or 2.2046 pounds to the kilo, rounding the inputs first, choosing the band from the rounded clearance, listing the flags in a different order.",
+          "Those variants matter as much as the mistakes. A grader that fails a sensible choice is measuring pedantry, and a model trained against it learns the wrong lesson. Everything else has to fail: each of the ten mistakes on its own, and seven broken outputs such as a missing patient, a duplicate line, or a clearance written as a string. All 25 land where they should.",
+        ],
+      },
+      {
+        id: "why-one-percent-cant-flip-a-flag",
+        figure: "renal-tolerance-margin",
+        heading: "Why 1% can't flip a flag",
+        paragraphs: [
+          "The tests accept a clearance within 1% of the reference, so honest rounding passes. That tolerance has a hidden risk: if a patient sat right on a band edge, a 1%-accurate answer could fall into the next band and get a different dose limit, and the flag test would fail an agent that did nothing wrong.",
+          "So every reference clearance is at least 2% from every band edge for that patient's drugs, twice the tolerance. The closest is PT005, 5.8% away. The script checks that too.",
+        ],
+      },
+      {
+        id: "what-it-taught-me",
+        heading: "What building it taught me about evaluating models",
+        paragraphs: [
+          "A test is a claim, and it needs evidence like any other claim. Writing the answer key is the half you can't skip. Proving it right, and proving the tests pass right answers and fail wrong ones, is the half that's easy to skip.",
+          "A good trap is a precise description of what wrong looks like. If I can't say which patient changes and by how much, I haven't designed a trap, I've added noise. And every trap invites a shortcut, so the next thing to build is the case that breaks the shortcut.",
+          "And grade the output, not the explanation. The tests read the answer file and nothing else. A model can write a confident paragraph about units and still divide by the wrong number, and only the number reaches the patient.",
+        ],
+        links: [
+          { text: "See every trap and the evidence", href: "/work/renal-dosing-task" },
+          { text: "Read the task on GitHub", href: "https://github.com/teesmile/renal-dosing-task" },
+        ],
+      },
+    ],
+  },
   {
     slug: "every-section-is-a-route",
     topic: "Engineering",
@@ -110,6 +209,9 @@ export const writing: WritingEntry[] = [
     ],
   },
 ];
+
+/** What /writing, the sitemap and the home page list. Drafts are left out. */
+export const published = writing.filter((entry) => !entry.draft);
 
 /** 200 words per minute, rounded up, floor of one minute. */
 export function readingTime(entry: WritingEntry) {

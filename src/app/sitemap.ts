@@ -2,7 +2,8 @@ import type { MetadataRoute } from "next";
 
 import { portfolioConfig } from "@/config/site";
 import { SITE_URL } from "@/config/site-url";
-import { writing } from "@/config/writing";
+import { published } from "@/config/writing";
+import { renalTraps } from "@/content/renal-dosing";
 
 /**
  * Every route, on the one address.
@@ -20,6 +21,7 @@ const STATIC_ROUTES = [
   "/",
   "/work",
   "/work/archive",
+  "/work/renal-dosing-task",
   "/writing",
   "/about",
   "/resume",
@@ -45,7 +47,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${SITE_URL}/work/${project.slug}`,
       lastModified: now,
     })),
-    ...writing.map((entry) => ({
+    ...renalTraps.map((trap) => ({
+      url: `${SITE_URL}/work/renal-dosing-task/${trap.slug}`,
+      lastModified: now,
+    })),
+    /* Published pieces only: a draft is reachable by its URL for review and
+       carries noindex, so listing it here would contradict itself. */
+    ...published.map((entry) => ({
       url: `${SITE_URL}/writing/${entry.slug}`,
       /* A piece's own date, because that is when it last changed in any way
          a reader would care about. */
