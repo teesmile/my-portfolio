@@ -112,7 +112,7 @@ export const resumeContent = {
   experience: [
     {
       title: 'AI Training & Evaluation Specialist',
-      company: 'Self-employed, remote · Outlier, Mercor, micro1 and similar platforms',
+      company: 'Self-employed, remote · Outlier, Mercor, micro1 and others',
       period: 'Nov 2025 – Present',
       /* Empty on purpose: /about renders this role's bullets in full, and
          the practices live in the stack's "AI evaluation" row. Four tags
@@ -238,7 +238,8 @@ export const resumeContent = {
   projects: [
     {
       name: 'Renal dose check (AI agent benchmark)',
-      line: 'Dose checks on a mixed-unit synthetic chart, with simulated agents proving the grading sound.',
+      line: 'A benchmark task that tests whether AI agents can check drug doses from a messy patient chart; simulated agents prove each mistake is caught.',
+      showcase: 'https://anthonyugwuja.dev/work/renal-dosing-task',
       repo: 'https://github.com/teesmile/renal-dosing-task',
       place: { default: 0, ai: 0 } as Placement,
     },
@@ -263,7 +264,7 @@ export const resumeContent = {
       repo: 'https://github.com/teesmile/space-tourism',
       place: {} as Placement,
     },
-  ] as { name: string; line: string; url?: string; repo: string; place: Placement }[],
+  ] as { name: string; line: string; url?: string; showcase?: string; repo: string; place: Placement }[],
 
   /* Reverse chronological, like the experience section. Mixing the two
      orders in one document is the kind of small inconsistency a careful
