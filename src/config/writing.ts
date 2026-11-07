@@ -44,7 +44,7 @@ export const writing: WritingEntry[] = [
         heading: "The maths is the easy part",
         paragraphs: [
           "The task gives an agent a terminal and a small ward chart: fifteen synthetic adults, their creatinine results, their medication orders, and a rules file with a dose limit for each level of kidney function. For each patient it has to work out creatinine clearance, an estimate of how well the kidneys clear drugs from the blood, using the Cockcroft–Gault formula, then flag every active order whose daily dose is over the limit. It writes one line per patient, and 32 tests grade the file.",
-          "Before I evaluated AI models, I spent a year as a pharmacy intern on hospital wards, and the slips this task tests are the ones that matter there.",
+          "I'm a pharmacist, and I spent a year as an intern on hospital wards, where the slips this task tests are the ones that matter.",
           "I gave the formula away. The instruction states it, along with both unit conversions and the exact rules. So the task doesn't ask whether a model knows pharmacy. It asks whether it reads the chart properly, which is a different skill, and it's the one this task is about.",
           "The drugs are invented, and so are the limits. Aldrovexin, Bremazotan, Cylvarone, Dorvatinex and Exalmizide don't exist, and none of this is dosing guidance.",
         ],
