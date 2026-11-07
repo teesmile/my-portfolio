@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Lenis needs the document to size itself naturally while it interpolates. */
+@import "lenis/dist/lenis.css";
 
 /* Dark is the primary mode: the tokens below are the dark values, and `.light`
    opts out. Because every colour utility reads a token, no `dark:` variant is
@@ -7,6 +9,16 @@
 
 :root {
   color-scheme: dark;
+  /* The notch, with a floor for phones that report nothing: without the
+     minimum the wordmark sits on the very top edge of the bar. */
+  --safe-top: max(env(safe-area-inset-top), 0.5rem);
+  --nav-height: calc(4rem + var(--safe-top));
+  /* The CSS half of src/lib/motion.ts. Keep the two in step. */
+  --duration-fast: 180ms;
+  --duration-base: 500ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Lint squiggle and the deck's warning mark. Content colour, not chrome. */
+  --warn: #ff6b5e;
   --surface: #0c0d0f;
   --raised: #15171a;
   --line: #23272d;
@@ -54,6 +66,11 @@
   /* System stack, not a third downloaded family: code set in a serif is
      unreadable, and a webfont for six lines of sample code is not worth it. */
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  /* A real monospace voice for the hero line. Code keeps the system stack:
+     Martian Mono is wide by design, which is good for one line and bad for
+     forty of them. */
+  --font-mono-brand: var(--font-martian), var(--font-mono);
+
 }
 
 @theme {
@@ -80,6 +97,16 @@
      count at 1280 and 360 rather than leaving it to the eye: 56px wide / 28px
      narrow, leading 1.05, Syne. These are the largest sizes that pass with
      the shipped statement. */
+  /* Hero headline (Syne) and the monospace line under it. Both sizes come
+     from /lab/type, measured for the two-voice layout. */
+  --text-headline: 4rem;
+  --text-headline--line-height: 1.05;
+  --text-headline-sm: 2rem;
+  --text-headline-sm--line-height: 1.1;
+  --text-mono: 1.25rem;
+  --text-mono--line-height: 1.6;
+  --text-mono-sm: 0.875rem;
+  --text-mono-sm--line-height: 1.6;
   --text-statement: 3.5rem;
   --text-statement--line-height: 1.05;
   --text-statement-sm: 1.75rem;
@@ -227,4 +254,237 @@
 
 .light .tech:hover {
   color: var(--brand, var(--ink));
+}
+
+/* The code line under the cursor, raised out of the muted body of the card. */
+.shiki .line-hover {
+  background-color: color-mix(in oklab, var(--ink) 14%, transparent);
+}
+
+/* Print: the resume is a document before it is a web page.
+   The palette flips to ink on paper — printing the dark theme would be a
+   solid black page — and the chrome comes off, because navigation means
+   nothing once the page is paper. */
+@media print {
+  :root,
+  .light {
+    color-scheme: light;
+    --surface: #ffffff;
+    --raised: #ffffff;
+    --line: #c8ccd2;
+    --ink: #101316;
+    --muted: #3f4650;
+    --accent: #1a1d21;
+    --accent-strong: #101316;
+  }
+
+  nav,
+  footer,
+  [data-no-print] {
+    display: none !important;
+  }
+
+  /* `body` is `min-h-dvh` so a short view still fills the screen. In paged
+     media `dvh` resolves against the page box, so body becomes exactly one
+     page tall and the first trailing margin after it starts a second page —
+     which is why a document measuring 1025px of content printed on two pages
+     with 1055px available. On paper nothing is scrolled, so let it be as tall
+     as its content and no taller. */
+  html,
+  body {
+    min-height: 0 !important;
+    height: auto !important;
+  }
+
+  main {
+    padding-top: 0 !important;
+  }
+
+  section {
+    padding-block: 0 !important;
+  }
+
+  a {
+    text-decoration: none !important;
+  }
+
+  /* Automatic hyphenation puts a hyphen at a line break, and text extraction
+     then reads "instruction-following" as "instructionfollowing". Turning it
+     off keeps hyphenated terms whole and keeps the extracted text honest. */
+  * {
+    hyphens: none !important;
+    -webkit-hyphens: none !important;
+  }
+
+  /* Headings and entries each need their own block with real vertical space,
+     or pdftotext runs the end of one into the start of the next —
+     "works.Software engineering intern". */
+  h1,
+  h2,
+  h3,
+  li,
+  article > p,
+  aside p {
+    display: block;
+    margin-bottom: 0.05rem;
+  }
+
+  article,
+  aside > div {
+    margin-bottom: 0.1rem;
+  }
+
+  /* One page is the target. Screen spacing is built for scrolling; paper is
+     not scrolled, so the document tightens up without changing a word. */
+  section {
+    padding-block: 0 !important;
+  }
+
+  h1 {
+    font-size: 18pt !important;
+    line-height: 1.05 !important;
+  }
+
+  h2 {
+    font-size: 8pt !important;
+    letter-spacing: 0.08em;
+  }
+
+  h3 {
+    font-size: 9.7pt !important;
+    line-height: 1.15 !important;
+  }
+
+  /* An education entry's title is a span inside its one-line paragraph, not a
+     heading, so none of the h3 rules above reach it — and it was printing
+     larger than the role titles because it kept the screen's `text-sm`. It is
+     an entry title like the others and takes the same size. */
+  p .font-display {
+    font-size: 9.7pt !important;
+  }
+
+  /* 9pt, not the 7.9pt this was squeezed to while the print margins were
+     still wrong. The master is allowed two pages; a document nobody can
+     read comfortably is a worse outcome than a second page. */
+  /* 8.3pt/1.30, the largest of the combinations measured against a real
+     print that still fits the master on one page. Every value below was
+     swept the same way rather than guessed: type size, leading, and the four
+     spacing knobs. */
+  p,
+  li {
+    font-size: 8.3pt !important;
+    line-height: 1.3 !important;
+  }
+
+  .flex {
+    gap: 0.1rem !important;
+  }
+
+  [class*='mt-10'],
+  [class*='mt-12'],
+  [class*='mt-14'],
+  [class*='mt-16'],
+  [class*='mt-20'] {
+    margin-top: 0.24rem !important;
+  }
+
+  [class*='mt-8'],
+  [class*='mt-6'],
+  [class*='mt-5'],
+  [class*='mt-4'] {
+    margin-top: 0.3rem !important;
+  }
+
+  article,
+  dl,
+  h2,
+  h3 {
+    break-inside: avoid;
+  }
+}
+
+/* Drifting stack rows. Transform only, so the compositor owns every frame;
+   paused whenever the reader is looking at one closely, by pointer or by
+   keyboard. */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 1rem;
+  animation: marquee var(--marquee-duration, 60s) linear infinite;
+}
+
+@keyframes marquee {
+  from {
+    transform: translate3d(var(--marquee-from, 0%), 0, 0);
+  }
+  to {
+    transform: translate3d(var(--marquee-to, -50%), 0, 0);
+  }
+}
+
+.marquee:hover .marquee-track,
+.marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .marquee-track > [aria-hidden='true'] {
+    display: none;
+  }
+}
+
+/* The hero as a file open in an editor.
+   Its own surface, ending where the hero ends: a line-number gutter aligned
+   to the headline's line boxes, faint indent guides, and a little grain for
+   depth. All of it is CSS and one inline SVG — no canvas, no particles, and
+   nothing that animates. */
+.editor-surface {
+  background-color: var(--raised);
+  border-bottom: 1px solid var(--line);
+  position: relative;
+  isolation: isolate;
+}
+
+/* Grain: a single inline SVG turbulence, rasterised once by the browser and
+   tiled. It sits under the content and never repaints. */
+.editor-surface::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Indent guides: evenly spaced hairlines behind the content, the way an
+   editor marks nesting depth. */
+.editor-guides::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: repeating-linear-gradient(
+    to right,
+    color-mix(in oklab, var(--line) 70%, transparent) 0 1px,
+    transparent 1px 4rem
+  );
+  opacity: 0.5;
+}
+
+/* The gutter's line boxes are the headline's line boxes, so the numbers sit
+   on the lines rather than near them. */
+.editor-gutter {
+  line-height: calc(var(--text-headline-sm) * var(--text-headline-sm--line-height));
+}
+
+@media (min-width: 1024px) {
+  .editor-gutter {
+    line-height: calc(var(--text-headline) * var(--text-headline--line-height));
+  }
 }

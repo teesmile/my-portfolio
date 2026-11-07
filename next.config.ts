@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+import { LEGACY_HOSTS, SITE_URL } from "./src/config/site-url";
+
 const nextConfig: NextConfig = {
   // Stable in Next 16: a <Link href> to a route that does not exist is a type
   // error, so Phase 1/2/3 cannot ship a dead link to /work/[slug] by accident.
@@ -11,6 +13,28 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
       },
     ],
+  },
+  /**
+   * One address, permanently.
+   *
+   * `has: [{ type: "host" }]` is matched as `new RegExp(`^${value}$`)` against
+   * the lowercased hostname with the port stripped, so the dots are escaped:
+   * an unescaped `.` matches any character, and `teesmile.vercel.app` would
+   * then also match a host like `teesmileXvercel.app`. Anchored and escaped,
+   * it matches those two hosts and nothing else — `teesmile-git-phase-2.
+   * vercel.app` and every other preview deployment serve their own branch as
+   * before.
+   *
+   * `permanent: true` is a 308 rather than a 301: the method and body survive,
+   * and search engines treat it as permanent either way.
+   */
+  async redirects() {
+    return LEGACY_HOSTS.map((host) => ({
+      source: "/:path*",
+      has: [{ type: "host" as const, value: host.replace(/\./g, "\\.") }],
+      destination: `${SITE_URL}/:path*`,
+      permanent: true,
+    }));
   },
 };
 

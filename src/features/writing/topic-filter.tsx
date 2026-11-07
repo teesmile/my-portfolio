@@ -41,7 +41,7 @@ export default function TopicFilter({ entries }: { entries: WritingEntry[] }) {
 
       <div className="flex flex-col">
         {shown.map((entry) => (
-          <article key={entry.slug} className="border-b border-line py-8">
+          <article key={entry.slug} data-reveal className="border-b border-line py-8">
             <p className="text-2xs text-muted tabular-nums">
               {entry.date} &middot; {readingTime(entry)} min read &middot; {entry.topic}
             </p>

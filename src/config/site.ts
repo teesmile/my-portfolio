@@ -91,21 +91,30 @@ export const portfolioConfig = {
   location: "Abuja, Nigeria",
   availability: "Remote, anywhere",
   takingWork: true,
+  resumePdf: "/Anthony-Ugwuja-Resume.pdf",
   currently:
     "Reading model-written code most of the week, and building the next thing with a real server behind it.",
   statement:
     "Pharmacist by training, engineer by choice. I ship across the stack and catch what AI gets wrong.",
+  /* The hero says it in two voices: the headline in Syne, the line under it
+     in monospace, as if the second sentence were typed into an editor. */
+  headline: "Pharmacist by training, engineer by choice.",
+  monoLine: "I ship across the stack and catch what AI gets wrong.",
+  /* The span the lint squiggle is drawn under. Must appear in monoLine. */
+  monoFlag: "what AI gets wrong",
   // The dated spine on /about. Two tracks running in parallel, not one career
   // replacing another — which is the actual story.
   timeline: [
-    { period: "2017 — 2025", label: "Pharmacy degree", track: "pharmacy" },
+    { period: "2017 – 2023", label: "B.Pharm, University of Nigeria, Nsukka", track: "pharmacy" },
     { period: "2020", label: "First code, written during pharmacy school", track: "code" },
-    { period: "2022", label: "Zuri and I4G training programmes", track: "code" },
-    { period: "2024 — 2025", label: "Software engineering diploma, AltSchool Africa", track: "code" },
-    { period: "2025", label: "Provisional pharmacist licence", track: "pharmacy" },
-    { period: "2025 — 2026", label: "Pharmacy internship", track: "pharmacy" },
-    { period: "2025 — now", label: "Frontend development and code evaluation", track: "code" },
-    { period: "2026", label: "Full pharmacist licence", track: "pharmacy" },
+    { period: "May 2022 – Sep 2022", label: "Full stack developer trainee, Zuri Team", track: "code" },
+    { period: "Feb 2024", label: "Provisional pharmacist licence", track: "pharmacy" },
+    { period: "Oct 2024 – Oct 2025", label: "Diploma in Frontend Engineering, AltSchool Africa", track: "code" },
+    { period: "May 2025 – May 2026", label: "Pharmacy intern, Federal Medical Centre, Keffi", track: "pharmacy" },
+    { period: "Nov 2025 – Present", label: "AI training and evaluation, self-employed", track: "code" },
+    { period: "Jul 2026 – Present", label: "Cloud Computing, AltSchool Africa", track: "code" },
+    { period: "Aug 2026 – Present", label: "Pharmacist, NYSC, Nasarawa State University clinic", track: "pharmacy" },
+    { period: "Oct 2026", label: "Full pharmacist licence", track: "pharmacy" },
   ] as { period: string | null; label: string; track: "pharmacy" | "code" }[],
   // The deck on /. Every example is written for this purpose, never taken from
   // paid evaluation work, and every bug is real enough to verify by reading.
@@ -129,6 +138,22 @@ export const portfolioConfig = {
       fix: ["() => [...items].sort((a, b) => a.price - b.price),"],
     },
     {
+      language: "tsx" as const,
+      context: "Auth — reading a session token",
+      lines: [
+        "import { jwtDecode } from 'jwt-decode';",
+        "",
+        "export function getUser(token: string) {",
+        "  const claims = jwtDecode<Claims>(token);",
+        "  return claims.role === 'admin' ? adminView(claims) : userView(claims);",
+        "}",
+      ],
+      markedLine: 4,
+      verdict:
+        "jwtDecode only base64-decodes the payload — it never checks the signature. Anyone can hand-write a token claiming role admin and this will believe it.",
+      fix: ["  const { payload } = await jwtVerify(token, publicKey);"],
+    },
+    {
       language: "python" as const,
       context: "Django — an order list page",
       lines: [
@@ -143,6 +168,22 @@ export const portfolioConfig = {
       verdict:
         "order.customer is a separate query per row. One hundred orders means one hundred and one queries, and the page gets slower in production exactly as the data grows.",
       fix: ["    orders = Order.objects.select_related('customer')"],
+    },
+    {
+      language: "python" as const,
+      context: "Python — collecting results",
+      lines: [
+        "def add_result(value, results=[]):",
+        "    results.append(value)",
+        "    return results",
+        "",
+        "add_result('a')  # ['a']",
+        "add_result('b')  # ['a', 'b'] — the list survived",
+      ],
+      markedLine: 1,
+      verdict:
+        "The default list is built once, when the function is defined, and every call that omits the argument shares that same list. The second caller sees the first caller's data.",
+      fix: ["def add_result(value, results=None):", "    results = [] if results is None else results"],
     },
     {
       language: "python" as const,
@@ -168,6 +209,23 @@ export const portfolioConfig = {
     },
     {
       language: "tsx" as const,
+      context: "MongoDB — a login lookup",
+      lines: [
+        "const user = await users.findOne({",
+        "  email: req.body.email,",
+        "  password: req.body.password,",
+        "});",
+      ],
+      markedLine: 3,
+      verdict:
+        "A JSON body can send { \"$ne\": null } where a string was expected, and the query matches the first user with any password at all. The operator is the injection — no quotes needed.",
+      fix: [
+        "const user = await users.findOne({ email: String(req.body.email) });",
+        "const ok = user && (await verifyHash(user.hash, String(req.body.password)));",
+      ],
+    },
+    {
+      language: "tsx" as const,
       context: "Async — a search-as-you-type field",
       lines: [
         "useEffect(() => {",
@@ -186,6 +244,36 @@ export const portfolioConfig = {
         "    .then((data) => { if (current) setResults(data); });",
         "  return () => { current = false; };",
       ],
+    },
+    {
+      language: "tsx" as const,
+      context: "Money — totalling a cart",
+      lines: [
+        "const total = items.reduce((sum, item) => sum + item.price, 0);",
+        "",
+        "// 0.1 + 0.2 === 0.30000000000000004",
+        "return `$${total.toFixed(2)}`;",
+      ],
+      markedLine: 1,
+      verdict:
+        "Prices in binary floating point drift as they add up. On a long cart the error surfaces as a penny that appears between the subtotal shown and the amount charged, and the two systems disagree forever after.",
+      fix: [
+        "const totalCents = items.reduce((sum, item) => sum + item.priceInCents, 0);",
+        "return formatMoney(totalCents);",
+      ],
+    },
+    {
+      language: "tsx" as const,
+      context: "React — a live price subscription",
+      lines: [
+        "useEffect(() => {",
+        "  socket.on('price', setPrice);",
+        "}, [symbol]);",
+      ],
+      markedLine: 2,
+      verdict:
+        "Every change of symbol adds another listener and removes none. After a few switches one message updates state several times, and the component keeps listening long after it unmounts.",
+      fix: ["  return () => socket.off('price', setPrice);"],
     },
   ],
   // /lab exists as a route but stays out of the nav until it holds one
@@ -217,7 +305,7 @@ export const portfolioConfig = {
       layer: "Frontend",
       items: ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "Vite", "HTML", "CSS"],
     },
-    { layer: "Backend", items: ["Node.js"] },
+    { layer: "Backend", items: ["Node.js", "Python", "Django"] },
     { layer: "Data", items: [] },
     { layer: "Infrastructure", items: ["Git", "GitHub", "Vercel", "pnpm", "Linux"] },
   ] as { layer: string; items: string[] }[],
@@ -250,82 +338,6 @@ export const portfolioConfig = {
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ] as const,
-  skills: [
-    {
-      label: "Core Skills",
-      items: ["React", "Node.js", "JavaScript", "Angular", "HTML", "CSS"]
-    },
-    {
-      label: "Frontend",
-      items: ["TypeScript", "Vite", "Tailwind CSS", "Responsive design", "Component architecture", "Form validation"]
-    },
-    {
-      label: "AI training",
-      items: ["Code evaluation", "Prompt-response review", "Rubric-based grading", "Instruction-following assessment", "Hallucination detection", "Edge-case testing", "Concise feedback"]
-    },
-    {
-      label: "Tools",
-      items: ["Git", "GitHub", "Chrome DevTools", "Vercel", "pnpm", "Linux/Ubuntu", "REST API fundamentals"]
-    }
-  ],
-  resume: {
-    summary:
-      "I build frontend interfaces in React and TypeScript, and I get paid to read code a model wrote and say what's wrong with it. I trained as a pharmacist first, which is where I picked up the habit of checking things twice before they reach someone else.",
-    highlights: [
-      "I build React and TypeScript interfaces: components that get reused, forms validated with Zod, layouts that hold on a phone.",
-      "I review model-written code and answers for correctness, missing requirements, edge cases and clarity, then write the feedback that explains the fix.",
-      "I work in Git, GitHub, Vercel, pnpm and Linux every day, and I debug in the browser rather than guessing.",
-    ],
-    experience: [
-      {
-        role: "Frontend developer and AI code evaluator",
-        company: "Independent, remote",
-        period: "2025 - Present",
-        present: true,
-        tech: ["React", "Vite", "TypeScript", "JavaScript", "Tailwind CSS", "Git", "GitHub", "Vercel", "pnpm", "Linux"],
-        bullets: [
-          "Build React and Vite interfaces with reusable components, hooks and Tailwind CSS.",
-          "Debug form validation, conditional rendering, routing, async data and responsive layout problems in JavaScript and TypeScript.",
-          "Read model-written code and answers, and judge them for correctness, instruction-following, edge cases and what the user actually asked for.",
-          "Write feedback that names the bug, explains why it bites and shows the version that works.",
-        ],
-      },
-      {
-        role: "Software engineering intern",
-        company: "AltSchool Africa",
-        period: "2024 - 2025",
-        present: false,
-        tech: ["JavaScript", "React", "Node.js", "HTML", "CSS", "Git", "GitHub"],
-        bullets: [
-          "Worked through engineering tasks in JavaScript, React, Node.js, HTML and CSS.",
-          "Built and reviewed interfaces with attention to responsive layout, reusable components and accessibility.",
-          "Practised debugging, code review and technical writing, which is the same work the evaluation job pays for now.",
-        ],
-      },
-    ],
-    education: [
-      {
-        title: "B.Pharm, Pharmacy",
-        institution: "University of Nigeria, Nsukka",
-        period: "2017 - 2025",
-        details: [
-          "Pharmacology, pharmaceutics and clinical practice. I wrote my first code in 2020, partway through the degree.",
-        ],
-      },
-      {
-        title: "Diploma in software engineering",
-        institution: "AltSchool Africa",
-        period: "2024 - 2025",
-        details: [
-          "JavaScript, React, Node.js, Angular, HTML, CSS, TypeScript, Git and GitHub, with debugging and technical writing throughout.",
-        ],
-      },
-    ],
-    credentials: [
-      { label: "Provisional pharmacist licence", year: "2025" },
-      { label: "Full pharmacist licence", year: "2026" },
-    ],
-  },
   socials: [
     { 
       name: "GitHub",
