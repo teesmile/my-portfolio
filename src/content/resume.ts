@@ -299,13 +299,12 @@ export const resumeContent = {
   ],
 
   /* One line, and it is the point of the AI version: a second language is
-     evaluation work there, not a personal detail. On a fintech or operations
-     desk it is the line that earns its space least, and the general version
-     is one line over a page — so that is the line that goes. Add
-     `general: 0` here to put it back. */
+     evaluation work there, not a personal detail. Every version carries it.
+     The general version once dropped it to stay on one page; under the
+     two-page Resume rule that reason no longer exists. */
   languages: {
     text: 'English (fluent), Igbo (native)',
-    place: { default: 0, ai: 0 },
+    place: { default: 0, ai: 0, general: 0 },
   } as Line,
 
   skills: [
