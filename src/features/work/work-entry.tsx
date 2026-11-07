@@ -62,6 +62,9 @@ export default function WorkEntry({
               alt={project.title}
               fill
               sizes="(min-width: 1024px) 50vw, 100vw"
+              /* The first frame is the page's largest paint on a phone, so
+                 it is fetched eagerly with high priority; the rest stay lazy. */
+              priority={index === 0}
               className="object-cover object-top"
             />
           ) : (

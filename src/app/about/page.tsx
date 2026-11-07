@@ -12,7 +12,7 @@ import TechGlitch from "@/components/ui/tech-glitch";
 export const metadata: Metadata = pageMetadata({
   title: "About",
   description:
-    "Pharmacist turned frontend developer, now paid to find what AI-written code gets wrong.",
+    "Registered pharmacist and full-stack developer who evaluates AI models, from model-written code to clinical and scientific answers.",
   path: "/about",
 });
 
@@ -68,9 +68,26 @@ export default function AboutPage() {
                   <p className="text-2xs text-muted tabular-nums">{role.period}</p>
                   <h3 className="mt-2 font-display text-base text-ink">{role.title}</h3>
                   <p className="mt-1 text-sm text-muted">{role.company}</p>
-                  <div className="mt-3">
-                    <TechList items={role.tech} />
-                  </div>
+                  {role.note ? (
+                    <p className="mt-1 text-2xs text-muted">{role.note}</p>
+                  ) : null}
+                  {/* The bullets are the resume's own, in the master's order,
+                      so this page and the PDF cannot describe the job two
+                      different ways. */}
+                  {role.bullets.length ? (
+                    <ul className="mt-3 flex flex-col gap-2 text-sm text-muted">
+                      {role.bullets.map((bullet) => (
+                        <li key={bullet} className="border-l border-line pl-3">
+                          {bullet}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  {role.tech.length ? (
+                    <div className="mt-3">
+                      <TechList items={role.tech} />
+                    </div>
+                  ) : null}
                 </article>
               ))}
             </div>
