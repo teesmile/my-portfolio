@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { DURATION, EASE } from '@/lib/motion';
 
 /**
  * The one orchestrated moment on every navigation.
@@ -26,11 +27,24 @@ export default function RouteTransition({ children }: { children: React.ReactNod
       const mm = gsap.matchMedia();
 
       mm.add('(prefers-reduced-motion: no-preference)', () => {
+        /* The whole view is being translated, and that view is mostly text.
+           A 2D transform at fractional pixels re-rasterises every glyph on
+           every frame — measured as a shake on the hero headline when
+           navigating back to /. The z nudge forces a 3D context so the
+           compositor moves one finished layer instead, and will-change lets
+           the browser prepare it rather than discovering it mid-tween. Both
+           are dropped once the view has landed, because a permanent layer
+           costs memory for nothing. */
+        gsap.set(scope.current, { z: 0.01, willChange: 'transform' });
+
         gsap.from(scope.current, {
           opacity: 0,
-          y: 10,
-          duration: 0.34,
-          ease: 'power2.out',
+          y: 12,
+          duration: DURATION.base,
+          ease: EASE.out,
+          onComplete: () => {
+            gsap.set(scope.current, { willChange: 'auto', clearProps: 'z' });
+          },
         });
       });
 

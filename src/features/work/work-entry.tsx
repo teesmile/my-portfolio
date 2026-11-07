@@ -44,7 +44,7 @@ export default function WorkEntry({
   };
 
   return (
-    <article className="grid gap-8 border-t border-line pt-10 lg:grid-cols-12 lg:gap-12">
+    <article data-reveal className="grid gap-8 border-t border-line pt-10 lg:grid-cols-12 lg:gap-12">
       <Link
         href={`/work/${project.slug}`}
         onClick={handoff}

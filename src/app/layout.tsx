@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { Syne, Source_Serif_4 } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Syne, Source_Serif_4, Martian_Mono } from "next/font/google";
 import "./globals.css";
 
 import Navbar from "@/components/layout/navbar";
@@ -9,6 +9,12 @@ import { portfolioConfig } from "@/config/site";
 
 const display = Syne({
   variable: "--font-syne",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const mono = Martian_Mono({
+  variable: "--font-martian",
   subsets: ["latin"],
   display: "swap",
 });
@@ -24,6 +30,12 @@ const text = Source_Serif_4({
 /* Runs before first paint so a light-mode reader never sees the dark default
    flash past. Dark needs no class, so this only ever adds one. */
 const themeScript = `try{var t=localStorage.getItem("theme");if(t==="light"||(!t&&window.matchMedia("(prefers-color-scheme: light)").matches)){document.documentElement.classList.add("light")}}catch(e){}`;
+
+/* viewport-fit: cover is what makes env(safe-area-inset-*) report anything
+   other than zero on a notched phone. */
+export const viewport: Viewport = {
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://anthonyugwuja.dev"),
@@ -56,12 +68,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${display.variable} ${text.variable}`}>
+    <html lang="en" className={`${display.variable} ${text.variable} ${mono.variable}`}>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <SmoothScroll>
           <Navbar />
-          <main className="flex flex-1 flex-col pt-16">{children}</main>
+          <main className="flex flex-1 flex-col pt-(--nav-height)">{children}</main>
           <Footer />
         </SmoothScroll>
       </body>

@@ -1,0 +1,19 @@
+#!/bin/sh
+# Regenerate the resume PDFs whenever their single source changes, and stage
+# them — so the committed PDF can never describe an older resume.ts.
+if git diff --cached --name-only | grep -q '^src/content/resume\.ts$'; then
+  # The PDFs are printed from the working tree, not from the index. If those
+  # two disagree, the commit would carry a document describing content it does
+  # not contain — so refuse rather than publish a contradiction.
+  if ! git diff --quiet -- src/content/resume.ts; then
+    echo "resume.ts is only partially staged."
+    echo "The PDFs are generated from the working tree, so they would not match this commit."
+    echo "Stage the rest of resume.ts (or stash it) and commit again."
+    exit 1
+  fi
+
+  echo "resume.ts changed — regenerating PDFs"
+  pnpm resume || exit 1
+  pnpm resume --variant ai || exit 1
+  git add public/Anthony-Ugwuja-Resume.pdf public/Anthony-Ugwuja-Resume-AI.pdf
+fi

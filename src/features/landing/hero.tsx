@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
 import DefectDeck from "./defect-deck";
-import Statement from "./statement";
+import HeroSequence from "./hero-sequence";
 
 export default function Hero() {
   return (
@@ -10,9 +10,10 @@ export default function Hero() {
         {/* Full container width is not a style choice: at the hero size the
             statement only fits three lines at 1280 across the whole container,
             which /lab/type measures rather than guesses. */}
-        <Statement
-          text={portfolioConfig.statement}
-          className="text-statement-sm text-ink lg:text-statement"
+        <HeroSequence
+          headline={portfolioConfig.headline}
+          monoLine={portfolioConfig.monoLine}
+          flag={portfolioConfig.monoFlag}
         />
 
         <div className="mt-14 grid gap-12 lg:grid-cols-12 lg:gap-16">
@@ -37,7 +38,7 @@ export default function Hero() {
             </p>
           </div>
 
-          <div className="lg:col-span-7 lg:col-start-6">
+          <div data-hero-deck className="lg:col-span-7 lg:col-start-6">
             <DefectDeck />
           </div>
         </div>

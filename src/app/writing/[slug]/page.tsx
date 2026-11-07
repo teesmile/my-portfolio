@@ -49,7 +49,7 @@ export default async function WritingEntryPage({ params }: Params) {
         </Link>
 
         <header className="mt-8 border-b border-line pb-8">
-          <h1 className="mt-3 max-w-[22ch] text-xl text-ink md:text-2xl">
+          <h1 data-reveal className="mt-3 max-w-[22ch] text-xl text-ink md:text-2xl">
             {entry.title}
           </h1>
           <p className="mt-5 max-w-(--container-reading) text-base text-muted">

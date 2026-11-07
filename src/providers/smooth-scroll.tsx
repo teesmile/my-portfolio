@@ -38,6 +38,9 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       return;
     }
 
+    /* Not an animation duration: this is how long Lenis takes to catch up
+       to the real scroll position, so it belongs to the scroller, not to the
+       timing scale. */
     const lenis = new Lenis({ duration: 0.9, smoothWheel: true });
     instance = lenis;
 
