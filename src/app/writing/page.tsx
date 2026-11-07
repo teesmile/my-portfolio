@@ -8,7 +8,7 @@ import Reveals from "@/components/layout/reveals";
 export const metadata: Metadata = pageMetadata({
   title: "Writing",
   description:
-    "Short write-ups on decisions I made building things.",
+    "Short write-ups by a full-stack developer and AI evaluator on decisions made building things, and what each one cost.",
   path: "/writing",
 });
 
