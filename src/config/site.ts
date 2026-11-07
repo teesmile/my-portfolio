@@ -32,16 +32,15 @@ const projects: Project[] = [
     preview: "/work/todo-app.webp",
     title: "React Todo / Productivity App",
     description:
-      "A todo app I built to learn TanStack Router and Form properly. Typed routes, inputs validated with Zod, and pagination that keeps its place when you come back to it.",
+      "A Next.js todo app with TanStack Query hooks over an IndexedDB store, and editing in place from the list. It's being rebuilt as an offline-first task app with optional sync.",
     role: "Frontend implementation",
     year: "2025",
-    tech: ["React", "TypeScript", "TanStack Router", "TanStack Form", "Zod", "Tailwind CSS"],
+    tech: ["Next.js", "React", "TypeScript", "TanStack Query", "IndexedDB", "Tailwind CSS"],
     link: "https://todo-app-tsc-mauve.vercel.app/",
     repo: "https://github.com/teesmile/todo-app-tsc", 
     highlights: [
-      "Home, TodoItem and Pagination split so each one does a single job",
-      "Form validation with Zod, so bad input fails before it reaches state",
-      "Layout built mobile first, with Tailwind doing the spacing",
+      "TanStack Query hooks wrap an IndexedDB store, and each mutation invalidates the list it changed",
+      "Edit in place from the list: Enter saves, Escape cancels",
     ]
   },
   {
