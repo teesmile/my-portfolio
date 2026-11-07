@@ -15,6 +15,13 @@ Study: <one concept, with a link or a search term>
 
 ---
 
+## 2026-11-07 — Every resume version runs newest first (resume-order)
+Decided by: Anthony — experience is reverse chronological in all three versions, not only the master.
+Verdict: AGREE, and it reverses the 2026-11-06 call that let the targeted versions lead with the role their reader is hiring for.
+Because: a recruiter reads the dates down the left edge before any bullet. The old AI and general orders put Nov 2025 above Aug 2026, and the general one put the Aug 2026 post below Jul 2022 admin work. A jump back in time reads as something being covered up, and a parser that infers "current role" from the first entry got the wrong one. Each targeted version still makes its case, but through the title line and the summary, which is where that targeting belongs.
+Changed: `place` ranks in `resume.ts` now match the master's order in all three versions. The todo app moved to the last project and its line describes only the live deploy; it moves back up when the offline-first revamp merges. All six PDFs are one page and pass both extractors.
+Study: how ATS parsers derive "current title" and "years of experience" from entry order and date ranges — search "resume parsing most recent position heuristic".
+
 ## 2026-11-06 — Codex review 5: three ways the resume pipeline could publish a lie (402fb1b)
 Codex challenged: the pre-commit hook generates PDFs from the working tree while committing only the index, so a partially staged `resume.ts` ships a document describing content the commit does not contain; the build-freshness check looks at `resume.ts` alone, so a change to the page component or the print stylesheet prints with the old presentation while a text-only ATS check still passes; and `/resume?variant=ai` renders the AI ordering but its download button always points at the default PDF.
 Verdict: AGREE on all three, each confirmed by reading the code and each proven fixed

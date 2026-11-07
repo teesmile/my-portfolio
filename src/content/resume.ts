@@ -95,7 +95,7 @@ export const resumeContent = {
        merge says both things once and buys back the lines that kept
        Education off page one. */
     default: [
-      'Full-stack developer (React, Next.js, TypeScript, Node.js) and registered pharmacist, building accessible product interfaces and grading AI model output, catching confident but wrong clinical answers.',
+      'Full-stack developer (React, Next.js, TypeScript, Node.js) and registered pharmacist who builds accessible product interfaces and evaluates AI model output, catching confident but wrong clinical answers.',
     ],
     ai: [
       'Registered pharmacist who evaluates AI models and catches confident but incorrect answers in clinical and scientific content.',
@@ -113,7 +113,7 @@ export const resumeContent = {
       company: 'Self-employed, remote · Outlier, Mercor, micro1 and similar platforms',
       period: 'Nov 2025 – Present',
       tech: ['LLM evaluation', 'multimodal annotation', 'rubric-based grading', 'side-by-side model comparison'],
-      place: { default: 1, ai: 0, general: 0 },
+      place: { default: 1, ai: 1, general: 1 },
       /* Why no client names anywhere in this entry. One line, in every
          version, because its absence is more conspicuous than its presence. */
       note: { text: 'Client and project details under NDA.', place: { default: 0, ai: 0, general: 0 } },
@@ -166,10 +166,12 @@ export const resumeContent = {
       company: 'Nasarawa State University clinic, Keffi',
       period: 'Aug 2026 – Present',
       tech: [],
-      /* The master runs strict reverse chronological order, so the current
-         clinical post opens the section. The two targeted versions lead with
-         the role their reader is hiring for instead. */
-      place: { default: 0, ai: 1, general: 3 },
+      /* Every version runs strict reverse chronological order, so the
+         current clinical post opens the section in all three. The targeted
+         versions say what their reader is hiring for in the title and the
+         summary, not by reshuffling dates: a recruiter scanning the left
+         edge reads a jump back in time as something being hidden. */
+      place: { default: 0, ai: 0, general: 0 },
       bullets: [
         {
           text: 'Dispense medications and counsel students and staff on safe use.',
@@ -182,7 +184,7 @@ export const resumeContent = {
       company: 'Federal Medical Centre, Keffi',
       period: 'May 2025 – May 2026',
       tech: [],
-      place: { default: 2, ai: 2, general: 4 },
+      place: { default: 2, ai: 2, general: 2 },
       bullets: [
         {
           text: 'Rotations across A&E, GOPD, inpatient, theatre, O&G and the ART (HIV) clinic; joined the TB unit on my own initiative.',
@@ -197,7 +199,7 @@ export const resumeContent = {
       company: 'Sky Pharmacy, Wuse, Abuja',
       period: 'Jul 2024 – Mar 2025',
       tech: [],
-      place: { general: 1 },
+      place: { general: 3 },
       bullets: [
         { text: 'Assisted the resident pharmacist and covered the role in their absence.', place: { general: 0 } },
         { text: 'Front-line customer service across 45-hour weeks.', place: { general: 1 } },
@@ -208,7 +210,7 @@ export const resumeContent = {
       company: 'New System Pharmacy, Nsukka',
       period: 'Jul 2022 – Sep 2022',
       tech: [],
-      place: { general: 2 },
+      place: { general: 4 },
       bullets: [
         { text: 'Grew sales revenue 15% in two months against a 5% target.', place: { general: 0 } },
         { text: 'Handled wholesale distribution.', place: { general: 1 } },
@@ -218,28 +220,31 @@ export const resumeContent = {
   ] as Role[],
 
   /* The master is the developer document, so it carries the work itself.
-     Neither one-page version can afford three projects at three lines each. */
+     Neither one-page version can afford three projects at three lines each.
+     The todo app sits last until its offline-first revamp merges: the line
+     describes only what the live deploy does, and the two finished projects
+     are the stronger first read until then. */
   projects: [
     {
       name: 'React Todo / Productivity App',
-      line: 'Next.js todo app with TanStack Query over IndexedDB and edit-in-place; being rebuilt offline-first.',
+      line: 'Next.js todo app with TanStack Query hooks over an IndexedDB store, and editing in place from the list.',
       url: 'https://todo-app-tsc-mauve.vercel.app/',
       repo: 'https://github.com/teesmile/todo-app-tsc',
-      place: { default: 0 } as Placement,
+      place: { default: 2 } as Placement,
     },
     {
       name: 'E-Commerce Product Page',
       line: 'Product page with a gallery, cart state and one responsive layout built from a design file.',
       url: 'https://e-commerce-product-page-one-ashy.vercel.app/',
       repo: 'https://github.com/teesmile/e-commerce-product-page',
-      place: { default: 1 } as Placement,
+      place: { default: 0 } as Placement,
     },
     {
       name: 'Space Tourism Website',
       line: 'Four content types sharing one navigation shell, spacing system and page transitions.',
       url: 'https://space-tourism-toni.vercel.app/',
       repo: 'https://github.com/teesmile/space-tourism',
-      place: { default: 2 } as Placement,
+      place: { default: 1 } as Placement,
     },
   ],
 
