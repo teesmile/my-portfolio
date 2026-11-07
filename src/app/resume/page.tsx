@@ -1,159 +1,223 @@
+import { Fragment } from "react";
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
-import { portfolioConfig } from "@/config/site";
+import { resumeFor, type Variant } from "@/content/resume";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Resume",
-  description: `${portfolioConfig.name} — frontend development and AI code evaluation.`,
-};
+  description:
+    "Frontend development and AI evaluation.",
+  path: "/resume",
+});
 
 /* The one place a rule carries the accent. CLAUDE.md states the exception:
-   the resume is read as a document rather than navigated, and the rules are
-   what separate its parts. */
-function SectionRule() {
-  return <div className="mb-3 h-0.5 w-10 bg-accent-strong" aria-hidden="true" />;
+   the resume is read as a document rather than navigated. */
+function SectionHeading({ label }: { label: string }) {
+  return (
+    <div className="mt-10 first:mt-0">
+      <div className="mb-2 h-0.5 w-10 bg-accent-strong" aria-hidden="true" />
+      <h2 className="text-2xs tracking-wide text-muted">{label}</h2>
+    </div>
+  );
 }
 
-export default function ResumePage() {
-  const { resume, skills, projects } = portfolioConfig;
+/**
+ * One column, in a fixed order: summary, skills, experience, projects,
+ * education, credentials, languages. A version that carries no projects
+ * drops that section rather than printing an empty heading.
+ *
+ * Single column is not a style choice. A two-column document interleaves in
+ * the text stream when it is extracted, which is how "todo-app…vercel.app/"
+ * ended up fused to the next project's name. A parser reads this top to
+ * bottom in the order a person would.
+ */
+export default async function ResumePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ variant?: string; private?: string }>;
+}) {
+  const params = await searchParams;
+  const variant: Variant =
+    params.variant === "ai" || params.variant === "general" ? params.variant : "default";
+
+  /* `?private=1` is a request, not an authorisation.
+     The phone number is only ever rendered when the *server* was started with
+     RESUME_ALLOW_PRIVATE=1, which only `pnpm resume --private` does, on a
+     localhost server it spawns and kills itself. A deployed instance never
+     has the variable set, so the parameter does nothing there — which is the
+     whole point: a URL anyone can type must not be able to reveal a number
+     that is deliberately kept off the site. */
+  const privateAllowed = process.env.RESUME_ALLOW_PRIVATE === "1";
+  const resume = resumeFor(variant, privateAllowed && params.private === "1");
 
   return (
     <section className="px-6 py-20 md:py-24">
-      <div className="mx-auto max-w-(--container-view)">
-        <header className="border-b border-line pb-10">
-          <h1 className="text-xl text-ink md:text-2xl">{portfolioConfig.name}</h1>
-          <p className="mt-3 text-sm text-muted">{portfolioConfig.title}</p>
-          <p className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-2xs text-muted">
-            <span>{portfolioConfig.email}</span>
-            <span>{portfolioConfig.phone}</span>
-            <span>{portfolioConfig.location}</span>
-            <span>{portfolioConfig.availability}</span>
+      <div className="mx-auto max-w-(--container-reading)">
+        <header className="border-b border-line pb-6">
+          <h1 className="text-xl text-ink md:text-2xl">{resume.name}</h1>
+          <p className="mt-2 text-sm text-muted">{resume.title}</p>
+
+          {/* Written out as text with visible separators so a parser reads it,
+              and linked so a person can click it. */}
+          {/* Every item holds together and the line breaks only at the
+              separators. Breaking inside an item is what produced
+              "github.co" + "m/teesmile" in extraction, and splitting "Abuja,"
+              from "Nigeria" reads badly; each item here is short enough to
+              fit a 390px screen whole, so there is nothing to gain from
+              letting one break. */}
+          <p className="mt-4 text-2xs leading-7 text-muted">
+            {resume.contact.map((item, index) => (
+              <Fragment key={item.text}>
+                {index > 0 ? " | " : null}
+                <span className="whitespace-nowrap">
+                  {item.href ? <a href={item.href}>{item.text}</a> : item.text}
+                </span>
+              </Fragment>
+            ))}
           </p>
+
+          <a
+            data-no-print
+            href={resume.pdfHref}
+            download
+            className="mt-5 inline-block border border-line px-4 py-2 text-2xs text-ink transition-colors hover:border-ink"
+          >
+            Download PDF
+          </a>
         </header>
 
-        <div className="mt-16 grid gap-16 lg:grid-cols-12 lg:gap-20">
-          <div className="lg:col-span-7">
-            <p className="max-w-(--container-reading) text-base text-ink">
-              {resume.summary}
+        <div className="mt-8">
+          {resume.summary.map((line) => (
+            <p key={line} className="mb-2 text-sm text-ink">
+              {line}
             </p>
-            <ul className="mt-6 flex max-w-(--container-reading) flex-col gap-3 text-sm text-muted">
-              {resume.highlights.map((highlight) => (
-                <li key={highlight} className="border-l border-line pl-4">
-                  {highlight}
-                </li>
-              ))}
-            </ul>
+          ))}
 
-            {/* Hierarchy: role in display type, company and dates quieter and
-                smaller, bullets smaller again. The accent appears once, as the
-                present marker, and never on a rule. */}
-            <div className="mt-20">
-              <SectionRule />
-              <h2 className="text-2xs text-muted">Experience</h2>
-            </div>
-            <div className="mt-6 flex flex-col gap-12">
-              {resume.experience.map((item) => (
-                <article key={`${item.role}-${item.period}`}>
-                  <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-                    <h3 className="font-display text-lg text-ink">{item.role}</h3>
-                    <p className="flex items-center gap-2 text-2xs text-muted tabular-nums">
-                      {item.present ? (
-                        <span
-                          className="inline-block h-1.5 w-1.5 rounded-full bg-accent-strong"
-                          aria-hidden="true"
-                        />
-                      ) : null}
-                      {item.period}
-                    </p>
-                  </div>
-                  <p className="mt-1.5 text-sm text-muted">{item.company}</p>
-                  <ul className="mt-5 flex flex-col gap-2.5 text-sm text-muted">
-                    {item.bullets.map((bullet) => (
-                      <li key={bullet} className="border-l border-line pl-4">
-                        {bullet}
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              ))}
-            </div>
-
-            <div className="mt-20">
-              <SectionRule />
-              <h2 className="text-2xs text-muted">Selected projects</h2>
-            </div>
-            <div className="mt-6 flex flex-col gap-6">
-              {projects.map((project) => (
-                <article key={project.slug}>
-                  <h3 className="font-display text-base text-ink">
-                    <Link
-                      href={`/work/${project.slug}`}
-                      className="transition-colors hover:text-accent"
-                    >
-                      {project.title}
-                    </Link>
-                  </h3>
-                  <p className="mt-1 text-2xs text-muted">{project.tech.join(", ")}</p>
-                </article>
-              ))}
-            </div>
+          <SectionHeading label={resume.sections.skills} />
+          <div className="mt-3 flex flex-col gap-2">
+            {resume.skills.map((group) => (
+              <p key={group.label} className="text-2xs leading-6">
+                <span className="text-ink">{group.label}: </span>
+                <span className="text-muted">
+                  {group.items.map((item, index) => (
+                    <span key={item}>
+                      {index > 0 ? ", " : ""}
+                      <span className="whitespace-nowrap">{item}</span>
+                    </span>
+                  ))}
+                </span>
+              </p>
+            ))}
           </div>
 
-          <aside className="lg:col-span-4 lg:col-start-9">
-            <div className="">
-              <SectionRule />
-              <h2 className="text-2xs text-muted">Education</h2>
-            </div>
-            <div className="mt-5 flex flex-col gap-8">
-              {resume.education.map((item) => (
-                <div key={item.title}>
-                  <h3 className="font-display text-base text-ink">{item.title}</h3>
-                  <p className="mt-1 text-2xs text-muted tabular-nums">
-                    {item.institution} &middot; {item.period}
-                  </p>
-                  {item.details.map((detail) => (
-                    <p key={detail} className="mt-3 text-sm text-muted">
-                      {detail}
-                    </p>
+          <SectionHeading label={resume.sections.experience} />
+          <div className="mt-3 flex flex-col gap-6">
+            {resume.experience.map((role) => (
+              <article key={`${role.title}-${role.period}`}>
+                <h3 className="font-display text-base text-ink">{role.title}</h3>
+                <p className="mt-0.5 text-2xs text-muted">
+                  {role.company} &middot; {role.period}
+                </p>
+                {role.note ? (
+                  <p className="mt-0.5 text-2xs text-muted">{role.note}</p>
+                ) : null}
+                <ul className="mt-2 flex flex-col gap-1.5 text-2xs leading-6 text-muted">
+                  {role.bullets.map((bullet) => (
+                    <li key={bullet} className="border-l border-line pl-3">
+                      {bullet}
+                    </li>
                   ))}
-                </div>
-              ))}
-            </div>
+                </ul>
+              </article>
+            ))}
+          </div>
 
-            <div className="mt-14">
-              <SectionRule />
-              <h2 className="text-2xs text-muted">Licensure</h2>
-            </div>
-            <dl className="mt-5 flex flex-col gap-3">
-              {resume.credentials.map((credential) => (
-                <div key={credential.label} className="flex justify-between gap-4 text-sm">
-                  <dt className="text-ink">{credential.label}</dt>
-                  <dd className="text-2xs text-muted tabular-nums">{credential.year}</dd>
-                </div>
-              ))}
-            </dl>
+          {resume.projects.length ? (
+            <>
+              <SectionHeading label={resume.sections.projects} />
+              <div className="mt-3 flex flex-col gap-4">
+            {resume.projects.map((project) => (
+              <article key={project.name}>
+                <h3 className="font-display text-sm text-ink">{project.name}</h3>
+                <p className="mt-0.5 text-2xs leading-6 text-muted">{project.line}</p>
+                {/* Both links on one line, each unbreakable in itself: a URL
+                    that wraps mid-token extracts as two words, but the line
+                    may break at the separator between them. Three projects
+                    at two link lines each is three lines of paper. */}
+                <p className="mt-0.5 text-2xs text-muted">
+                  {/* Scheme off, trailing slash off: the address a person
+                      would type, and one character less to wrap. The href
+                      keeps the URL exactly as the project config has it. */}
+                  <a className="whitespace-nowrap" href={project.url}>
+                    Live: {project.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                  </a>
+                  {" | "}
+                  <a className="whitespace-nowrap" href={project.repo}>
+                    Code: {project.repo.replace(/^https?:\/\//, "")}
+                  </a>
+                </p>
+              </article>
+            ))}
+              </div>
+            </>
+          ) : null}
 
-            <div className="mt-14">
-              <SectionRule />
-              <h2 className="text-2xs text-muted">Skills</h2>
-            </div>
-            <dl className="mt-5 flex flex-col gap-4">
-              {skills.map((group) => (
-                <div key={group.label}>
-                  <dt className="text-sm text-ink">{group.label}</dt>
-                  <dd className="mt-1 text-2xs text-muted">{group.items.join(", ")}</dd>
-                </div>
-              ))}
-            </dl>
+          <SectionHeading label={resume.sections.education} />
+          <div className="mt-3 flex flex-col gap-3">
+            {resume.education.map((item) => (
+              <article key={item.title}>
+                {/* Qualification, institution and dates are one fact each and
+                    read as one line. Experience entries earn the stacked
+                    treatment because they carry bullets underneath. */}
+                <p className="text-2xs leading-6">
+                  <span className="font-display text-sm text-ink">{item.title}</span>
+                  <span className="text-muted">
+                    {" "}&mdash; {item.institution} &middot; {item.period}
+                  </span>
+                </p>
+                {item.note ? (
+                  <p className="text-2xs leading-6 text-muted">{item.note}</p>
+                ) : null}
+              </article>
+            ))}
+          </div>
 
-            <Link
-              href="/contact"
-              className="mt-14 inline-block text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
-            >
-              Get in touch
-            </Link>
-          </aside>
+          {/* Credentials and languages are four facts between them; they get
+              one line each, label included, so the document ends on the page
+              it started on. */}
+          <div className="mt-6">
+            <div className="mb-2 h-0.5 w-10 bg-accent-strong" aria-hidden="true" />
+          </div>
+          <p className="text-2xs leading-6 text-muted">
+            <span className="text-muted">{resume.sections.credentials}: </span>
+            {resume.credentials.map((credential, index) => (
+              <Fragment key={credential.label}>
+                {/* A literal separator, not a margin. `mx-2` puts visible
+                    space on paper that is not in the text, so the page reads
+                    "Nigeria|AI" and the PDF reads "Nigeria | AI" and the two
+                    stop matching. */}
+                {index > 0 ? " | " : null}
+                <span className="text-ink">{credential.label}</span>, {credential.issuer}
+                {credential.date ? <> &middot; {credential.date}</> : null}
+              </Fragment>
+            ))}
+          </p>
+          {resume.languages ? (
+            <p className="text-2xs leading-6 text-muted">
+              <span className="text-muted">{resume.sections.languages}: </span>
+              <span className="text-ink">{resume.languages}</span>
+            </p>
+          ) : null}
         </div>
+
+        <Link
+          data-no-print
+          href="/contact"
+          className="mt-12 inline-block text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
+        >
+          Get in touch
+        </Link>
       </div>
     </section>
   );

@@ -50,11 +50,9 @@ function measureAll(): Result[] {
       maxLines,
       computedLeading: Number(computedLeading.toFixed(3)),
       overflows,
-      passes:
-        lines <= maxLines &&
-        !overflows &&
-        computedLeading >= 0.95 &&
-        computedLeading <= 1.05,
+      /* Leading is now per-candidate (a display face and a monospace line
+         want different values), so the rule here is lines and breaks only. */
+      passes: lines <= maxLines && !overflows,
     });
   });
 

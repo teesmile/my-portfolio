@@ -1,19 +1,25 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
 import WorkEntry from "@/features/work/work-entry";
+import TechGlitch from "@/components/ui/tech-glitch";
+import Reveals from "@/components/layout/reveals";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Work",
   description:
     "Interfaces built with React, TypeScript and Tailwind, with the decisions behind them.",
-};
+  path: "/work",
+});
 
 export default function WorkPage() {
   return (
     <section className="px-6 py-20 md:py-24">
+      <Reveals />
+      <TechGlitch />
       <div className="mx-auto max-w-(--container-view)">
-        <h1 className="max-w-[18ch] text-xl text-ink md:text-2xl">
+        <h1 data-reveal className="max-w-[18ch] text-xl text-ink md:text-2xl">
           {portfolioConfig.copy.workHeading}
         </h1>
         <div className="mt-16 flex flex-col gap-20">
@@ -23,6 +29,7 @@ export default function WorkPage() {
         </div>
 
         <Link
+          data-reveal
           href="/work/archive"
           className="mt-20 inline-block border-t border-line pt-6 text-sm text-muted transition-colors hover:text-ink"
         >
