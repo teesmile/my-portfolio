@@ -222,7 +222,7 @@ export const resumeContent = {
   projects: [
     {
       name: 'React Todo / Productivity App',
-      line: 'Task manager with typed routes, Zod-validated forms and pagination that keeps its place.',
+      line: 'Next.js todo app with TanStack Query over IndexedDB and edit-in-place; being rebuilt offline-first.',
       url: 'https://todo-app-tsc-mauve.vercel.app/',
       repo: 'https://github.com/teesmile/todo-app-tsc',
       place: { default: 0 } as Placement,
