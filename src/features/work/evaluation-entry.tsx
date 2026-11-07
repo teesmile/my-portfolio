@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
 
 /**
  * The evaluation work on /work.
  *
+ * First on the page, ahead of every project (the Projects rule in CLAUDE.md).
  * Same rule and rhythm as a project entry, different anatomy: where a project
  * has a screenshot, this has the sample task, because the real work cannot be
  * shown. The copy says "the sample below", so the sample sits under the
@@ -27,14 +29,22 @@ export default function EvaluationEntry() {
           <h3 className="text-2xs text-muted">The sample</h3>
           <p className="mt-2 font-display text-base text-ink">{evaluation.sample.title}</p>
           <p className="mt-2 text-sm text-muted">{evaluation.sample.summary}</p>
-          <a
-            href={evaluation.sample.repo}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-5 inline-block text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
-          >
-            Read the sample task
-          </a>
+          <div className="mt-5 flex flex-wrap items-baseline gap-x-6 gap-y-3">
+            <Link
+              href="/work/renal-dosing-task"
+              className="text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
+            >
+              See the traps and the evidence
+            </Link>
+            <a
+              href={evaluation.sample.repo}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-muted underline decoration-line underline-offset-[6px] transition-colors hover:text-ink"
+            >
+              Read the source
+            </a>
+          </div>
         </aside>
       </div>
     </article>

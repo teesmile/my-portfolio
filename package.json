@@ -10,6 +10,7 @@
     "capture": "node scripts/capture.mjs",
     "frames": "node scripts/measure-frames.mjs",
     "resume": "node scripts/resume-pdf.mjs",
+    "snapshot:renal": "uv run --no-project --with pytest==8.3.3 python scripts/snapshot-renal.py",
     "prepare": "git config core.hooksPath .githooks"
   },
   "dependencies": {

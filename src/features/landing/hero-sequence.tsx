@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { SplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
 import { DURATION, EASE, STAGGER, prefersReducedMotion } from '@/lib/motion';
+import { settle } from '@/lib/motion-lease';
 
 gsap.registerPlugin(SplitText, useGSAP);
 
@@ -53,6 +54,7 @@ export default function HeroSequence({
     () => {
       if (prefersReducedMotion()) {
         gsap.set(caretRef.current, { autoAlpha: 0 });
+        settle();
         return;
       }
 
@@ -98,6 +100,7 @@ export default function HeroSequence({
       };
 
       if (hasPlayed) {
+        settle();
         startBlink();
         return () => {
           blink?.kill();
@@ -138,6 +141,7 @@ export default function HeroSequence({
               split?.revert();
               monoSplit?.revert();
               startBlink();
+              settle();
             },
           })
           .from('nav', { yPercent: -100, duration: DURATION.base, ease: EASE.out, force3D: true }, 0)

@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 
 import Hero from "@/features/landing/hero";
+import SelectedWork from "@/features/landing/selected-work";
+import ToolsRow from "@/features/landing/tools-row";
+import Reveals from "@/components/layout/reveals";
 import { portfolioConfig } from "@/config/site";
 import { SITE_URL } from "@/config/site-url";
 
@@ -40,6 +43,9 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
       />
       <Hero />
+      <Reveals initial={0} />
+      <SelectedWork />
+      <ToolsRow />
     </>
   );
 }

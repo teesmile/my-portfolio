@@ -1,5 +1,6 @@
 import { TechList } from "@/components/ui/tech";
 import type { StackLayer as Layer } from "@/config/site";
+import Marquee from "@/components/ui/marquee";
 
 /**
  * The stack as drifting rows, one per layer.
@@ -69,25 +70,9 @@ export default function StackRows({ layers }: { layers: Layer[] }) {
         <div key={row.layer} className="flex min-w-0 items-center gap-4">
           <span className="w-28 shrink-0 text-2xs text-muted">{row.layer}</span>
 
-          <div className="marquee min-w-0 flex-1 overflow-x-clip">
-            <div
-              className="marquee-track"
-              style={
-                {
-                  "--marquee-duration": speeds[index % speeds.length],
-                  "--marquee-from": index % 2 === 0 ? "0%" : "-50%",
-                  "--marquee-to": index % 2 === 0 ? "-50%" : "0%",
-                } as React.CSSProperties
-              }
-            >
-              <List row={row} />
-              {/* The second copy exists only so the loop has something to run
-                  into; a screen reader should hear the list once. */}
-              <div aria-hidden="true">
-                <List row={row} />
-              </div>
-            </div>
-          </div>
+          <Marquee duration={speeds[index % speeds.length]} reverse={index % 2 === 1}>
+            <List row={row} />
+          </Marquee>
         </div>
       ))}
     </div>
