@@ -109,9 +109,11 @@ export const portfolioConfig = {
     { period: "2020", label: "First code, written during pharmacy school", track: "code" },
     { period: "May 2022 – Sep 2022", label: "Full stack developer trainee, Zuri Team", track: "code" },
     { period: "Feb 2024", label: "Provisional pharmacist licence", track: "pharmacy" },
-    { period: "Jan 2024 – Dec 2025", label: "Software engineering diploma, AltSchool Africa", track: "code" },
+    { period: "Oct 2024 – Oct 2025", label: "Diploma in Frontend Engineering, AltSchool Africa", track: "code" },
     { period: "May 2025 – May 2026", label: "Pharmacy intern, Federal Medical Centre, Keffi", track: "pharmacy" },
-    { period: "Nov 2025 – Present", label: "Frontend development and code evaluation", track: "code" },
+    { period: "Nov 2025 – Present", label: "AI training and evaluation, self-employed", track: "code" },
+    { period: "Jul 2026 – Present", label: "Cloud Computing, AltSchool Africa", track: "code" },
+    { period: "Aug 2026 – Present", label: "Pharmacist, NYSC, Nasarawa State University clinic", track: "pharmacy" },
     { period: "Oct 2026", label: "Full pharmacist licence", track: "pharmacy" },
   ] as { period: string | null; label: string; track: "pharmacy" | "code" }[],
   // The deck on /. Every example is written for this purpose, never taken from

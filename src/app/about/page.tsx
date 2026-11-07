@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import Image from "next/image";
 import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
-import { resumeContent } from "@/content/resume";
+import { siteExperience } from "@/content/resume";
 import { TechList } from "@/components/ui/tech";
 import StackRows from "@/features/about/stack-rows";
 import Reveals from "@/components/layout/reveals";
 import TechGlitch from "@/components/ui/tech-glitch";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About",
   description:
     "Pharmacist turned frontend developer, now paid to find what AI-written code gets wrong.",
-};
+  path: "/about",
+});
 
 export default function AboutPage() {
   const { copy, stack, timeline } = portfolioConfig;
@@ -61,7 +63,7 @@ export default function AboutPage() {
 
             <h2 className="mt-16 text-lg text-ink">Experience</h2>
             <div className="mt-6 flex max-w-(--container-reading) flex-col gap-8">
-              {resumeContent.experience.map((role) => (
+              {siteExperience.map((role) => (
                 <article key={`${role.title}-${role.period}`} data-reveal className="border-t border-line pt-5">
                   <p className="text-2xs text-muted tabular-nums">{role.period}</p>
                   <h3 className="mt-2 font-display text-base text-ink">{role.title}</h3>
