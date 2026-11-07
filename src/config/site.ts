@@ -86,7 +86,7 @@ export const portfolioConfig = {
   brandName: "Teesmile",
   title: "Frontend developer and AI code evaluator",
   phone: "+234 903 257 0130",
-  email: "anthonyugwuja.dev@gmail.com",
+  email: "anthonyugwujac@gmail.com",
   location: "Abuja, Nigeria",
   availability: "Remote, anywhere",
   takingWork: true,
