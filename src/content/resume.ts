@@ -95,7 +95,7 @@ export const resumeContent = {
        merge says both things once and buys back the lines that kept
        Education off page one. */
     default: [
-      'Full-stack developer (React, Next.js, TypeScript, Node.js) and registered pharmacist, building accessible, responsive product interfaces and grading AI model output for accuracy, instruction following and safety.',
+      'Full-stack developer (React, Next.js, TypeScript, Node.js) and registered pharmacist, building accessible product interfaces and grading AI model output, catching confident but wrong clinical answers.',
     ],
     ai: [
       'Registered pharmacist who evaluates AI models and catches confident but incorrect answers in clinical and scientific content.',
@@ -140,6 +140,10 @@ export const resumeContent = {
           text: 'Annotate audio-visual and multimodal data.',
           place: { default: 4, ai: 4, general: 3 },
         },
+        {
+          text: 'Consistently meet quality bars across concurrent projects, with tasks rated at the top of the reviewer scale.',
+          place: { default: 5, ai: 5, general: 4 },
+        },
       ],
     },
     {
@@ -166,7 +170,12 @@ export const resumeContent = {
          clinical post opens the section. The two targeted versions lead with
          the role their reader is hiring for instead. */
       place: { default: 0, ai: 1, general: 3 },
-      bullets: [],
+      bullets: [
+        {
+          text: 'Dispense medications and counsel students and staff on safe use.',
+          place: { default: 0, ai: 0, general: 0 },
+        },
+      ],
     },
     {
       title: 'Pharmacy Intern',

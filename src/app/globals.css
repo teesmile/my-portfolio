@@ -326,12 +326,12 @@
   article > p,
   aside p {
     display: block;
-    margin-bottom: 0.05rem;
+    margin-bottom: 0.03rem;
   }
 
   article,
   aside > div {
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.05rem;
   }
 
   /* One page is the target. Screen spacing is built for scrolling; paper is
@@ -369,7 +369,12 @@
   /* 8.3pt/1.30, the largest of the combinations measured against a real
      print that still fits the master on one page. Every value below was
      swept the same way rather than guessed: type size, leading, and the four
-     spacing knobs. */
+     spacing knobs.
+
+     When three more lines of content arrived, the spacing knobs were
+     tightened and the type was left alone — a reader notices the size of the
+     letters long before the gap between two blocks, so space between things
+     is the cheaper thing to spend. */
   p,
   li {
     font-size: 8.3pt !important;
@@ -377,7 +382,17 @@
   }
 
   .flex {
-    gap: 0.1rem !important;
+    gap: 0.05rem !important;
+  }
+
+  /* The exception, and the only gap worth paying for: the experience list.
+     Every other collapsed gap sits between things a reader already tells
+     apart — a skills line from a skills line, a project from its own heading.
+     Between two roles the thing above is a bullet list and the thing below is
+     a job title, and with no gap at all the eye reads the title as one more
+     bullet. Measured: this spends 12px of the 21px the page had spare. */
+  [class*='gap-6'] {
+    gap: 0.3rem !important;
   }
 
   [class*='mt-10'],
@@ -385,7 +400,7 @@
   [class*='mt-14'],
   [class*='mt-16'],
   [class*='mt-20'] {
-    margin-top: 0.24rem !important;
+    margin-top: 0.16rem !important;
   }
 
   [class*='mt-8'],
