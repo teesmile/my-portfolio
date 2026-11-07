@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
 import WorkEntry from "@/features/work/work-entry";
 import TechGlitch from "@/components/ui/tech-glitch";
 import Reveals from "@/components/layout/reveals";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Work",
   description:
     "Interfaces built with React, TypeScript and Tailwind, with the decisions behind them.",
-};
+  path: "/work",
+});
 
 export default function WorkPage() {
   return (

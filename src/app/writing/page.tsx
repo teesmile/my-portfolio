@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import { writing } from "@/config/writing";
 import { portfolioConfig } from "@/config/site";
 import TopicFilter from "@/features/writing/topic-filter";
 import Reveals from "@/components/layout/reveals";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Writing",
-  description: "Short write-ups on decisions I made building things.",
-};
+  description:
+    "Short write-ups on decisions I made building things.",
+  path: "/writing",
+});
 
 export default function WritingPage() {
   return (

@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { portfolioConfig } from "@/config/site";
 import { pageMetadata } from "@/lib/metadata";
 import { TechList } from "@/components/ui/tech";
-import CaseStudyHero from "@/features/work/case-study-hero";
+import StickyHero from "@/components/layout/sticky-hero";
+import Image from "next/image";
 import Reveals from "@/components/layout/reveals";
 import TechGlitch from "@/components/ui/tech-glitch";
 
@@ -26,6 +27,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     title: project.title,
     description: project.description,
     path: `/work/${project.slug}`,
+    type: "article",
   });
 }
 
@@ -38,20 +40,32 @@ export default async function CaseStudyPage({ params }: Params) {
   }
 
   return (
-    <article>
+    <article className="block">
       <Reveals />
       <TechGlitch />
-      <CaseStudyHero
-        slug={project.slug}
+      <StickyHero
+        backHref="/work"
+        backLabel="Work"
         title={project.title}
         meta={`${project.year} · ${project.role}`}
-        preview={project.preview}
-      />
+        flipId={`work-${project.slug}`}
+      >
+        {project.preview ? (
+          <Image
+            src={project.preview}
+            alt={project.title}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-top"
+          />
+        ) : null}
+      </StickyHero>
 
       {/* The sheet: a solid surface that rides up over the hero. It owns the
           page background from here down, which is what makes it read as a
           sheet rather than a transparent column. */}
-      <div data-case-sheet className="relative z-10 min-h-screen bg-surface px-6 py-16 md:py-20">
+      <div data-sheet className="relative z-10 min-h-screen bg-surface px-6 py-16 md:py-20">
         <Link
           href="/work"
           className="sticky top-(--nav-height) z-20 -mt-6 mb-10 hidden w-fit bg-surface py-2 text-2xs text-muted transition-colors hover:text-ink md:block"

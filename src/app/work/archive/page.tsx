@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Archive",
-  description: "Everything else, including the training work.",
-};
+  description:
+    "Everything else, including the training work.",
+  path: "/work/archive",
+});
 
 export default function ArchivePage() {
   return (

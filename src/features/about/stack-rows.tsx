@@ -48,7 +48,7 @@ export default function StackRows({ layers }: { layers: Layer[] }) {
         <div key={row.layer} className="flex min-w-0 items-center gap-4">
           <span className="w-28 shrink-0 text-2xs text-muted">{row.layer}</span>
 
-          <div className="marquee min-w-0 flex-1 overflow-hidden">
+          <div className="marquee min-w-0 flex-1 overflow-x-clip">
             <div
               className="marquee-track"
               style={

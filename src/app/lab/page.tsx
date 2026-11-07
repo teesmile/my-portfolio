@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Lab",
-  description: "Small interaction experiments, one at a time.",
-};
+  description:
+    "Small interaction experiments, one at a time.",
+  path: "/lab",
+  noindex: true,
+});
 
 /* Deliberately not in the nav until it holds its first experiment: a link to an
    empty page costs more than the page is worth. */
