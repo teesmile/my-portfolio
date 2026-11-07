@@ -56,7 +56,6 @@ export default function HeroSequence({
         return;
       }
 
-      const caret = caretRef.current;
       let blink: gsap.core.Tween | null = null;
       let observer: IntersectionObserver | null = null;
 
@@ -64,6 +63,9 @@ export default function HeroSequence({
          looked at: an animation running against a hidden tab is work nobody
          sees, and on a phone it is battery. */
       const startBlink = () => {
+        /* Queried, not read from the ref: reverting the typed line's split
+           rebuilds its markup, so the node the ref was given is gone. */
+        const caret = scope.current?.querySelector('[data-caret]');
         if (!caret) return;
         blink = gsap.to(caret, {
           opacity: 0,
@@ -128,9 +130,13 @@ export default function HeroSequence({
         gsap
           .timeline({
             onComplete: () => {
-              /* Hand the headline back to the browser as ordinary text. */
+              /* Hand both lines back to the browser as ordinary text. The
+                 typed line matters for more than resizes: while split, its
+                 <p> carries SplitText's aria-label, which ARIA prohibits on a
+                 paragraph, and its letters are separate boxes. */
               if (split) gsap.set(split.lines, { willChange: 'auto' });
               split?.revert();
+              monoSplit?.revert();
               startBlink();
             },
           })
@@ -207,9 +213,15 @@ export default function HeroSequence({
           </span>
         ) : null}
         {after}
-        <span ref={caretRef} aria-hidden="true" className="ml-0.5 inline-block text-accent">
-          |
-        </span>
+        {/* The caret is a drawn bar, not a "|" glyph: a character would be
+            indexed, copied with the line and split by SplitText as if it
+            were part of the sentence. */}
+        <span
+          ref={caretRef}
+          data-caret
+          aria-hidden="true"
+          className="ml-1 inline-block h-[1em] w-0.5 bg-accent align-[-0.15em]"
+        />
       </p>
     </div>
   );

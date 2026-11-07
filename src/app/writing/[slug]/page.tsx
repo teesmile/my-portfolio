@@ -28,6 +28,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     description: entry.standfirst,
     path: `/writing/${entry.slug}`,
     type: "article",
+    image: `/writing/${entry.slug}/opengraph-image`,
   });
 }
 

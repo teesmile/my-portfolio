@@ -3,13 +3,14 @@ import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
 import WorkEntry from "@/features/work/work-entry";
+import EvaluationEntry from "@/features/work/evaluation-entry";
 import TechGlitch from "@/components/ui/tech-glitch";
 import Reveals from "@/components/layout/reveals";
 
 export const metadata: Metadata = pageMetadata({
   title: "Work",
   description:
-    "Interfaces built with React, TypeScript and Tailwind, with the decisions behind them.",
+    "Full-stack builds in React, Next.js and TypeScript with the decisions behind them, and AI evaluation work in chemistry, biology and clinical pharmacy.",
   path: "/work",
 });
 
@@ -26,6 +27,7 @@ export default function WorkPage() {
           {portfolioConfig.projects.map((project, index) => (
             <WorkEntry key={project.slug} project={project} index={index} />
           ))}
+          <EvaluationEntry />
         </div>
 
         <Link
