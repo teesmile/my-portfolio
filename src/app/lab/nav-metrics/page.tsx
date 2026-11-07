@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import NavMetrics from "./measure";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Nav metrics",
-  description: "Proving the active state cannot move anything.",
-};
+  description:
+    "Proving the active state cannot move anything.",
+  path: "/lab/nav-metrics",
+  noindex: true,
+});
 
 export default function NavMetricsPage() {
   return (

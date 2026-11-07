@@ -5,8 +5,20 @@ import HeroSequence from "./hero-sequence";
 
 export default function Hero() {
   return (
-    <section className="flex flex-1 flex-col justify-center px-6 py-16 md:py-20">
-      <div className="mx-auto w-full max-w-(--container-view)">
+    <section className="editor-surface flex flex-1 flex-col justify-center px-6 py-16 md:py-20">
+      <div className="editor-guides relative mx-auto w-full max-w-(--container-view)">
+        <div className="flex gap-4 md:gap-6">
+          {/* The gutter: decorative, and the reader should not hear it. */}
+          <div
+            aria-hidden="true"
+            className="editor-gutter hidden shrink-0 select-none font-mono text-2xs text-muted/50 sm:block"
+          >
+            {[1, 2, 3, 4, 5].map((line) => (
+              <div key={line}>{String(line).padStart(2, "0")}</div>
+            ))}
+          </div>
+
+          <div className="min-w-0 flex-1">
         {/* Full container width is not a style choice: at the hero size the
             statement only fits three lines at 1280 across the whole container,
             which /lab/type measures rather than guesses. */}
@@ -40,6 +52,8 @@ export default function Hero() {
 
           <div data-hero-deck className="lg:col-span-7 lg:col-start-6">
             <DefectDeck />
+          </div>
+        </div>
           </div>
         </div>
       </div>

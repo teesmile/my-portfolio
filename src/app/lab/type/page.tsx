@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import { Syne, Martian_Mono } from "next/font/google";
 import { portfolioConfig } from "@/config/site";
 import TypeMeasure from "./measure";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Type specimen",
-  description: "Sizing the hero's two voices by rule rather than by eye.",
-};
+  description:
+    "Sizing the hero's two voices by rule rather than by eye.",
+  path: "/lab/type",
+  noindex: true,
+});
 
 const syne = Syne({ subsets: ["latin"] });
 const martian = Martian_Mono({ subsets: ["latin"] });

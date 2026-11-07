@@ -13,7 +13,14 @@ if git diff --cached --name-only | grep -q '^src/content/resume\.ts$'; then
   fi
 
   echo "resume.ts changed — regenerating PDFs"
+  # Every public version, or the one nobody regenerated is the one somebody
+  # downloads. The --private copies are deliberately not built here: they
+  # carry a phone number and live in a gitignored folder, so a commit hook is
+  # the wrong place to touch them.
   pnpm resume || exit 1
   pnpm resume --variant ai || exit 1
-  git add public/Anthony-Ugwuja-Resume.pdf public/Anthony-Ugwuja-Resume-AI.pdf
+  pnpm resume --variant general || exit 1
+  git add public/Anthony-Ugwuja-Resume.pdf \
+          public/Anthony-Ugwuja-Resume-AI.pdf \
+          public/Anthony-Ugwuja-Resume-General.pdf
 fi

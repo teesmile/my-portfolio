@@ -54,7 +54,7 @@ export default function WorkEntry({
         <div
           ref={frameRef}
           data-flip-id={`work-${project.slug}`}
-          className={`${layout.ratio} relative w-full overflow-hidden border border-line bg-raised`}
+          className={`${layout.ratio} relative w-full overflow-clip border border-line bg-raised`}
         >
           {project.preview ? (
             <Image
