@@ -15,6 +15,13 @@ Study: <one concept, with a link or a search term>
 
 ---
 
+## 2026-11-07 — Two current roles: relevance orders them in the AI version (resume-current-roles)
+Decided by: Anthony — in the AI version, AI Training & Evaluation Specialist comes first and Pharmacist (NYSC Corps Member) second. The master and general versions stay strictly newest first, with NYSC on top.
+Verdict: AGREE. This narrows the newest-first rule in the entry below rather than reversing it.
+Because: the newest-first rule exists so the dates down the left edge never jump back in time. Both roles end in "Present", so the dates can't break the tie and nothing reads as a step backwards. What's left is relevance, and in the version written for AI-evaluation hiring the evaluation role is the one the reader came for. A parser that takes the first entry as "current title" now finds the role the application is for, which is also true. The two other versions keep start-date order, because their readers aren't hiring for either role specifically.
+Changed: `place` ranks in `resume.ts`, AI version only (evaluation 0, NYSC 1, intern 2). All three PDFs regenerated; each is one page and passes both extractors.
+Study: how reverse-chronological order works with overlapping roles. Search "resume concurrent positions order".
+
 ## 2026-11-07 — Every resume version runs newest first (resume-order)
 Decided by: Anthony — experience is reverse chronological in all three versions, not only the master.
 Verdict: AGREE, and it reverses the 2026-11-06 call that let the targeted versions lead with the role their reader is hiring for.
