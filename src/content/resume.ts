@@ -113,7 +113,9 @@ export const resumeContent = {
       company: 'Self-employed, remote · Outlier, Mercor, micro1 and similar platforms',
       period: 'Nov 2025 – Present',
       tech: ['LLM evaluation', 'multimodal annotation', 'rubric-based grading', 'side-by-side model comparison'],
-      place: { default: 1, ai: 1, general: 1 },
+      /* First in the AI version only: both this and the NYSC post are
+         current, so dates can't order them and relevance does. */
+      place: { default: 1, ai: 0, general: 1 },
       /* Why no client names anywhere in this entry. One line, in every
          version, because its absence is more conspicuous than its presence. */
       note: { text: 'Client and project details under NDA.', place: { default: 0, ai: 0, general: 0 } },
@@ -166,12 +168,13 @@ export const resumeContent = {
       company: 'Nasarawa State University clinic, Keffi',
       period: 'Aug 2026 – Present',
       tech: [],
-      /* Every version runs strict reverse chronological order, so the
-         current clinical post opens the section in all three. The targeted
-         versions say what their reader is hiring for in the title and the
-         summary, not by reshuffling dates: a recruiter scanning the left
-         edge reads a jump back in time as something being hidden. */
-      place: { default: 0, ai: 0, general: 0 },
+      /* The master and general versions run strict reverse chronological
+         order, so the current clinical post opens the section there. In the
+         AI version it sits second: it and the evaluation role are both
+         "– Present", so putting the evaluation role first never shows a
+         jump back in time, and two concurrent roles are ordered by
+         relevance to the reader instead. */
+      place: { default: 0, ai: 1, general: 0 },
       bullets: [
         {
           text: 'Dispense medications and counsel students and staff on safe use.',
