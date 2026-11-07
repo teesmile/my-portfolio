@@ -15,6 +15,49 @@ Study: <one concept, with a link or a search term>
 
 ---
 
+## 2026-11-06 — Codex review 5: three ways the resume pipeline could publish a lie (402fb1b)
+Codex challenged: the pre-commit hook generates PDFs from the working tree while committing only the index, so a partially staged `resume.ts` ships a document describing content the commit does not contain; the build-freshness check looks at `resume.ts` alone, so a change to the page component or the print stylesheet prints with the old presentation while a text-only ATS check still passes; and `/resume?variant=ai` renders the AI ordering but its download button always points at the default PDF.
+Verdict: AGREE on all three, each confirmed by reading the code and each proven fixed
+Because: all three are the same failure in different places — a document that claims to represent something it was not generated from. The first is the worst, because it passes every check: the PDF is internally consistent, the ATS check passes, and the commit is still wrong. The second is the quietest: extraction only sees text, so a stale layout is invisible to it by construction. The third is the one a reader would hit first — downloading from the AI page and getting the general resume.
+Changed: the hook refuses a partially staged `resume.ts` rather than resolving the ambiguity on its own (proven: exit 1 with an explanation). Build freshness now takes the newest mtime across all of `src/` plus `next.config.ts`, not one file (proven: touching `globals.css` triggers "source is newer than the build — rebuilding"). The download href comes from the variant (proven: `/resume` serves `Anthony-Ugwuja-Resume.pdf`, `/resume?variant=ai` serves `Anthony-Ugwuja-Resume-AI.pdf`).
+One self-inflicted bug surfaced while fixing: adding `pdf.ai` to the content made the checker's `/ai: '...'/` regex match the PDF path instead of the AI title, so the default document was asked to contain the AI title. The regex is now anchored to the titles block.
+Study: why "generated from the working tree, committed from the index" is a whole class of bug — the same shape as building from a dirty tree in CI.
+
+
+## 2026-11-06 — The headline shake was re-rasterisation, not movement (402fb1b)
+Decided by: Anthony reported the headline shaking as it rises on a real phone.
+Claim: check three suspects — SplitText running before Syne loads, whole pixels instead of yPercent, and masks clipping mid-tween.
+Verdict: REPRODUCED by instrumentation; the third explanation was the right one, and none of the three as stated
+Because: a logger injected before any page script, sampling every animation frame at 390 wide and DPR 3, cleared two suspects outright — `document.fonts.ready` resolved at 342ms and the split ran at 444ms, so it does wait for the face; the line count stayed at 2 and the masks stayed `overflow: clip` for the whole tween, so nothing re-split or re-clipped. The rise was already `yPercent`, not pixels. What the frames showed instead was `matrix(1, 0, 0, 1, 0, 40.4656)` — a **2D** matrix at fractional pixels. The geometry was perfectly smooth (zero direction reversals), so nothing was moving wrongly: the glyphs were being re-rasterised at a new sub-pixel offset every frame, which at DPR 3 reads as vibration.
+Changed: `force3D: true` alone did not fix it — GSAP still wrote a 2D translate — so the lines get `z: 0.01` and `will-change: transform` before the tween, which produces `translate3d(0px, 0px, 0.01px)` and a `matrix3d` computed transform. Both are removed on completion, along with the split itself, so later resizes reflow ordinary text. `autoSplit` is now off, because a re-split on font load or resize would swap the elements mid-tween. The caret blinks on a steady one-second rhythm and pauses when the tab is hidden or the hero scrolls out of view.
+Study: why a compositor layer stops text shimmering — the difference between moving a rasterised bitmap and re-rendering glyphs at a fractional offset.
+
+
+## 2026-11-06 — One timing scale, and the reveal rule it serves (402fb1b)
+Decided by: Anthony — "everything reads too fast".
+Claim: define one shared scale of durations and eases, use it everywhere, and give every scrolling view the same reveal behaviour: the first screen arrives on load, everything below enters as it is reached, and scrolling back up reverses it.
+Verdict: SHIPPED
+Because: `src/lib/motion.ts` is now the only place a duration is chosen, so "slower" is one edit rather than thirty. The numbers are picked so a view's entrance lands between 0.6s and 1s — a 0.5s tween staggered 0.09s over five items finishes at 0.86s. The reveal rule needed two things the obvious implementation lacks. First, the content already on screen at load cannot wait for a scroll event that will never arrive, so it animates as a group immediately and is never left hidden. Second, `onLeaveBack` fires the instant the trigger line is crossed, so a reader resting at the boundary would flicker the element on and off; a second geometric check (the element must fall back past 99% of the viewport) gives an 9% dead band.
+Changed: route transition, drawer, clock, case-study morph and reveals all read from the scale. Hidden state is still written in script rather than CSS, so a failed script leaves the page readable.
+Study: hysteresis as an interface idea — two thresholds instead of one wherever a boundary can be hovered.
+
+## 2026-11-06 — Batching scroll triggers, found by the gate (402fb1b)
+Decided by: measurement, after the reveal rewrite.
+Claim: the new reveals and the tool-logo glitch each created one ScrollTrigger per element.
+Verdict: REGRESSION, caught and fixed
+Because: the gate found it. Scrolling a case study measured a **66.7ms** longest frame at 4x CPU throttle against a **16.8ms** control — the first genuine motion cost of the whole phase, where every earlier number turned out to be React rendering a route. The cause was volume rather than complexity: a case study has dozens of marked nodes and a logo list has twenty, and each trigger does its own bookkeeping on every scroll frame. `ScrollTrigger.batch` shares that work. Re-measured: **16.8ms**, parity with the control. The navigation scenarios still exceed the budget in both configurations, and paired runs show the control sometimes slower than motion (mid-flight cancel: 133.3ms control against 166.6ms with motion, cold navigation 83.4ms against 100.1ms), so the run-to-run variance there is larger than the difference between the two configurations.
+Changed: both reveals and the glitch batch their triggers; the glitch staggers 60ms per logo so a row does not fire as one flash.
+Study: why per-element scroll listeners scale badly, and what `ScrollTrigger.batch` actually shares.
+
+## 2026-11-06 — The hero's two voices, and the deck as a travelling stack (402fb1b)
+Decided by: Anthony.
+Claim: split the hero statement into a Syne headline and a monospace line that types itself with a caret and a lint squiggle; make the deck advance by travel rather than shuffle, with drag on touch; print the resume from the page itself.
+Verdict: SHIPPED, sizes measured
+Because: the second sentence is set in Martian Mono because the implication is an editor, and text appears in an editor by being typed — so it types, the caret blinks twice and leaves rather than looping forever, and a wavy underline draws under "what AI gets wrong" in the warning colour, which is the lint mark the sentence is describing. `/lab/type` re-measured both voices for the two-line layout: the headline ships at **64px/32px** and the mono line at **20px/14px**, the largest sizes that keep the headline inside two lines wide and four narrow, and the typed line to one line wide and three narrow. The deck now sends the read card out to the left and brings the next forward from the right, because nothing physical reorders itself without moving; a drag past a quarter of the card's width or a flick over 450px/s dismisses, anything less springs back, so a fast flick and a slow deliberate push both work. Code lines keep the system monospace: Martian Mono is wide by design, which suits one line and not forty.
+Changed: nine cards now, `pnpm resume` prints `public/Anthony-Ugwuja-Resume.pdf` from `/resume` through a print stylesheet, so the document cannot drift from the page it comes from.
+Study: why a monospace face reads as "typed" and a proportional one does not, and what `preferCSSPageSize` and print margins do to a printed layout.
+
+
 ## 2026-11-06 — Flip earns its cost on the case study and not in the deck (131de59)
 Decided by: measurement, during the Phase 2 gate.
 Claim: the brief asked for Flip in both places — the work card morphing into the case-study hero, and the deck bringing the next card forward.
