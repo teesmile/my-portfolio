@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "capture": "node scripts/capture.mjs",
-    "frames": "node scripts/measure-frames.mjs"
+    "frames": "node scripts/measure-frames.mjs",
+    "resume": "node scripts/resume-pdf.mjs",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { portfolioConfig } from "@/config/site";
 import { pageMetadata } from "@/lib/metadata";
 import { TechList } from "@/components/ui/tech";
 import CaseStudyHero from "@/features/work/case-study-hero";
 import Reveals from "@/components/layout/reveals";
+import TechGlitch from "@/components/ui/tech-glitch";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -38,6 +40,7 @@ export default async function CaseStudyPage({ params }: Params) {
   return (
     <article>
       <Reveals />
+      <TechGlitch />
       <CaseStudyHero
         slug={project.slug}
         title={project.title}
@@ -45,7 +48,17 @@ export default async function CaseStudyPage({ params }: Params) {
         preview={project.preview}
       />
 
-      <div className="px-6 py-16 md:py-20">
+      {/* The sheet: a solid surface that rides up over the hero. It owns the
+          page background from here down, which is what makes it read as a
+          sheet rather than a transparent column. */}
+      <div data-case-sheet className="relative z-10 min-h-screen bg-surface px-6 py-16 md:py-20">
+        <Link
+          href="/work"
+          className="sticky top-(--nav-height) z-20 -mt-6 mb-10 hidden w-fit bg-surface py-2 text-2xs text-muted transition-colors hover:text-ink md:block"
+        >
+          <span aria-hidden="true">&larr;</span> Work
+        </Link>
+
         <div className="mx-auto max-w-(--container-view)">
           <div className="grid gap-12 lg:grid-cols-12">
             <div className="lg:col-span-7">

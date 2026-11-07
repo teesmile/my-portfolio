@@ -3,6 +3,7 @@ import { portfolioConfig } from "@/config/site";
 import { PhoneIcon, PinIcon } from "@/components/ui/icons";
 import CopyEmail from "@/features/contact/copy-email";
 import LocalClock from "@/features/contact/local-clock";
+import ContactEntrance from "@/features/contact/contact-entrance";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -18,13 +19,14 @@ export default function ContactPage() {
 
   return (
     <section className="flex flex-1 items-center px-6 py-6 md:py-10">
+      <ContactEntrance />
       <div className="mx-auto w-full min-w-0 max-w-(--container-view)">
         <h1 className="max-w-[18ch] text-lg text-ink md:text-xl">
           {portfolioConfig.copy.contactHeading}
         </h1>
 
         <div className="mt-6 grid gap-8 md:mt-8 lg:grid-cols-12 lg:items-center lg:gap-16">
-          <div className="lg:col-span-6">
+          <div data-contact-left className="lg:col-span-6">
             <CopyEmail email={portfolioConfig.email} />
 
             <a
@@ -74,7 +76,7 @@ export default function ContactPage() {
             </p>
           </div>
 
-          <div className="lg:col-span-5 lg:col-start-8">
+          <div data-contact-right className="lg:col-span-5 lg:col-start-8">
             <LocalClock />
             <p className="mt-6 max-w-[34ch] border-t border-line pt-4 text-sm text-muted md:mt-8 md:pt-5">
               <span className="text-2xs text-muted">Currently </span>

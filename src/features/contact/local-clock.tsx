@@ -3,6 +3,7 @@
 import { useRef, useSyncExternalStore } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { DURATION, EASE, STAGGER } from '@/lib/motion';
 import { MoonIcon, SunIcon } from '@/components/ui/icons';
 
 const ZONE = 'Africa/Lagos';
@@ -70,9 +71,9 @@ export default function LocalClock() {
       gsap.from(scope.current!.querySelectorAll('[data-digit]'), {
         yPercent: 35,
         opacity: 0,
-        duration: 0.5,
-        ease: 'power3.out',
-        stagger: 0.07,
+        duration: DURATION.base,
+        ease: EASE.out,
+        stagger: STAGGER.tight,
       });
     },
     { scope, dependencies: [clock !== null] },

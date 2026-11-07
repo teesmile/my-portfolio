@@ -4,103 +4,189 @@ import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { Observer } from 'gsap/Observer';
 import { useGSAP } from '@gsap/react';
+import { DURATION, EASE, prefersReducedMotion } from '@/lib/motion';
 
 gsap.registerPlugin(Observer, useGSAP);
 
 type Card = { context: string; verdict: string; html: string };
 
-/* Where a card sits once it is in slot n. Slot 0 is the one you read.
-   GSAP owns these transforms, not React: if both wrote to style.transform the
-   two would overwrite each other mid-tween. React owns order and z-index. */
+/** How far back a card sits at depth n. Only the top few are worth drawing. */
 const slot = (index: number) => ({
   x: index * 8,
   y: index * 12,
   rotate: index * 1.4,
+  zIndex: 60 - index,
+  opacity: index > 3 ? 0 : 1,
 });
 
-const reduced = () =>
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/** Past this fraction of the card's width, a drag becomes a dismissal. */
+const DRAG_RATIO = 0.25;
+const FLICK_VELOCITY = 450;
 
 export default function DeckInteractive({ cards }: { cards: Card[] }) {
   const [order, setOrder] = useState(() => cards.map((_, index) => index));
   const container = useRef<HTMLDivElement>(null);
   const placed = useRef(false);
+  const flying = useRef<HTMLElement | null>(null);
   const highlighted = useRef<Element | null>(null);
+  const busy = useRef(false);
 
+  const nodes = () =>
+    Array.from(
+      container.current?.querySelectorAll<HTMLElement>('[data-card]') ?? [],
+    );
+
+  const frontNode = () =>
+    nodes().find((node) => Number(node.dataset.card) === order[0]) ?? null;
+
+  /**
+   * Advancing is travel, not a shuffle: the card you have read leaves to
+   * the left and the next one arrives from behind on the right. A card that
+   * simply swapped z-index would read as a glitch, because nothing in the
+   * physical world reorders itself without moving.
+   *
+   * The outgoing card is excluded from the normal placement pass while it is
+   * in flight — otherwise two tweens would own its transform at once — and
+   * it is re-seated at the back of the stack once it is off screen.
+   */
   const advance = () => {
+    if (busy.current) return;
+
+    const front = frontNode();
+    if (!front) return;
+
+    if (prefersReducedMotion()) {
+      setOrder((current) => [...current.slice(1), current[0]]);
+      return;
+    }
+
+    busy.current = true;
+    flying.current = front;
+    const back = slot(cards.length - 1);
+
+    gsap
+      .timeline({
+        onComplete: () => {
+          flying.current = null;
+          busy.current = false;
+        },
+      })
+      .set(front, { zIndex: 70 })
+      .to(front, {
+        xPercent: -130,
+        rotate: -8,
+        opacity: 0,
+        duration: DURATION.base,
+        ease: EASE.in,
+      })
+      /* Re-enter from the right, at the back, where a returning card belongs. */
+      .set(front, { xPercent: 0, x: back.x + 40, y: back.y, rotate: back.rotate, zIndex: back.zIndex })
+      .to(front, { x: back.x, opacity: back.opacity, duration: DURATION.base, ease: EASE.out });
+
     setOrder((current) => [...current.slice(1), current[0]]);
   };
 
-  /**
-   * Each card tweens to the slot it now occupies.
-   *
-   * Flip was the obvious tool and measurably the wrong one here: it reads
-   * layout for every card before animating, which cost a 33.4ms frame at 4x
-   * CPU throttle against a 16.8ms control. Flip earns that cost when the
-   * start and end geometry are unknown — the case-study hero, where the
-   * element lives on another route. In this deck the slots are a pure
-   * function of position, so the start and end transforms are already known
-   * and the measurement pass buys nothing.
-   */
+  /* Every card tweens to the slot it now occupies. The slots are a pure
+     function of position, so no layout measurement is needed — which is why
+     this is not Flip. See docs/decisions.md. */
   useGSAP(
     () => {
-      const nodes = container.current?.querySelectorAll<HTMLElement>('[data-card]');
-      if (!nodes) return;
-
       const first = !placed.current;
       placed.current = true;
 
-      nodes.forEach((node) => {
-        const cardIndex = Number(node.dataset.card);
-        const position = order.indexOf(cardIndex);
-        const target = slot(position);
+      nodes().forEach((node) => {
+        if (node === flying.current) return;
 
-        if (first || reduced()) {
-          gsap.set(node, target);
+        const position = order.indexOf(Number(node.dataset.card));
+        const target = slot(position);
+        const body = node.querySelector('[data-body]');
+        const visible = position === 0 ? 1 : 0;
+
+        if (first || prefersReducedMotion()) {
+          gsap.set(node, { ...target, xPercent: 0 });
+          if (body) gsap.set(body, { opacity: visible });
           return;
         }
 
-        gsap.to(node, { ...target, duration: 0.5, ease: 'power2.inOut', overwrite: 'auto' });
+        gsap.to(node, {
+          ...target,
+          xPercent: 0,
+          duration: DURATION.base,
+          ease: EASE.inOut,
+          overwrite: 'auto',
+        });
+
+        if (body) {
+          gsap.to(body, {
+            opacity: visible,
+            duration: visible ? 0.3 : 0.15,
+            delay: visible ? 0.18 : 0,
+            ease: EASE.out,
+            overwrite: 'auto',
+          });
+        }
       });
     },
     { dependencies: [order] },
   );
 
-  /* Swipe on touch, which is the gesture a stack of cards already implies.
-     Observer handles the pointer maths and the thresholds. */
+  /* The observer is created once and reads the current handlers through a
+     ref: rebuilding it on every reorder would tear down and re-attach the
+     touch listeners mid-gesture. */
+  const latest = useRef({ advance, frontNode });
   useEffect(() => {
-    if (!container.current || reduced()) return;
+    latest.current = { advance, frontNode };
+  });
+
+  /* Touch: the card follows the finger, then either leaves or springs back.
+     A threshold on distance alone punishes a fast flick, and velocity alone
+     punishes a slow deliberate push, so both count. */
+  useEffect(() => {
+    if (!container.current || prefersReducedMotion()) return;
 
     const observer = Observer.create({
       target: container.current,
-      type: 'touch',
-      onLeft: advance,
-      onRight: advance,
-      tolerance: 24,
+      type: 'touch,pointer',
+      dragMinimum: 6,
+      onDrag: (self) => {
+        const front = latest.current.frontNode();
+        if (!front || busy.current) return;
+        gsap.set(front, { x: self.deltaX + Number(gsap.getProperty(front, 'x')), rotate: self.deltaX * 0.04 });
+      },
+      onDragEnd: (self) => {
+        const front = latest.current.frontNode();
+        if (!front || busy.current) return;
+
+        const width = front.getBoundingClientRect().width || 1;
+        const dragged = Number(gsap.getProperty(front, 'x'));
+        const far = Math.abs(dragged) > width * DRAG_RATIO;
+        const fast = Math.abs(self.velocityX) > FLICK_VELOCITY;
+
+        if (far || fast) {
+          latest.current.advance();
+        } else {
+          gsap.to(front, { ...slot(0), duration: DURATION.base, ease: EASE.out });
+        }
+      },
     });
 
     return () => observer.kill();
   }, []);
 
-  /* Tilt toward the cursor, and raise the code line underneath it. The card
-     reacts to where you are reading, not merely that you are there. */
+  /* Tilt toward the cursor and raise the line underneath it. */
   useGSAP(
     () => {
-      if (!container.current || reduced()) return;
+      const front = frontNode();
+      if (!front || prefersReducedMotion()) return;
 
-      const front = container.current.querySelector<HTMLElement>('[data-front]');
-      if (!front) return;
-
-      const rotateX = gsap.quickTo(front, 'rotationX', { duration: 0.4, ease: 'power2.out' });
-      const rotateY = gsap.quickTo(front, 'rotationY', { duration: 0.4, ease: 'power2.out' });
+      const rotateX = gsap.quickTo(front, 'rotationX', { duration: DURATION.track, ease: EASE.out });
+      const rotateY = gsap.quickTo(front, 'rotationY', { duration: DURATION.track, ease: EASE.out });
 
       const move = (event: PointerEvent) => {
+        if (busy.current) return;
         const bounds = front.getBoundingClientRect();
-        const x = (event.clientX - bounds.left) / bounds.width - 0.5;
-        const y = (event.clientY - bounds.top) / bounds.height - 0.5;
-
-        rotateX(-y * 5);
-        rotateY(x * 5);
+        rotateX(-((event.clientY - bounds.top) / bounds.height - 0.5) * 5);
+        rotateY(((event.clientX - bounds.left) / bounds.width - 0.5) * 5);
 
         const line = document
           .elementFromPoint(event.clientX, event.clientY)
@@ -133,50 +219,70 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
   );
 
   return (
-    <div
-      ref={container}
-      className="relative h-[27rem] w-full [perspective:1200px] sm:h-[23rem]"
-    >
-      {order.map((cardIndex, position) => {
-        const card = cards[cardIndex];
-        const isFront = position === 0;
+    <div>
+      <div
+        ref={container}
+        className="relative h-[27rem] w-full overflow-x-clip [perspective:1200px] sm:h-[23rem]"
+      >
+        {cards.map((card, cardIndex) => {
+          const position = order.indexOf(cardIndex);
+          const isFront = position === 0;
 
-        return (
-          <article
-            key={card.context}
-            data-card={cardIndex}
-            data-front={isFront ? '' : undefined}
-            style={{ zIndex: 40 - position * 10 }}
-            onClick={isFront ? advance : undefined}
-            onKeyDown={
-              isFront
-                ? (event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
-                      advance();
+          return (
+            <article
+              key={card.context}
+              data-card={cardIndex}
+              onClick={isFront ? advance : undefined}
+              onKeyDown={
+                isFront
+                  ? (event) => {
+                      if (['Enter', ' ', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+                        event.preventDefault();
+                        advance();
+                      }
                     }
-                  }
-                : undefined
-            }
-            tabIndex={isFront ? 0 : -1}
-            role={isFront ? 'button' : undefined}
-            aria-label={isFront ? `${card.context}. Show the next bug.` : undefined}
-            className="absolute inset-x-0 top-0 h-full origin-top-left cursor-pointer overflow-hidden border border-line bg-raised p-5 [transform-style:preserve-3d]"
-          >
-            <p className="font-display text-2xs text-muted">{card.context}</p>
+                  : undefined
+              }
+              tabIndex={isFront ? 0 : -1}
+              role={isFront ? 'button' : undefined}
+              aria-hidden={isFront ? undefined : true}
+              aria-label={isFront ? `${card.context}. Show the next bug.` : undefined}
+              className="absolute inset-x-0 top-0 h-full origin-top-left cursor-pointer touch-pan-y overflow-hidden border border-line bg-raised p-5 [transform-style:preserve-3d]"
+            >
+              <div data-body>
+                <p className="font-display text-2xs text-muted">{card.context}</p>
 
-            <div
-              className="mt-4 overflow-x-auto"
-              dangerouslySetInnerHTML={{ __html: card.html }}
+                <div
+                  className="mt-4 overflow-x-auto"
+                  dangerouslySetInnerHTML={{ __html: card.html }}
+                />
+
+                <p className="mt-4 max-w-[54ch] text-xs text-muted">
+                  <span className="font-display text-ink">What breaks: </span>
+                  {card.verdict}
+                </p>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      <div className="mt-5 flex items-center gap-3">
+        <div className="flex gap-1.5" aria-hidden="true">
+          {cards.map((card, index) => (
+            <span
+              key={card.context}
+              className={`h-1 w-4 transition-colors ${
+                index === order[0] ? 'bg-accent' : 'bg-line'
+              }`}
             />
-
-            <p className="mt-4 max-w-[54ch] text-xs text-muted">
-              <span className="font-display text-ink">What breaks: </span>
-              {card.verdict}
-            </p>
-          </article>
-        );
-      })}
+          ))}
+        </div>
+        <p className="text-2xs text-muted tabular-nums">
+          {order[0] + 1} of {cards.length}
+          <span className="ml-3 text-muted">&middot; tap, swipe or use the arrow keys</span>
+        </p>
+      </div>
     </div>
   );
 }
