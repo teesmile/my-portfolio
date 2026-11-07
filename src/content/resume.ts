@@ -8,11 +8,13 @@
  *
  * Three versions come out of this one file:
  *
- *   default   the master. The only one linked on the site. Two pages at most.
- *   ai        health-AI evaluation, led by the pharmacy. One page.
+ *   default   the master. The only one linked on the site.
+ *   ai        health-AI evaluation, led by the pharmacy.
  *   general   fintech and operations, led by evaluation and data quality,
  *             with the retail and admin history that the master leaves out.
- *             One page.
+ *
+ * Each runs to two pages at most, at a readable size (CLAUDE.md, Resume
+ * rule), and never with a second page holding only a few lines.
  *
  * Nothing is invented for a version. Every fact here is true of all three;
  * what changes is which facts are worth the space, and in what order.
@@ -226,11 +228,11 @@ export const resumeContent = {
   ] as Role[],
 
   /* The Projects rule (CLAUDE.md): every version lists only its strongest
-     projects, inside its page limit, and when a stronger one arrives the
+     projects, inside the two-page limit, and when a stronger one arrives the
      weakest comes off the resume, never off the site. The evaluation sample
      leads wherever projects appear. The master carries the work itself; the
      AI version carries only the sample, because a health-AI reader is hiring
-     for exactly that and the page has no line to spare. Space Tourism came
+     for exactly that, and the rest is frontend work it skims. Space Tourism came
      off when the sample and the rebuilt todo app went on: it is the simplest
      of the four, and it is still on /work. */
   projects: [

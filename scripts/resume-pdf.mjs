@@ -3,8 +3,10 @@
  * Prints /resume to a PDF and then checks what an ATS would actually read.
  *
  *   pnpm resume                      the master, linked on the site
- *   pnpm resume --variant ai         health-AI evaluation, one page
- *   pnpm resume --variant general    fintech and operations, one page
+ *   pnpm resume --variant ai         health-AI evaluation
+ *   pnpm resume --variant general    fintech and operations
+ *
+ * Every version may run to two pages, never with a stub second page.
  *   --private                        adds the phone number, gitignored folder
  *
  * The PDF is generated from the same component and the same data as the page,
@@ -152,11 +154,6 @@ for (let attempt = 0; attempt < 20; attempt += 1) {
   await wait(250);
 }
 
-/* A4 with 10-11mm margins. Margins decide page count twice over: they take
-   height away from the page and they narrow the column, so narrow text wraps
-   more and grows taller. At 0.55in all round the document measured 1017px of
-   room for 1039px of content and spilled one line onto a second page; these
-   numbers leave 1051px of room for 1025px of content. */
 /* What the page actually renders, taken from the live DOM in print media.
    This is the expectation the extraction is checked against.
 
@@ -173,14 +170,57 @@ const renderedLines = renderedText
   .map((line) => line.replace(/\s+/g, " ").trim())
   .filter(Boolean);
 
-const { data } = await send("Page.printToPDF", {
-  printBackground: false,
-  paperWidth: 8.27,
-  paperHeight: 11.69,
-  marginTop: 0.4, marginBottom: 0.35, marginLeft: 0.45, marginRight: 0.45,
-  displayHeaderFooter: false,
-});
-const bytes = Buffer.from(data, "base64");
+/* Normal margins, A4. Every version may run to two pages (CLAUDE.md,
+   Resume rule), so the margins are a reader's margins, not a squeeze. */
+const MARGINS = { marginTop: 0.75, marginBottom: 0.75, marginLeft: 0.75, marginRight: 0.75 };
+/* Used only for the tight reprint below. */
+const TIGHT_MARGINS = { marginTop: 0.6, marginBottom: 0.6, marginLeft: 0.65, marginRight: 0.65 };
+/* Fewer extracted lines than this on page two is "a few stray lines": about
+   a quarter of a page at 11pt. A second page that short reads as an
+   accident, so the document is tightened onto one page instead. */
+const MIN_SECOND_PAGE_LINES = 12;
+
+async function pageLines(buffer) {
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const doc = await pdfjs.getDocument({ data: new Uint8Array(buffer), useSystemFonts: true }).promise;
+  const counts = [];
+  for (let page = 1; page <= doc.numPages; page += 1) {
+    const content = await (await doc.getPage(page)).getTextContent();
+    const rows = new Set(content.items.filter((item) => item.str.trim()).map((item) => Math.round(item.transform[5])));
+    counts.push(rows.size);
+  }
+  return counts;
+}
+
+async function print(tight) {
+  await evaluate(tight
+    ? "(document.documentElement.dataset.fit = 'tight', true)"
+    : "(delete document.documentElement.dataset.fit, true)");
+  const { data } = await send("Page.printToPDF", {
+    printBackground: false,
+    paperWidth: 8.27,
+    paperHeight: 11.69,
+    ...(tight ? TIGHT_MARGINS : MARGINS),
+    displayHeaderFooter: false,
+  });
+  const buffer = Buffer.from(data, "base64");
+  return { buffer, lines: await pageLines(buffer), tight };
+}
+
+let printed = await print(false);
+let fitNote = "";
+if (printed.lines.length === 2 && printed.lines[1] < MIN_SECOND_PAGE_LINES) {
+  const tight = await print(true);
+  fitNote = `page two held ${printed.lines[1]} lines; `;
+  if (tight.lines.length === 1) {
+    printed = tight;
+    fitNote += "tightened onto one page";
+  } else {
+    fitNote += `tightening still left ${tight.lines.length} pages (${tight.lines.join(" + ")} lines)`;
+  }
+}
+
+const bytes = printed.buffer;
 await mkdir(path.dirname(OUT), { recursive: true });
 await writeFile(OUT, bytes);
 socket.close();
@@ -282,19 +322,17 @@ const failures = [
   ...check("pdfjs", streamText),
 ];
 
-/* The master is allowed a second page because it carries the projects and
-   the development history. The targeted versions are one page or they have
-   failed at the thing they exist to do: say less, to the right reader. */
-const pageLimit = variant === "default" ? 2 : 1;
-if (pages > pageLimit) failures.push(`${pages} pages — the limit for ${variant} is ${pageLimit}`);
-/* The master's hard limit is two, but it fits on one and should stay there.
-   A warning rather than a failure: going to two pages is a decision, and the
-   point is that it cannot happen without somebody noticing. */
-if (variant === "default" && pages > 1) {
-  console.warn(`warning: the master is ${pages} pages. It fits on one — check what grew.`);
+/* Two pages for every version (CLAUDE.md, Resume rule). A second page
+   is allowed; a second page holding a few stray lines is not — the print
+   above has already tried to close that up, so if one is left it fails. */
+const pageLimit = 2;
+if (pages > pageLimit) failures.push(`${pages} pages — the limit is ${pageLimit}`);
+const lastPage = printed.lines[printed.lines.length - 1];
+if (pages === 2 && lastPage < MIN_SECOND_PAGE_LINES) {
+  failures.push(`page two holds only ${lastPage} lines, even after tightening — cut a line or two, or add a section's worth`);
 }
 
-console.log(`${path.relative(process.cwd(), OUT)} — ${Math.round(bytes.length / 1024)} KB, ${pages} page${pages === 1 ? "" : "s"}, variant: ${variant}${isPrivate ? ", private" : ""}`);
+console.log(`${path.relative(process.cwd(), OUT)} — ${Math.round(bytes.length / 1024)} KB, ${pages} page${pages === 1 ? "" : "s"} (${printed.lines.join(" + ")} lines${printed.tight ? ", tight" : ""}), variant: ${variant}${isPrivate ? ", private" : ""}${fitNote ? ` — ${fitNote}` : ""}`);
 
 if (failures.length) {
   console.error(`\nATS check failed:\n  ${failures.join("\n  ")}`);

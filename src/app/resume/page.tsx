@@ -15,7 +15,7 @@ export const metadata: Metadata = pageMetadata({
    the resume is read as a document rather than navigated. */
 function SectionHeading({ label }: { label: string }) {
   return (
-    <div className="mt-10 first:mt-0">
+    <div data-section-heading className="mt-10 first:mt-0">
       <div className="mb-2 h-0.5 w-10 bg-accent-strong" aria-hidden="true" />
       <h2 className="text-2xs tracking-wide text-muted">{label}</h2>
     </div>
