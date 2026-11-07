@@ -283,6 +283,11 @@ console.log("\n".padEnd(72, "-"));
 console.log(layoutText.trim());
 console.log("".padEnd(72, "-"));
 
+const MONTH = "(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) ";
+const dateRanges = [...new Set(
+  normalise(renderedText).match(new RegExp(`(?:${MONTH})?\\d{4} -\\s?(?:Present|(?:${MONTH})?\\d{4})`, "g")) ?? [],
+)];
+
 function check(label, raw) {
   const flat = normalise(raw);
   const problems = [];
@@ -305,6 +310,17 @@ function check(label, raw) {
       .filter((word) => word.length > 3 && !renderedWords.has(word) && !/^[0-9.]+$/.test(word)),
   )];
   if (unknown.length) problems.push(`${label}: fused or unknown words — ${unknown.join(", ")}`);
+
+  /* Every date range on one line. "Nov 2025 –" ending a line and "Present"
+     starting the next reads as two facts to a person and splits the range
+     for a parser. Checked per extracted line, not on the flattened text,
+     because flattening is exactly what hides a break. */
+  const extractedLines = raw.split("\n").map(normalise);
+  for (const range of dateRanges) {
+    if (!extractedLines.some((line) => line.includes(range))) {
+      problems.push(`${label}: date range "${range}" is split across lines`);
+    }
+  }
 
   for (const webOnly of ["Download PDF", "Get in touch", "Switch between light and dark"]) {
     if (flat.includes(webOnly)) problems.push(`${label}: web-only text "${webOnly}"`);

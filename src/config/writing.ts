@@ -30,14 +30,12 @@ export type WritingEntry = {
 
 export const writing: WritingEntry[] = [
   {
-    /* DRAFT, awaiting approval. Every fact is from the renal-dosing-task
-       repository (README, patient design table, evidence results). Edit the
-       words here; delete `draft: true` to publish it. */
+    /* Every fact about the task is from the renal-dosing-task repository
+       (README, patient design table, evidence results). */
     slug: "building-a-renal-dose-check-benchmark",
     topic: "AI",
     title: "Ten ways to misread a ward chart, and proving the tests catch them",
     date: "2026-11-07",
-    draft: true,
     standfirst:
       "I built a small benchmark where an AI agent checks drug doses against kidney function. The maths is handed over in the instruction. The hard part is reading the chart, and then proving the grading is fair.",
     sections: [
@@ -45,7 +43,8 @@ export const writing: WritingEntry[] = [
         id: "the-maths-is-the-easy-part",
         heading: "The maths is the easy part",
         paragraphs: [
-          "The task gives an agent a terminal and a small ward chart: fifteen synthetic adults, their creatinine results, their medication orders, and a rules file with a dose limit for each level of kidney function. For each patient it has to work out creatinine clearance with the Cockcroft–Gault formula, then flag every active order whose daily dose is over the limit. It writes one line per patient, and 32 tests grade the file.",
+          "The task gives an agent a terminal and a small ward chart: fifteen synthetic adults, their creatinine results, their medication orders, and a rules file with a dose limit for each level of kidney function. For each patient it has to work out creatinine clearance, an estimate of how well the kidneys clear drugs from the blood, using the Cockcroft–Gault formula, then flag every active order whose daily dose is over the limit. It writes one line per patient, and 32 tests grade the file.",
+          "Before I evaluated AI models, I spent a year as a pharmacy intern on hospital wards, and the slips this task tests are the ones that matter there.",
           "I gave the formula away. The instruction states it, along with both unit conversions and the exact rules. So the task doesn't ask whether a model knows pharmacy. It asks whether it reads the chart properly, which is a different skill, and it's the one this task is about.",
           "The drugs are invented, and so are the limits. Aldrovexin, Bremazotan, Cylvarone, Dorvatinex and Exalmizide don't exist, and none of this is dosing guidance.",
         ],
