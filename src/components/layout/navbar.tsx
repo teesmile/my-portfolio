@@ -1,6 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+import { DURATION, EASE } from '@/lib/motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { portfolioConfig } from '@/config/site';
@@ -13,12 +16,57 @@ export default function Navbar() {
      effect syncing state to the path. */
   const [menuPath, setMenuPath] = useState<string | null>(null);
   const isMenuOpen = menuPath === pathname;
-  const setIsMenuOpen = (open: boolean) => setMenuPath(open ? pathname : null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  const prefersReducedMotion = () =>
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Closing runs the exit tween first and clears state in its onComplete, so
+     the element cannot unmount mid-animation — unmounting first is what left
+     a single frame of the panel at full opacity under the old library. */
+  const closeMenu = () => {
+    const panel = panelRef.current;
+
+    if (!panel || prefersReducedMotion()) {
+      setMenuPath(null);
+      return;
+    }
+
+    gsap.to(panel, {
+      opacity: 0,
+      y: -8,
+      duration: DURATION.fast,
+      ease: EASE.in,
+      onComplete: () => setMenuPath(null),
+    });
+  };
+
+  const setIsMenuOpen = (open: boolean) => {
+    if (open) {
+      setMenuPath(pathname);
+      return;
+    }
+    closeMenu();
+  };
+
+  useGSAP(
+    () => {
+      if (!isMenuOpen || !panelRef.current || prefersReducedMotion()) return;
+
+      gsap.from(panelRef.current, {
+        opacity: 0,
+        y: -8,
+        duration: DURATION.base,
+        ease: EASE.out,
+      });
+    },
+    { dependencies: [isMenuOpen] },
+  );
 
   /* Route state is the source of truth for "where am I", so a deep link and a
      reload are both correct without any scroll bookkeeping. */
   const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(`${href}/`);
+    href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`);
 
   useEffect(() => {
     const closeOnEscape = (event: KeyboardEvent) => {
@@ -36,11 +84,13 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed inset-x-0 top-0 z-50 border-b border-line bg-surface/85 backdrop-blur-md">
+      <nav className="fixed inset-x-0 top-0 z-50 border-b border-line bg-surface/85 pt-(--safe-top) backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-(--container-view) items-center justify-between px-6">
         <Link
           href="/"
-          className="relative z-50 font-display text-lg text-ink transition-colors hover:text-accent"
+          aria-label={`${portfolioConfig.name} — go to the home page`}
+          aria-current={pathname === '/' ? 'page' : undefined}
+          className="relative z-50 font-display text-lg text-ink underline decoration-2 decoration-transparent underline-offset-[6px] transition-colors hover:decoration-accent"
         >
           {portfolioConfig.name}
         </Link>
@@ -82,12 +132,12 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="relative z-60 flex w-[5.25rem] items-center justify-center gap-2 border border-line px-3 py-1.5 text-2xs text-ink transition-colors hover:border-ink md:hidden"
+            className="relative z-60 -m-2 p-2 text-muted transition-colors hover:text-ink md:hidden"
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isMenuOpen}
             aria-controls="mobile-menu"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
               {isMenuOpen ? (
                 <>
                   <path d="M6 6l12 12" />
@@ -101,7 +151,6 @@ export default function Navbar() {
                 </>
               )}
             </svg>
-            {isMenuOpen ? 'Close' : 'Menu'}
           </button>
         </div>
       </div>
@@ -109,14 +158,14 @@ export default function Navbar() {
       </nav>
 
       {isMenuOpen ? (
-        /* No enter or exit animation in Phase 1. framer-motion reset the
-           panel's opacity to the opposite extreme for a single frame as each
-           animation handed off, which is the blink — measured at 426.9ms on
-           open and 2059.8ms on close. Phase 2 designs this transition
-           properly; until then the panel simply is or is not there. */
+        /* Phase 2's transition. The enter tween is a gsap.from inside
+           useGSAP, so its start values land before paint; the exit tween owns
+           the unmount through onComplete. Both are proven flash-free by the
+           per-frame opacity logger. */
         <div
           id="mobile-menu"
-          className="fixed inset-x-0 top-16 bottom-0 z-45 bg-surface px-6 pt-10 md:hidden"
+          ref={panelRef}
+          className="fixed inset-x-0 top-(--nav-height) bottom-0 z-45 bg-surface px-6 pt-10 md:hidden"
         >
           <ul className="flex flex-col">
             {[...portfolioConfig.navLinks, { name: 'Resume', href: '/resume' } as const].map((link) => (

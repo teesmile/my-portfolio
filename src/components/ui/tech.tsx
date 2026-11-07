@@ -53,13 +53,21 @@ export function TechList({ items }: { items: string[] }) {
             }
           >
             {icon ? (
-              <svg
-                viewBox="0 0 24 24"
-                className="tech-mark h-3 w-3 shrink-0 fill-current"
-                aria-hidden="true"
+              <span
+                data-tech-mark
+                className="tech-mark relative inline-block h-3 w-3 shrink-0"
               >
-                <path d={icon.path} />
-              </svg>
+                <svg viewBox="0 0 24 24" className="absolute inset-0 fill-current" aria-hidden="true">
+                  <path d={icon.path} />
+                </svg>
+                {/* Two tinted copies, invisible until the split runs. */}
+                <svg data-ghost="r" viewBox="0 0 24 24" className="absolute inset-0 fill-[#ff3b30] opacity-0" aria-hidden="true">
+                  <path d={icon.path} />
+                </svg>
+                <svg data-ghost="c" viewBox="0 0 24 24" className="absolute inset-0 fill-[#00e5ff] opacity-0" aria-hidden="true">
+                  <path d={icon.path} />
+                </svg>
+              </span>
             ) : null}
             {item}
           </li>

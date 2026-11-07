@@ -1,30 +1,38 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/metadata";
 import Image from "next/image";
 import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
+import { siteExperience } from "@/content/resume";
 import { TechList } from "@/components/ui/tech";
+import StackRows from "@/features/about/stack-rows";
+import Reveals from "@/components/layout/reveals";
+import TechGlitch from "@/components/ui/tech-glitch";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About",
   description:
     "Pharmacist turned frontend developer, now paid to find what AI-written code gets wrong.",
-};
+  path: "/about",
+});
 
 export default function AboutPage() {
-  const { copy, stack, timeline, resume } = portfolioConfig;
+  const { copy, stack, timeline } = portfolioConfig;
 
   return (
     <section className="px-6 py-20 md:py-24">
+      <Reveals />
+      <TechGlitch />
       <div className="mx-auto max-w-(--container-view)">
-        <div className="grid gap-16 lg:grid-cols-12 lg:gap-20">
-          <div className="lg:col-span-7">
-            <h1 className="max-w-[20ch] text-xl text-ink md:text-2xl">
+        <div className="grid min-w-0 gap-16 lg:grid-cols-12 lg:gap-20">
+          <div className="min-w-0 lg:col-span-7">
+            <h1 data-reveal className="max-w-[20ch] text-xl text-ink md:text-2xl">
               {copy.aboutHeading}
             </h1>
 
             <div className="mt-10 flex max-w-(--container-reading) flex-col gap-6 text-base text-ink">
               {copy.aboutParagraphs.map((paragraph) => (
-                <p key={paragraph.slice(0, 40)}>{paragraph}</p>
+                <p key={paragraph.slice(0, 40)} data-reveal>{paragraph}</p>
               ))}
             </div>
 
@@ -37,6 +45,7 @@ export default function AboutPage() {
               {timeline.map((entry) => (
                 <li
                   key={entry.label}
+                  data-reveal
                   className="grid grid-cols-[6.5rem_1fr_auto] items-baseline gap-4 border-t border-line py-4 text-sm"
                 >
                   <span className="text-2xs text-muted tabular-nums">
@@ -54,10 +63,10 @@ export default function AboutPage() {
 
             <h2 className="mt-16 text-lg text-ink">Experience</h2>
             <div className="mt-6 flex max-w-(--container-reading) flex-col gap-8">
-              {resume.experience.map((role) => (
-                <article key={`${role.role}-${role.period}`} className="border-t border-line pt-5">
+              {siteExperience.map((role) => (
+                <article key={`${role.title}-${role.period}`} data-reveal className="border-t border-line pt-5">
                   <p className="text-2xs text-muted tabular-nums">{role.period}</p>
-                  <h3 className="mt-2 font-display text-base text-ink">{role.role}</h3>
+                  <h3 className="mt-2 font-display text-base text-ink">{role.title}</h3>
                   <p className="mt-1 text-sm text-muted">{role.company}</p>
                   <div className="mt-3">
                     <TechList items={role.tech} />
@@ -67,40 +76,41 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="lg:col-span-4 lg:col-start-9">
-            <div className="relative aspect-[4/5] w-full overflow-hidden border border-line bg-raised">
+          <div className="min-w-0 lg:col-span-4 lg:col-start-9">
+            {/* No frame, no border, no backing panel: the source is a clean
+                cutout, so anything behind it reads as a box the photo was
+                pasted into — and in light mode that box was white. */}
+            <div className="relative aspect-square w-full">
               <Image
                 src="/profile.webp"
                 alt={`${portfolioConfig.name} portrait`}
                 fill
                 sizes="(min-width: 1024px) 24rem, 100vw"
-                className="object-cover"
+                className="object-contain"
+                priority
               />
             </div>
 
             <h2 className="mt-12 text-2xs text-muted">{copy.aboutStackHeading}</h2>
-            {/* Grouped by layer so the gaps are as visible as the strengths. */}
-            <dl className="mt-5 flex flex-col gap-5">
-              {stack.map((group) => (
-                <div key={group.layer} className="border-t border-line pt-4">
-                  <dt className="text-sm text-ink">{group.layer}</dt>
-                  <dd className="mt-2">
-                    {group.items.length > 0 ? (
-                      <TechList items={group.items} />
-                    ) : (
-                      <p className="text-2xs text-muted">{copy.aboutDataEmpty}</p>
-                    )}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+            <div className="mt-5">
+              <StackRows layers={stack} />
+            </div>
 
-            <Link
-              href="/resume"
-              className="mt-10 inline-block text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
-            >
-              Read the resume
-            </Link>
+            <div className="mt-10 flex flex-wrap items-center gap-5">
+              <Link
+                href="/resume"
+                className="text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
+              >
+                Read the resume
+              </Link>
+              <a
+                href={portfolioConfig.resumePdf}
+                download
+                className="border border-line px-3 py-1.5 text-2xs text-ink transition-colors hover:border-ink"
+              >
+                Download PDF
+              </a>
+            </div>
           </div>
         </div>
       </div>
