@@ -19,6 +19,9 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   /* Lint squiggle and the deck's warning mark. Content colour, not chrome. */
   --warn: #ff6b5e;
+  /* The wrong reading in the renal loop: text, so it needs text contrast.
+     The same red in dark (5.9:1 on --raised); darker in light. */
+  --wrong: #ff6b5e;
   --surface: #0c0d0f;
   --raised: #15171a;
   --line: #23272d;
@@ -49,6 +52,8 @@
   --accent-strong: #f0b429;
   --accent-ink: #0c0d0f;
   --focus-halo: #14171a;
+  /* 5.3:1 on light --raised: --warn there is only 2.6:1. */
+  --wrong: #c0362b;
 }
 
 @theme inline {
@@ -63,6 +68,7 @@
   /* Content only: the lint squiggle, and the misread cell in the renal
      showcase's chart tables. Never chrome. */
   --color-warn: var(--warn);
+  --color-wrong: var(--wrong);
 
   --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
   --font-text: var(--font-source-serif), ui-serif, Georgia, serif;
@@ -523,6 +529,67 @@
 @keyframes deck-dwell-b {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
+}
+
+/* The renal loop (src/features/landing/renal-loop.tsx). 8s, on the
+   compositor where the browser can: opacity, transform and a stroke draw.
+   Resting styles are the finished frame; the keyframes apply only when
+   motion is allowed and the loop holds the motion lease (no [data-held] on
+   its gate). Every track starts and ends invisible, so 100% meets 0%. */
+.renal-loop .rl-sweep {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .renal-gate:not([data-held]) .rl-row { animation: rl-row 8s linear infinite; }
+  .renal-gate:not([data-held]) .rl-sweep { animation: rl-sweep 8s linear infinite; }
+  .renal-gate:not([data-held]) .rl-link {
+    stroke-dasharray: 1;
+    animation: rl-link 8s linear infinite;
+  }
+  .renal-gate:not([data-held]) .rl-good { animation: rl-good 8s linear infinite; }
+  .renal-gate:not([data-held]) .rl-bad { animation: rl-bad 8s linear infinite; }
+  .renal-gate:not([data-held]) .rl-cap { animation: rl-cap 8s linear infinite; }
+}
+
+/* 1% = 80ms. Row 0–0.6s, sweep 0.8–1.8s, branches 2.0–2.6s, correct
+   2.4–3.0s, wrong 3.0–3.6s, caption 4.0–4.6s, hold, all out 7.2–7.8s. */
+@keyframes rl-row {
+  0% { opacity: 0; transform: translateY(4px); }
+  7.5%, 90% { opacity: 1; transform: none; }
+  97.5%, 100% { opacity: 0; transform: none; }
+}
+
+@keyframes rl-sweep {
+  0%, 10% { opacity: 0.16; transform: scaleX(0); }
+  22.5% { opacity: 0.16; transform: scaleX(1); }
+  30%, 100% { opacity: 0; transform: scaleX(1); }
+}
+
+@keyframes rl-link {
+  0%, 25% { stroke-dashoffset: 1; opacity: 1; }
+  32.5%, 90% { stroke-dashoffset: 0; opacity: 1; }
+  97.5%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+@keyframes rl-good {
+  0%, 30% { opacity: 0; }
+  37.5%, 90% { opacity: 1; }
+  97.5%, 100% { opacity: 0; }
+}
+
+@keyframes rl-bad {
+  0%, 37.5% { opacity: 0; }
+  45%, 90% { opacity: 1; }
+  97.5%, 100% { opacity: 0; }
+}
+
+@keyframes rl-cap {
+  0%, 50% { opacity: 0; }
+  57.5%, 90% { opacity: 1; }
+  97.5%, 100% { opacity: 0; }
 }
 
 /* The hero as a file open in an editor.
