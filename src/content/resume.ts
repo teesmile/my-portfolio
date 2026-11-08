@@ -8,11 +8,13 @@
  *
  * Three versions come out of this one file:
  *
- *   default   the master. The only one linked on the site. Two pages at most.
- *   ai        health-AI evaluation, led by the pharmacy. One page.
+ *   default   the master. The only one linked on the site.
+ *   ai        health-AI evaluation, led by the pharmacy.
  *   general   fintech and operations, led by evaluation and data quality,
  *             with the retail and admin history that the master leaves out.
- *             One page.
+ *
+ * Each runs to two pages at most, at a readable size (CLAUDE.md, Resume
+ * rule), and never with a second page holding only a few lines.
  *
  * Nothing is invented for a version. Every fact here is true of all three;
  * what changes is which facts are worth the space, and in what order.
@@ -110,7 +112,7 @@ export const resumeContent = {
   experience: [
     {
       title: 'AI Training & Evaluation Specialist',
-      company: 'Self-employed, remote · Outlier, Mercor, micro1 and similar platforms',
+      company: 'Self-employed, remote · Outlier, Mercor, micro1 and others',
       period: 'Nov 2025 – Present',
       /* Empty on purpose: /about renders this role's bullets in full, and
          the practices live in the stack's "AI evaluation" row. Four tags
@@ -225,34 +227,44 @@ export const resumeContent = {
     },
   ] as Role[],
 
-  /* The master is the developer document, so it carries the work itself.
-     Neither one-page version can afford three projects at three lines each.
-     The todo app sits last until its offline-first revamp merges: the line
-     describes only what the live deploy does, and the two finished projects
-     are the stronger first read until then. */
+  /* The Projects rule (CLAUDE.md): every version lists only its strongest
+     projects, inside the two-page limit, and when a stronger one arrives the
+     weakest comes off the resume, never off the site. The evaluation sample
+     leads wherever projects appear. The master carries the work itself; the
+     AI version carries only the sample, because a health-AI reader is hiring
+     for exactly that, and the rest is frontend work it skims. Space Tourism came
+     off when the sample and the rebuilt todo app went on: it is the simplest
+     of the four, and it is still on /work. */
   projects: [
     {
+      name: 'Renal dose check (AI agent benchmark)',
+      line: 'A benchmark task that tests whether AI agents can check drug doses from a messy patient chart; simulated agents prove each mistake is caught.',
+      showcase: 'https://anthonyugwuja.dev/work/renal-dosing-task',
+      repo: 'https://github.com/teesmile/renal-dosing-task',
+      place: { default: 0, ai: 0 } as Placement,
+    },
+    {
       name: 'React Todo / Productivity App',
-      line: 'Next.js todo app with TanStack Query hooks over an IndexedDB store, and editing in place from the list.',
-      url: 'https://todo-app-tsc-mauve.vercel.app/',
+      line: 'Local-first task list on IndexedDB: due-date groups, edit in place, Undo, persistent filters.',
+      url: 'https://todo.anthonyugwuja.dev',
       repo: 'https://github.com/teesmile/todo-app-tsc',
-      place: { default: 2 } as Placement,
+      place: { default: 1 } as Placement,
     },
     {
       name: 'E-Commerce Product Page',
       line: 'Product page with a gallery, cart state and one responsive layout built from a design file.',
-      url: 'https://e-commerce-product-page-one-ashy.vercel.app/',
+      url: 'https://shop.anthonyugwuja.dev',
       repo: 'https://github.com/teesmile/e-commerce-product-page',
-      place: { default: 0 } as Placement,
+      place: { default: 2 } as Placement,
     },
     {
       name: 'Space Tourism Website',
       line: 'Four content types sharing one navigation shell, spacing system and page transitions.',
-      url: 'https://space-tourism-toni.vercel.app/',
+      url: 'https://space.anthonyugwuja.dev',
       repo: 'https://github.com/teesmile/space-tourism',
-      place: { default: 1 } as Placement,
+      place: {} as Placement,
     },
-  ],
+  ] as { name: string; line: string; url?: string; showcase?: string; repo: string; place: Placement }[],
 
   /* Reverse chronological, like the experience section. Mixing the two
      orders in one document is the kind of small inconsistency a careful
@@ -288,13 +300,12 @@ export const resumeContent = {
   ],
 
   /* One line, and it is the point of the AI version: a second language is
-     evaluation work there, not a personal detail. On a fintech or operations
-     desk it is the line that earns its space least, and the general version
-     is one line over a page — so that is the line that goes. Add
-     `general: 0` here to put it back. */
+     evaluation work there, not a personal detail. Every version carries it.
+     The general version once dropped it to stay on one page; under the
+     two-page Resume rule that reason no longer exists. */
   languages: {
     text: 'English (fluent), Igbo (native)',
-    place: { default: 0, ai: 0 },
+    place: { default: 0, ai: 0, general: 0 },
   } as Line,
 
   skills: [

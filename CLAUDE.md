@@ -26,6 +26,18 @@ Next.js 16 App Router, React 19, Tailwind 4, TypeScript. Content lives in `src/c
 - Run `pnpm lint && pnpm build` before calling any task done.
 - Commits and pull requests in this repo never carry AI attribution: no `Co-Authored-By: Claude …` trailer in commit messages and no "Generated with Claude Code" line in PR descriptions. `.claude/settings.json` turns Claude Code's attribution off; this rule holds even if that setting is missing or overridden.
 
+## Projects rule
+- On the site, projects are never deleted. `/work` lists the AI evaluation work first, then projects with the strongest and newest first; simpler ones move down the list, they don't come off it.
+- On every resume variant, only the strongest projects are listed, within the two-page limit. Whenever a stronger project is added, the weakest comes off the resume, not off the site.
+- The AI evaluation work stays first: first entry on `/work`, and first project on any resume that lists projects.
+- Order lives in data: the `projects` array in `src/config/site.ts` for the site, and each project's `place` in `src/content/resume.ts` for the resumes (a missing key means "not on that version").
+
+## Resume rule
+- Every variant may run to two pages; `pnpm resume` fails above two.
+- Readable, never crammed: body text at least 10.5pt (11pt by default), headings clearly larger, normal margins (0.75in).
+- A single job, project or qualification never splits across the page break, and a section heading never sits alone at the foot of a page.
+- No stub second page: if page two would hold only a few lines (under 12), `pnpm resume` tightens to one page (spacing and margins, body at the 10.5pt floor); if it still can't, the check fails.
+
 ## Codex review protocol
 When Codex reviews a change:
 - Answer each point with AGREE or DISAGREE and the reason.

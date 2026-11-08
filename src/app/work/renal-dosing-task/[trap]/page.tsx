@@ -1,0 +1,174 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { pageMetadata } from "@/lib/metadata";
+import { highlight } from "@/lib/highlight";
+import Reveals from "@/components/layout/reveals";
+import { describeTest, findTrap, renal, renalTraps } from "@/content/renal-dosing";
+import { ChartRows, FictionalNote, TestName, WalkColumn, familyLabel } from "@/features/renal/parts";
+
+type Params = { params: Promise<{ trap: string }> };
+
+/* Ten pages, all known at build time. Anything else is a 404 rather than a
+   render attempt. */
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return renalTraps.map((trap) => ({ trap: trap.slug }));
+}
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const trap = findTrap((await params).trap);
+  if (!trap) return {};
+
+  return pageMetadata({
+    title: `${trap.name} — renal dose check`,
+    description: `${trap.why} One trap in a sample AI-agent benchmark, with the patient's rows, both readings and the test that catches it. Fictional drugs; not clinical guidance.`,
+    path: `/work/renal-dosing-task/${trap.slug}`,
+    type: "article",
+  });
+}
+
+export default async function TrapPage({ params }: Params) {
+  const trap = findTrap((await params).trap);
+  if (!trap) notFound();
+
+  const index = renalTraps.indexOf(trap);
+  const previous = renalTraps[index - 1];
+  const next = renalTraps[index + 1];
+
+  const own = trap.failures.filter((failure) => describeTest(failure.test).patient === trap.patient_id);
+  const sources = await Promise.all(
+    Array.from(new Set(own.map((failure) => describeTest(failure.test).name))).map(async (name) => ({
+      name,
+      html: await highlight(
+        name === "test_clearance_within_one_percent" ? renal.testSource.clearance : renal.testSource.flags,
+        "python",
+      ),
+    })),
+  );
+
+  return (
+    <article className="px-6 py-20 md:py-24">
+      <Reveals />
+      <div className="mx-auto max-w-(--container-view)">
+        <Link href="/work/renal-dosing-task" className="text-2xs text-muted transition-colors hover:text-ink">
+          <span aria-hidden="true">&larr;</span> Renal dose check
+        </Link>
+
+        <p className="mt-8 text-2xs text-muted">
+          {trap.kind === "trap" ? "Trap" : "Valid look-alike"} &middot; {familyLabel(trap.family)} &middot; patient{" "}
+          {trap.patient_id}
+        </p>
+        <h1 data-reveal className="mt-3 max-w-[22ch] text-xl text-ink md:text-2xl">
+          {trap.name}
+        </h1>
+        <p data-reveal className="mt-6 max-w-(--container-reading) text-base text-ink">
+          {trap.why}
+        </p>
+
+        <div className="mt-8">
+          <FictionalNote compact />
+        </div>
+
+        <section className="mt-16" aria-labelledby="rows">
+          <h2 data-reveal id="rows" className="text-lg text-ink">The patient&apos;s rows</h2>
+          <p data-reveal className="mt-4 max-w-(--container-reading) text-sm text-muted">
+            Exactly what the agent sees for {trap.patient_id}, copied from the chart. The value this mistake misreads is underlined.
+          </p>
+          <div data-reveal>
+            <ChartRows trap={trap} />
+          </div>
+        </section>
+
+        <section className="mt-16" aria-labelledby="readings">
+          <h2 data-reveal id="readings" className="text-lg text-ink">Two readings of the same rows</h2>
+          <p data-reveal className="mt-4 max-w-(--container-reading) text-sm text-muted">
+            Every step is shown. Where the careless reading goes wrong, the value is underlined.
+          </p>
+          <div data-reveal className="mt-8 grid gap-12 md:grid-cols-2 md:gap-10">
+            <WalkColumn
+              title="What a careless agent computes"
+              lead={trap.slip}
+              walk={trap.careless}
+              against={trap.correct}
+              mark
+              sex={trap.patient.sex}
+              age={trap.patient.age_years}
+            />
+            <WalkColumn
+              title="The correct answer"
+              lead="Reads the unit, status, frequency and time columns as the instruction says, and flags only a daily dose strictly over the band's limit."
+              walk={trap.correct}
+              against={trap.careless}
+              sex={trap.patient.sex}
+              age={trap.patient.age_years}
+            />
+          </div>
+        </section>
+
+        <section className="mt-16" aria-labelledby="test">
+          <h2 data-reveal id="test" className="text-lg text-ink">
+            {own.length > 1 ? "The tests that catch it" : "The test that catches it"}
+          </h2>
+          <p data-reveal className="mt-4 max-w-(--container-reading) text-sm text-muted">
+            The careless output, graded by the task&apos;s real test file. This is what pytest printed.
+          </p>
+          <ul data-reveal className="mt-6 flex max-w-(--container-reading) flex-col gap-4">
+            {own.map((failure) => (
+              <li key={failure.test} className="border-l border-line pl-4">
+                <p className="font-mono text-2xs text-ink">
+                  <TestName test={failure.test} />
+                  <span className="mt-1 block break-all text-muted">{failure.test}</span>
+                </p>
+                <pre className="mt-2 overflow-x-auto font-mono text-2xs text-ink">{failure.message}</pre>
+              </li>
+            ))}
+          </ul>
+
+          {sources.map((source) => (
+            <figure key={source.name} data-reveal className="mt-8 max-w-(--container-reading) border-y border-line py-4">
+              <figcaption className="font-mono text-2xs text-muted">tests/test_outputs.py</figcaption>
+              <div className="mt-3" dangerouslySetInnerHTML={{ __html: source.html }} />
+            </figure>
+          ))}
+
+          {trap.also_changed.length ? (
+            <p data-reveal className="mt-8 max-w-(--container-reading) text-sm text-muted">
+              The same mistake also changes {trap.also_changed.join(", ")}, which share this trap family, and
+              fails {trap.failures.length - own.length} more of their tests. No patient from another family moves.
+            </p>
+          ) : (
+            <p data-reveal className="mt-8 max-w-(--container-reading) text-sm text-muted">
+              No other patient&apos;s answer moves under this mistake, so this one failure is the whole signal.
+            </p>
+          )}
+        </section>
+
+        <nav aria-label="Other traps" className="mt-20 grid gap-6 border-t border-line pt-6 text-sm sm:grid-cols-2">
+          {previous ? (
+            <Link href={`/work/renal-dosing-task/${previous.slug}`} className="text-muted transition-colors hover:text-ink">
+              <span aria-hidden="true">&larr;</span> {previous.name}
+            </Link>
+          ) : (
+            <Link href="/work/renal-dosing-task" className="text-muted transition-colors hover:text-ink">
+              <span aria-hidden="true">&larr;</span> All traps
+            </Link>
+          )}
+          {next ? (
+            <Link
+              href={`/work/renal-dosing-task/${next.slug}`}
+              className="text-muted transition-colors hover:text-ink sm:text-right"
+            >
+              {next.name} <span aria-hidden="true">&rarr;</span>
+            </Link>
+          ) : (
+            <Link href="/work/renal-dosing-task#evidence" className="text-muted transition-colors hover:text-ink sm:text-right">
+              The evidence <span aria-hidden="true">&rarr;</span>
+            </Link>
+          )}
+        </nav>
+      </div>
+    </article>
+  );
+}

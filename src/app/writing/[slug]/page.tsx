@@ -29,6 +29,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     path: `/writing/${entry.slug}`,
     type: "article",
     image: `/writing/${entry.slug}/opengraph-image`,
+    noindex: Boolean(entry.draft),
   });
 }
 
@@ -55,6 +56,11 @@ export default async function WritingEntryPage({ params }: Params) {
 
       <div data-sheet className="relative z-10 min-h-screen bg-surface px-6 py-16 md:py-20">
         <div className="mx-auto max-w-(--container-view)">
+          {entry.draft ? (
+            <p className="mb-8 max-w-(--container-reading) border-y border-line py-3 text-2xs text-muted">
+              Draft. Not listed on Writing and not indexed until it&apos;s published.
+            </p>
+          ) : null}
           <p className="max-w-(--container-reading) text-base text-muted">
             {entry.standfirst}
           </p>
@@ -72,6 +78,23 @@ export default async function WritingEntryPage({ params }: Params) {
                     ))}
                   </div>
                   <Figure name={section.figure} />
+                  {section.links?.length ? (
+                    <ul className="mt-5 flex flex-col gap-2 text-sm">
+                      {section.links.map((link) => (
+                        <li key={link.href}>
+                          <a
+                            href={link.href}
+                            {...(link.href.startsWith("http")
+                              ? { target: "_blank", rel: "noopener noreferrer" }
+                              : {})}
+                            className="text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
+                          >
+                            {link.text}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
                 </section>
               ))}
             </div>

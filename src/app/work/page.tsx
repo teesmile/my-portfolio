@@ -23,11 +23,13 @@ export default function WorkPage() {
         <h1 data-reveal className="max-w-[18ch] text-xl text-ink md:text-2xl">
           {portfolioConfig.copy.workHeading}
         </h1>
+        {/* The evaluation work leads, then projects strongest and newest
+            first. See the Projects rule in CLAUDE.md. */}
         <div className="mt-16 flex flex-col gap-20">
+          <EvaluationEntry />
           {portfolioConfig.projects.map((project, index) => (
             <WorkEntry key={project.slug} project={project} index={index} />
           ))}
-          <EvaluationEntry />
         </div>
 
         <Link
