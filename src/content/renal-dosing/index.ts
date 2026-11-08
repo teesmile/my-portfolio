@@ -86,6 +86,9 @@ type TrapCopy = {
   /** What the careless agent does, in plain words. */
   slip: string;
   culprit: Culprit;
+  /** Show the correct clearance as "calculated": for a frail, low-muscle
+   *  patient the Cockcroft–Gault figure is an estimate worth naming as one. */
+  calculated?: true;
 };
 
 /* Order follows the task's own README: the four trap families first, the two
@@ -171,6 +174,7 @@ const copy: TrapCopy[] = [
     why: "A frail 90-year-old with little muscle has a low creatinine. Guess the unit from the number and she looks like she's in kidney failure.",
     slip: "Applies a blanket rule, values under 20 must be mg/dL, instead of reading the unit column.",
     culprit: "creatinine_unit",
+    calculated: true,
   },
   {
     slug: "genuine-150-kg",
@@ -255,7 +259,7 @@ export function describeTest(test: string) {
 export function shiftOf(trap: Trap) {
   const { correct, careless } = trap;
   if (correct.crcl_ml_min !== careless.crcl_ml_min) {
-    return `CrCl ${correct.crcl_ml_min} → ${careless.crcl_ml_min}`;
+    return `${trap.calculated ? "calculated " : ""}CrCl ${correct.crcl_ml_min} → ${careless.crcl_ml_min}`;
   }
   const added = careless.flagged_order_ids.filter((id) => !correct.flagged_order_ids.includes(id));
   const dropped = correct.flagged_order_ids.filter((id) => !careless.flagged_order_ids.includes(id));

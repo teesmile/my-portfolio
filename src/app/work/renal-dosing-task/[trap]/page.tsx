@@ -101,6 +101,7 @@ export default async function TrapPage({ params }: Params) {
               lead="Reads the unit, status, frequency and time columns as the instruction says, and flags only a daily dose strictly over the band's limit."
               walk={trap.correct}
               against={trap.careless}
+              crclLabel={trap.calculated ? "Calculated CrCl" : "CrCl"}
               sex={trap.patient.sex}
               age={trap.patient.age_years}
             />
