@@ -219,7 +219,10 @@ export function WalkColumn({
   sex,
   age,
   mark = false,
+  crclLabel = "CrCl",
 }: {
+  /** "Calculated CrCl" where the page should name the figure an estimate. */
+  crclLabel?: string;
   /** Underline what differs from `against`. Only the careless reading marks:
    *  the squiggle means "misread", and the correct column has nothing wrong. */
   mark?: boolean;
@@ -257,14 +260,14 @@ export function WalkColumn({
             </Value>,
           ],
           [
-            "CrCl",
+            crclLabel,
             <Value key="k" off={crclOff}>
               (140 − {age}) × {fmt(walk.weight.kg)} ÷ (72 × {fmt(walk.creatinine.mg_dl, 2)})
               {sex === "F" ? " × 0.85" : ""} = {walk.crcl_ml_min} mL/min
             </Value>,
           ],
         ].map(([label, value]) => (
-          <div key={label as string} className="grid grid-cols-[6.5rem_1fr] gap-3 border-b border-line py-2.5">
+          <div key={label as string} className="grid grid-cols-[8rem_1fr] gap-3 border-b border-line py-2.5">
             <dt className="text-muted">{label}</dt>
             <dd className="min-w-0 break-words text-ink">{value}</dd>
           </div>
