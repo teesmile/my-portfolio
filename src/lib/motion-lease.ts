@@ -15,7 +15,7 @@
  */
 type Listener = (owner: string | null) => void;
 
-const PRIORITY: Record<string, number> = { deck: 2, tools: 1 };
+const PRIORITY: Record<string, number> = { deck: 3, renal: 2, tools: 1 };
 
 const wanting = new Set<string>();
 const listeners = new Set<Listener>();
