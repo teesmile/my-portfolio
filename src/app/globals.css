@@ -568,8 +568,12 @@
   30%, 100% { opacity: 0; transform: scaleX(1); }
 }
 
+/* Hidden by opacity as well as by the dash: an undrawn dash still leaves
+   antialiased specks at the path's ends, which made the loop's first frame
+   differ from its last. */
 @keyframes rl-link {
-  0%, 25% { stroke-dashoffset: 1; opacity: 1; }
+  0%, 25% { stroke-dashoffset: 1; opacity: 0; }
+  25.5% { stroke-dashoffset: 1; opacity: 1; }
   32.5%, 90% { stroke-dashoffset: 0; opacity: 1; }
   97.5%, 100% { stroke-dashoffset: 0; opacity: 0; }
 }
