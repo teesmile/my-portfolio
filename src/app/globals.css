@@ -20,7 +20,7 @@
   /* Lint squiggle and the deck's warning mark. Content colour, not chrome. */
   --warn: #ff6b5e;
   /* The wrong reading in the renal loop: text, so it needs text contrast.
-     The same red in dark (5.9:1 on --raised); darker in light. */
+     The same red in dark (6.4:1 on --raised); darker in light. */
   --wrong: #ff6b5e;
   --surface: #0c0d0f;
   --raised: #15171a;
@@ -52,7 +52,7 @@
   --accent-strong: #f0b429;
   --accent-ink: #0c0d0f;
   --focus-halo: #14171a;
-  /* 5.3:1 on light --raised: --warn there is only 2.6:1. */
+  /* 5.5:1 on light --raised: --warn there is only 2.8:1. */
   --wrong: #c0362b;
 }
 
