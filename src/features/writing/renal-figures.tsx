@@ -140,7 +140,9 @@ export function MagnitudeRule() {
         "creatinine under 20 must be mg/dL",
         `${frail.patient_id} 16 µmol/L`,
         `16 mg/dL, CrCl ${frail.careless.crcl_ml_min}`,
-        `CrCl ${frail.correct.crcl_ml_min}`,
+        /* "Calculated": in a frail, low-muscle patient the Cockcroft–Gault
+           figure is an estimate worth flagging as one. */
+        `calculated CrCl ${frail.correct.crcl_ml_min}`,
         `flags ${frail.careless.flagged_order_ids.length}, should flag ${frail.correct.flagged_order_ids.length}`,
       )}
     </Frame>
