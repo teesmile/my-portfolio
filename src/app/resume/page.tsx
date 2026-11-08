@@ -15,7 +15,7 @@ export const metadata: Metadata = pageMetadata({
    the resume is read as a document rather than navigated. */
 function SectionHeading({ label }: { label: string }) {
   return (
-    <div className="mt-10 first:mt-0">
+    <div data-section-heading className="mt-10 first:mt-0">
       <div className="mb-2 h-0.5 w-10 bg-accent-strong" aria-hidden="true" />
       <h2 className="text-2xs tracking-wide text-muted">{label}</h2>
     </div>
@@ -117,7 +117,7 @@ export default async function ResumePage({
               <article key={`${role.title}-${role.period}`}>
                 <h3 className="font-display text-base text-ink">{role.title}</h3>
                 <p className="mt-0.5 text-2xs text-muted">
-                  {role.company} &middot; {role.period}
+                  {role.company} &middot; <span className="whitespace-nowrap">{role.period}</span>
                 </p>
                 {role.note ? (
                   <p className="mt-0.5 text-2xs text-muted">{role.note}</p>
@@ -149,10 +149,26 @@ export default async function ResumePage({
                   {/* Scheme off, trailing slash off: the address a person
                       would type, and one character less to wrap. The href
                       keeps the URL exactly as the project config has it. */}
-                  <a className="whitespace-nowrap" href={project.url}>
-                    Live: {project.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
-                  </a>
-                  {" | "}
+                  {/* A benchmark task has no live deploy, only its source;
+                      the line shows what exists rather than a blank label. */}
+                  {/* Live for an app, Showcase for a benchmark's write-up
+                      page; then the source. Whichever exist, in that order. */}
+                  {project.url ? (
+                    <>
+                      <a className="whitespace-nowrap" href={project.url}>
+                        Live: {project.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                      </a>
+                      {" | "}
+                    </>
+                  ) : null}
+                  {project.showcase ? (
+                    <>
+                      <a className="whitespace-nowrap" href={project.showcase}>
+                        Showcase: {project.showcase.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                      </a>
+                      {" | "}
+                    </>
+                  ) : null}
                   <a className="whitespace-nowrap" href={project.repo}>
                     Code: {project.repo.replace(/^https?:\/\//, "")}
                   </a>
@@ -167,13 +183,20 @@ export default async function ResumePage({
           <div className="mt-3 flex flex-col gap-3">
             {resume.education.map((item) => (
               <article key={item.title}>
+                {/* Every date range is nowrap, here and in the role and
+                    credential lines: a range broken across lines ("Nov 2025
+                    –" / "Present") reads as two facts. Nowrap rather than
+                    U+00A0, which would also end up in the extracted text an
+                    ATS parses. pnpm resume checks every range survives on
+                    one extracted line. */}
                 {/* Qualification, institution and dates are one fact each and
                     read as one line. Experience entries earn the stacked
                     treatment because they carry bullets underneath. */}
                 <p className="text-2xs leading-6">
                   <span className="font-display text-sm text-ink">{item.title}</span>
                   <span className="text-muted">
-                    {" "}&mdash; {item.institution} &middot; {item.period}
+                    {" "}&mdash; {item.institution} &middot;{" "}
+                    <span className="whitespace-nowrap">{item.period}</span>
                   </span>
                 </p>
                 {item.note ? (
@@ -199,7 +222,7 @@ export default async function ResumePage({
                     stop matching. */}
                 {index > 0 ? " | " : null}
                 <span className="text-ink">{credential.label}</span>, {credential.issuer}
-                {credential.date ? <> &middot; {credential.date}</> : null}
+                {credential.date ? <> &middot; <span className="whitespace-nowrap">{credential.date}</span></> : null}
               </Fragment>
             ))}
           </p>

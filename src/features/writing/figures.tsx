@@ -2,6 +2,14 @@
    thing rather than collected at the top. Each one shows a mechanism: what
    goes in, what comes out, and where the problem is. */
 
+import {
+  GradingEvidence,
+  MagnitudeRule,
+  OneRowTwoReadings,
+  ToleranceMargin,
+  TrapIsolation,
+} from "./renal-figures";
+
 const label = { fontSize: 8, fill: "var(--muted)" } as const;
 const strong = { fontSize: 8, fill: "var(--ink)" } as const;
 
@@ -204,6 +212,11 @@ function SrcsetPick() {
 }
 
 const figures: Record<string, () => React.ReactElement> = {
+  "renal-one-row": OneRowTwoReadings,
+  "renal-trap-isolation": TrapIsolation,
+  "renal-magnitude-rule": MagnitudeRule,
+  "renal-grading-evidence": GradingEvidence,
+  "renal-tolerance-margin": ToleranceMargin,
   "anchors-vs-routes": AnchorsVsRoutes,
   "state-source": StateSource,
   "cut-vs-continuous": CutVsContinuous,

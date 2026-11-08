@@ -31,118 +31,144 @@ const LEAVE = 0.99;
  * prevent. Arming also sweeps anything already past the line, so nothing can
  * get stuck invisible.
  */
-export default function Reveals() {
+export default function Reveals({ initial = 2 }: { initial?: number }) {
   useGSAP(() => {
     if (prefersReducedMotion()) return;
 
-    const targets = gsap.utils.toArray<HTMLElement>('[data-reveal]');
-    if (targets.length === 0) return;
+    /* With nothing to reveal on load, there is nothing to measure on load
+       either. Setting up means hiding every target and building triggers
+       that read their positions, and on the home page that forced the
+       browser to lay out sections it was otherwise skipping
+       (content-visibility: auto) in the middle of the hero entrance. So the
+       whole rule waits for the first scroll, then sweeps what is in view. */
+    if (initial === 0) {
+      let teardown: (() => void) | undefined;
+      const start = () => {
+        teardown = setupReveals(initial, true);
+      };
+      window.addEventListener('scroll', start, { once: true, passive: true });
+      return () => {
+        window.removeEventListener('scroll', start);
+        teardown?.();
+      };
+    }
 
-    const onLoad = targets.slice(0, 2);
-    const rest = targets.slice(2);
+    return setupReveals(initial, false);
+  });
 
-    const show = (els: HTMLElement[]) =>
-      gsap.to(els, {
-        opacity: 1,
-        y: 0,
-        duration: DURATION.base,
-        ease: EASE.out,
-        stagger: STAGGER.tight,
-        overwrite: 'auto',
-      });
+  return null;
+}
 
-    const hide = (els: HTMLElement[]) =>
-      gsap.to(els, {
-        opacity: 0,
-        y: 14,
-        duration: DURATION.fast,
-        ease: EASE.in,
-        overwrite: 'auto',
-      });
+/** The rule itself. Returns its cleanup. */
+function setupReveals(initial: number, armNow: boolean) {
+  const targets = gsap.utils.toArray<HTMLElement>('[data-reveal]');
+  if (targets.length === 0) return;
 
-    gsap.set([...onLoad, ...rest], { opacity: 0, y: 14 });
-    gsap.to(onLoad, {
+  /* `initial` is 0 on the home page: the hero already has its own
+     entrance, and the page's one orchestrated moment should not share the
+     first second with a second one. */
+  const onLoad = targets.slice(0, initial);
+  const rest = targets.slice(initial);
+
+  const show = (els: HTMLElement[]) =>
+    gsap.to(els, {
       opacity: 1,
       y: 0,
       duration: DURATION.base,
       ease: EASE.out,
-      stagger: STAGGER.base,
+      stagger: STAGGER.tight,
+      overwrite: 'auto',
     });
 
-    let armed = false;
-    /* ?markers paints ScrollTrigger's start/end lines on the page, which is
-       the only way to see why a trigger fired where it did. */
-    const markers = new URLSearchParams(window.location.search).has('markers');
-
-    /* `markers` is honoured at runtime but missing from BatchVars in the
-       types, so it is spread in and each object cast once. */
-    const debug = markers ? { markers: true } : {};
-
-    /* Two thresholds, not one check at a single threshold.
-       ScrollTrigger fires onLeaveBack the moment the start line is crossed,
-       where the element's top is by definition at that line — so testing
-       "is it below a lower line yet" inside that callback can only ever
-       answer no, and nothing was ever reversed. Entering uses the 88% line,
-       leaving uses the 99% line, and the gap between them is the hysteresis
-       a reader resting at the boundary falls into. */
-    const entering = ScrollTrigger.batch(rest, {
-      ...debug,
-      start: `top ${ENTER * 100}%`,
-      onEnter: (batch) => {
-        if (armed) show(batch as HTMLElement[]);
-      },
-      onEnterBack: (batch) => {
-        if (armed) show(batch as HTMLElement[]);
-      },
-    } as ScrollTrigger.BatchVars);
-
-    const leaving = ScrollTrigger.batch(rest, {
-      start: `top ${LEAVE * 100}%`,
-      onLeaveBack: (batch) => hide(batch as HTMLElement[]),
-    } as ScrollTrigger.BatchVars);
-
-    const triggers = [...entering, ...leaving];
-
-    const arm = () => {
-      armed = true;
-      const reached = rest.filter(
-        (el) => el.getBoundingClientRect().top < window.innerHeight * ENTER,
-      );
-      if (reached.length) show(reached);
-    };
-
-    window.addEventListener('scroll', arm, { once: true, passive: true });
-
-    /* Arming on first scroll is what stops everything arriving at once — but
-       a page with nothing to scroll would then never arm at all, and a reader
-       who simply does not scroll would sit in front of a half-empty page. So:
-       arm immediately if there is no scrolling to be done, and after a second
-       regardless. Both sweep whatever is already in view. */
-    const canScroll = () =>
-      document.documentElement.scrollHeight > window.innerHeight + 2;
-
-    if (!canScroll()) arm();
-    const patience = gsap.delayedCall(1, () => {
-      if (!armed) arm();
+  const hide = (els: HTMLElement[]) =>
+    gsap.to(els, {
+      opacity: 0,
+      y: 14,
+      duration: DURATION.fast,
+      ease: EASE.in,
+      overwrite: 'auto',
     });
 
-    /* Start positions measured before fonts and images settle are wrong, and
-       wrong start positions make every trigger fire at once. Refresh when
-       each of those finishes, and once more after the route transition has
-       stopped moving the view. */
-    const refresh = () => ScrollTrigger.refresh();
-    document.fonts.ready.then(refresh);
-    window.addEventListener('load', refresh);
-    const afterTransition = gsap.delayedCall(DURATION.base + 0.15, refresh);
-
-    return () => {
-      patience.kill();
-      window.removeEventListener('scroll', arm);
-      window.removeEventListener('load', refresh);
-      afterTransition.kill();
-      triggers.forEach((trigger) => trigger.kill());
-    };
+  gsap.set([...onLoad, ...rest], { opacity: 0, y: 14 });
+  gsap.to(onLoad, {
+    opacity: 1,
+    y: 0,
+    duration: DURATION.base,
+    ease: EASE.out,
+    stagger: STAGGER.base,
   });
 
-  return null;
+  let armed = false;
+  /* ?markers paints ScrollTrigger's start/end lines on the page, which is
+     the only way to see why a trigger fired where it did. */
+  const markers = new URLSearchParams(window.location.search).has('markers');
+
+  /* `markers` is honoured at runtime but missing from BatchVars in the
+     types, so it is spread in and each object cast once. */
+  const debug = markers ? { markers: true } : {};
+
+  /* Two thresholds, not one check at a single threshold.
+     ScrollTrigger fires onLeaveBack the moment the start line is crossed,
+     where the element's top is by definition at that line — so testing
+     "is it below a lower line yet" inside that callback can only ever
+     answer no, and nothing was ever reversed. Entering uses the 88% line,
+     leaving uses the 99% line, and the gap between them is the hysteresis
+     a reader resting at the boundary falls into. */
+  const entering = ScrollTrigger.batch(rest, {
+    ...debug,
+    start: `top ${ENTER * 100}%`,
+    onEnter: (batch) => {
+      if (armed) show(batch as HTMLElement[]);
+    },
+    onEnterBack: (batch) => {
+      if (armed) show(batch as HTMLElement[]);
+    },
+  } as ScrollTrigger.BatchVars);
+
+  const leaving = ScrollTrigger.batch(rest, {
+    start: `top ${LEAVE * 100}%`,
+    onLeaveBack: (batch) => hide(batch as HTMLElement[]),
+  } as ScrollTrigger.BatchVars);
+
+  const triggers = [...entering, ...leaving];
+
+  const arm = () => {
+    armed = true;
+    const reached = rest.filter(
+      (el) => el.getBoundingClientRect().top < window.innerHeight * ENTER,
+    );
+    if (reached.length) show(reached);
+  };
+
+  window.addEventListener('scroll', arm, { once: true, passive: true });
+
+  /* Arming on first scroll is what stops everything arriving at once — but
+     a page with nothing to scroll would then never arm at all, and a reader
+     who simply does not scroll would sit in front of a half-empty page. So:
+     arm immediately if there is no scrolling to be done, and after a second
+     regardless. Both sweep whatever is already in view. */
+  const canScroll = () =>
+    document.documentElement.scrollHeight > window.innerHeight + 2;
+
+  if (armNow || !canScroll()) arm();
+  const patience = gsap.delayedCall(1, () => {
+    if (!armed) arm();
+  });
+
+  /* Start positions measured before fonts and images settle are wrong, and
+     wrong start positions make every trigger fire at once. Refresh when
+     each of those finishes, and once more after the route transition has
+     stopped moving the view. */
+  const refresh = () => ScrollTrigger.refresh();
+  document.fonts.ready.then(refresh);
+  window.addEventListener('load', refresh);
+  const afterTransition = gsap.delayedCall(DURATION.base + 0.15, refresh);
+
+  return () => {
+    patience.kill();
+    window.removeEventListener('scroll', arm);
+    window.removeEventListener('load', refresh);
+    afterTransition.kill();
+    triggers.forEach((trigger) => trigger.kill());
+  };
 }

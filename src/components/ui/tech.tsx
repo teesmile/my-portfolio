@@ -3,6 +3,7 @@ import {
   siJavascript, siLinux, siNextdotjs, siNodedotjs, siPnpm, siPython, siReact,
   siTailwindcss, siTypescript, siVercel, siVite, siZod,
 } from "simple-icons";
+import { cn } from "@/lib/utils";
 
 type Icon = { hex: string; path: string };
 
@@ -33,9 +34,9 @@ function darkSafe(hex: string) {
   return contrast >= 3 ? `#${hex}` : "var(--ink)";
 }
 
-export function TechList({ items }: { items: string[] }) {
+export function TechList({ items, className }: { items: string[]; className?: string }) {
   return (
-    <ul className="flex flex-wrap gap-x-4 gap-y-2 text-2xs text-muted">
+    <ul className={cn("flex flex-wrap gap-x-4 gap-y-2 text-2xs text-muted", className)}>
       {items.map((item) => {
         const icon = icons[item];
 

@@ -45,7 +45,27 @@ function BytesBanner() {
   );
 }
 
+function ChartBanner() {
+  /* A ward chart as rows of hairlines, one cell underlined the way the hero
+     underlines its own flag: the whole piece is about that one cell. */
+  return (
+    <svg viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid slice" className="h-full w-full" role="img" aria-label="Rows of a ward chart with one creatinine unit underlined">
+      <rect width="1200" height="420" fill="var(--raised)" />
+      {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+        <g key={i}>
+          <line x1="90" y1={70 + i * 46} x2="1110" y2={70 + i * 46} stroke="var(--line)" strokeWidth="2" />
+          {[0, 1, 2, 3].map((c) => (
+            <rect key={c} x={110 + c * 250} y={84 + i * 46} width={c === 2 && i === 3 ? 120 : 90 + ((i + c) % 3) * 30} height="12" fill="var(--muted)" opacity={c === 2 && i === 3 ? 0.6 : 0.18} />
+          ))}
+        </g>
+      ))}
+      <path d="M610 222q10 -7 20 0t20 0t20 0t20 0t20 0t20 0" stroke="var(--warn)" strokeWidth="3" fill="none" />
+    </svg>
+  );
+}
+
 const art: Record<string, () => React.ReactElement> = {
+  "building-a-renal-dose-check-benchmark": ChartBanner,
   'every-section-is-a-route': RoutesBanner,
   'what-unoptimized-turns-off': BytesBanner,
 };
