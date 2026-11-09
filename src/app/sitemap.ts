@@ -20,7 +20,6 @@ import { renalTraps } from "@/content/renal-dosing";
 const STATIC_ROUTES = [
   "/",
   "/work",
-  "/work/archive",
   "/work/renal-dosing-task",
   "/writing",
   "/about",

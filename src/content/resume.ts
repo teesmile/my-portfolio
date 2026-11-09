@@ -70,9 +70,9 @@ export const resumeContent = {
     skills: 'Skills',
   },
   titles: {
-    default: 'Full-stack developer and AI evaluator · Registered pharmacist',
-    ai: 'AI evaluation specialist · Registered pharmacist',
-    general: 'AI evaluation and data quality specialist · Registered pharmacist',
+    default: 'Full-stack developer and AI evaluator · Pharmacist',
+    ai: 'AI evaluation specialist · Pharmacist',
+    general: 'AI evaluation and data quality specialist · Pharmacist',
   },
 
   /* Written out as text so a parser reads them, and linked so a human can
@@ -97,15 +97,15 @@ export const resumeContent = {
        merge says both things once and buys back the lines that kept
        Education off page one. */
     default: [
-      'Full-stack developer (React, Next.js, TypeScript, Node.js) and registered pharmacist who builds accessible product interfaces and evaluates AI model output, catching confident but wrong clinical answers.',
+      'Full-stack developer (React, Next.js, TypeScript, Node.js) and pharmacist who builds accessible product interfaces and evaluates AI model output, catching confident but wrong clinical answers.',
     ],
     ai: [
-      'Registered pharmacist who evaluates AI models and catches confident but incorrect answers in clinical and scientific content.',
+      'Pharmacist who evaluates AI models and catches confident but incorrect answers in clinical and scientific content.',
       'Authors and reviews expert-level evaluation tasks across text, image, video and terminal-based formats, grading for accuracy, instruction following, reasoning quality and safety.',
     ],
     general: [
       'AI training and evaluation specialist working on data quality: grading model output against detailed guidelines and flagging subtle factual and reasoning errors.',
-      'Registered pharmacist with front-line customer service, sales growth and regulated record-keeping experience.',
+      'Pharmacist with front-line customer service, sales growth and regulated record-keeping experience.',
     ],
   } as Record<Variant, string[]>,
 
@@ -234,7 +234,9 @@ export const resumeContent = {
      AI version carries only the sample, because a health-AI reader is hiring
      for exactly that, and the rest is frontend work it skims. Space Tourism came
      off when the sample and the rebuilt todo app went on: it is the simplest
-     of the four, and it is still on /work. */
+     of the four, and it is still on /work. Roasted then replaced the
+     E-Commerce page on the master: it has a server side, three external
+     services and real users, where the product page is a frontend build. */
   projects: [
     {
       name: 'Renal dose check (AI agent benchmark)',
@@ -251,11 +253,18 @@ export const resumeContent = {
       place: { default: 1 } as Placement,
     },
     {
+      name: 'Roasted',
+      line: 'Farcaster mini app that writes a roast from a user\'s profile and recent casts, turns their avatar into a meme, and shares the card as a cast.',
+      url: 'https://castroast.vercel.app',
+      repo: 'https://github.com/teesmile/roasted-app',
+      place: { default: 2 } as Placement,
+    },
+    {
       name: 'E-Commerce Product Page',
       line: 'Product page with a gallery, cart state and one responsive layout built from a design file.',
       url: 'https://shop.anthonyugwuja.dev',
       repo: 'https://github.com/teesmile/e-commerce-product-page',
-      place: { default: 2 } as Placement,
+      place: {} as Placement,
     },
     {
       name: 'Space Tourism Website',
@@ -295,7 +304,7 @@ export const resumeContent = {
   ],
 
   credentials: [
-    { label: 'Registered Pharmacist', issuer: 'Pharmacists Council of Nigeria', date: '', place: { default: 0, ai: 0, general: 0 } as Placement },
+    { label: 'Pharmacist', issuer: 'Pharmacists Council of Nigeria', date: '', place: { default: 0, ai: 0, general: 0 } as Placement },
     { label: 'AI Fluency Framework', issuer: 'Anthropic', date: 'Jul 2026', place: { default: 1, ai: 1, general: 1 } as Placement },
   ],
 

@@ -8,6 +8,7 @@ import { TechList } from "@/components/ui/tech";
 import StackRows from "@/features/about/stack-rows";
 import Reveals from "@/components/layout/reveals";
 import TechGlitch from "@/components/ui/tech-glitch";
+import { ExternalLinkIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = pageMetadata({
   title: "About",
@@ -17,7 +18,7 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default function AboutPage() {
-  const { copy, stack, timeline } = portfolioConfig;
+  const { copy, stack, timeline, talks } = portfolioConfig;
 
   return (
     <section className="px-4 sm:px-6 py-20 md:py-24">
@@ -57,6 +58,44 @@ export default function AboutPage() {
                   <span className="text-2xs text-muted">
                     {entry.track === "code" ? "code" : "pharmacy"}
                   </span>
+                </li>
+              ))}
+            </ol>
+
+            {/* The timeline's grid, so a talk reads as one more dated entry
+                on its track rather than as a separate kind of card. */}
+            <h2 className="mt-16 text-lg text-ink">Talks</h2>
+            <ol className="mt-6 flex max-w-(--container-reading) flex-col">
+              {talks.map((talk) => (
+                <li
+                  key={talk.title}
+                  data-reveal
+                  className="grid grid-cols-[6.5rem_1fr_auto] items-baseline gap-4 border-t border-line py-4 text-sm"
+                >
+                  <span className="text-2xs text-muted tabular-nums">{talk.period}</span>
+                  <div className="min-w-0">
+                    <p className="text-ink">{talk.title}</p>
+                    <p className="mt-1 text-2xs text-muted">{talk.venue}</p>
+                    <p className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-2xs">
+                      {[
+                        ["Slides", talk.slides],
+                        ["PDF", talk.pdf],
+                      ].map(([label, href]) => (
+                        <a
+                          key={label}
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
+                        >
+                          {label}
+                          <ExternalLinkIcon className="h-3 w-3" />
+                          <span className="sr-only">(opens in a new tab)</span>
+                        </a>
+                      ))}
+                    </p>
+                  </div>
+                  <span className="text-2xs text-muted">{talk.track}</span>
                 </li>
               ))}
             </ol>

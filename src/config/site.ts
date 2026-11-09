@@ -1,4 +1,3 @@
-import { resumeContent } from "@/content/resume";
 
 
 export type StackLayer = {
@@ -72,6 +71,34 @@ const projects: Project[] = [
     },
   },
   {
+    id: 4,
+    slug: "roasted",
+    preview: "/work/roasted.webp",
+    title: "Roasted",
+    /* Checked against teesmile/roasted-app at d84e741 and the live app on
+       2026-11-09: a real roast and its avatar meme ran end to end; the
+       upload guard is in src/lib/uploadGuard.ts. */
+    description:
+      "A Farcaster mini app that reads a user's profile and recent casts, writes a short roast of them, turns their avatar into a meme, and shares the result as a cast.",
+    role: "Design and build",
+    year: "2025",
+    tech: ["Next.js", "React", "TypeScript", "Farcaster Mini App SDK", "Neynar API", "Gemini", "Replicate", "Vercel Blob", "Tailwind CSS"],
+    link: "https://castroast.vercel.app",
+    repo: "https://github.com/teesmile/roasted-app",
+    highlights: [
+      "Runs inside Farcaster clients, where the mini app SDK fills in the signed-in user's handle",
+      "Three services at two speeds: the roast text shows as soon as Gemini answers, and the avatar meme from Replicate swaps in when it is ready",
+      "Sharing draws a 1080×1080 card on a canvas in the browser and uploads it, because a cast can only embed a public URL; outside Farcaster it downloads instead",
+      "Uploads only with a signed, single-use token issued with each roast: one 1080×1080 PNG up to 3 MB, five per minute per address, named by the server",
+    ],
+    architecture: {
+      dataModel: "No database: each roast is computed on request from the profile and its 30 most recent casts. Share cards are stored in Vercel Blob.",
+      api: "Next.js server actions: a Neynar lookup, the Gemini roast, a Replicate image edit, and a guarded Blob upload. API keys stay on the server.",
+      auth: "None of its own. Inside Farcaster the client supplies the viewer's identity; the upload token ties each share to the roast it came from.",
+      hosting: "Vercel, with a domain-signed manifest at /.well-known/farcaster.json that Farcaster checks before listing the app.",
+    },
+  },
+  {
     id: 2,
     slug: "ecommerce-product-page",
     preview: "/work/ecommerce-product-page.webp",
@@ -113,9 +140,10 @@ const projects: Project[] = [
 export const portfolioConfig = {
   name: "Anthony Ugwuja",
   brandName: "Teesmile",
-  /* The resume's own title line, not a copy of it: the share cards and the
-     document a recruiter downloads should never describe two people. */
-  title: resumeContent.titles.default,
+  /* The site's own title line, used on the share cards. It used to be the
+     resume's master title by reference; the CVs now say "Pharmacist" while
+     the site keeps "Registered pharmacist", so the site states its own. */
+  title: "Full-stack developer and AI evaluator · Registered pharmacist",
   /* Search and social copy. One title and one description for the home page,
      used by the root layout for <title>, Open Graph and Twitter alike, so the
      three cannot drift apart the way they did when each was typed out. */
@@ -164,7 +192,7 @@ export const portfolioConfig = {
   timeline: [
     { period: "2017 – 2023", label: "B.Pharm, University of Nigeria, Nsukka", track: "pharmacy" },
     { period: "2020", label: "First code, written during pharmacy school", track: "code" },
-    { period: "May 2022 – Sep 2022", label: "Full stack developer trainee, Zuri Team", track: "code" },
+    { period: "May 2022 – Sep 2022", label: "Full stack developer trainee, Zuri Team and I4G", track: "code" },
     { period: "Feb 2024", label: "Provisional pharmacist licence", track: "pharmacy" },
     { period: "Oct 2024 – Oct 2025", label: "Diploma in Frontend Engineering, AltSchool Africa", track: "code" },
     { period: "May 2025 – May 2026", label: "Pharmacy intern, Federal Medical Centre, Keffi", track: "pharmacy" },
@@ -173,6 +201,18 @@ export const portfolioConfig = {
     { period: "Aug 2026 – Present", label: "Pharmacist, NYSC, Nasarawa State University clinic", track: "pharmacy" },
     { period: "Oct 2026", label: "Full pharmacist licence", track: "pharmacy" },
   ] as { period: string | null; label: string; track: "pharmacy" | "code" }[],
+  // Talks on /about, in the timeline's grid. The deck is the talk as given:
+  // its own site, plus the PDF it exports.
+  talks: [
+    {
+      period: "Aug 2025",
+      title: "Basics of Antimicrobial Stewardship in Hospitals",
+      venue: "Pharmacy interns' presentation, Federal Medical Centre, Keffi",
+      slides: "https://talks.anthonyugwuja.dev",
+      pdf: "https://talks.anthonyugwuja.dev/presentation.pdf",
+      track: "pharmacy",
+    },
+  ] as { period: string; title: string; venue: string; slides: string; pdf: string; track: "pharmacy" | "code" }[],
   // The deck on /. Every example is written for this purpose, never taken from
   // paid evaluation work, and every bug is real enough to verify by reading.
   defects: [
@@ -335,25 +375,6 @@ export const portfolioConfig = {
   ],
   // /lab exists as a route but stays out of the nav until it holds one
   // experiment. An empty page linked from the nav is worse than no link.
-  // /work/archive. TODO(human): the other projects — year, stack, and links if
-  // they are still up. The two training rows below are what the spine already
-  // establishes; everything else needs your list.
-  archive: [
-    {
-      year: "2022",
-      title: "Zuri and I4G training projects",
-      stack: ["HTML", "CSS", "JavaScript"],
-      training: true,
-      link: null,
-    },
-    {
-      year: "2020",
-      title: "First projects, written during pharmacy school",
-      stack: ["HTML", "CSS"],
-      training: true,
-      link: null,
-    },
-  ] as { year: string; title: string; stack: string[]; training: boolean; link: string | null }[],
   // Grouped by layer, and only tools that appear in a listed project or role.
   // The data row stayed empty until something shipped with a database: the
   // todo app's sync (Supabase Postgres) is the first.
@@ -365,6 +386,9 @@ export const portfolioConfig = {
     { layer: "Backend", items: ["Node.js", "Python", "Django"] },
     { layer: "Data", items: ["Supabase", "PostgreSQL", "IndexedDB"] },
     { layer: "Infrastructure", items: ["Git", "GitHub", "Vercel", "pnpm", "Linux"] },
+    /* The services Roasted is built on. Four, so on /about the row merges
+       into the one above as "Infrastructure and services". */
+    { layer: "Services", items: ["Farcaster", "Neynar", "Gemini", "Replicate"] },
     /* Practices rather than tools: no logos exist for them, so the row draws
        them as text chips instead of borrowing an icon that means something
        else. */
@@ -393,14 +417,12 @@ export const portfolioConfig = {
     ],
     aboutStackHeading: "What I work with",
     workHeading: "Things I\u2019ve built, and what each one taught me.",
-    workArchiveLink: "Everything else, including the training work",
     writingHeading: "Decisions, and what they cost.",
     contactHeading: "Open to remote AI evaluation and full-stack work.",
     contactNote: "Email reaches me fastest.",
     labHeading: "Interaction experiments, one at a time.",
     labIntro:
       "Where I try the things a client project would not pay for, and where I settle arguments with a measurement instead of an opinion.",
-    archiveHeading: "Everything else.",
   },
   navLinks: [
     { name: "Work", href: "/work" },

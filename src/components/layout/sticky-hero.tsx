@@ -87,15 +87,49 @@ export default function StickyHero({
   }, []);
 
   useGSAP(() => {
+    const frame = frameRef.current!;
     const state = flipId ? takeFlip(flipId) : null;
+    const mm = gsap.matchMedia();
+
+    /* The desktop fade as the sheet rides up. It is created only once the
+       frame is at rest, and with explicit start values. It used to be a
+       `to` tween created alongside the Flip below: a `to` records its start
+       values when it first renders, so it captured the Flip's *starting*
+       pose — the frame translated down to where the card was and squashed to
+       its size. With scrub, every return to the top re-rendered that pose:
+       the image slid down the page and dimmed, and the sticky header, moved
+       over the footer, swallowed the footer's clicks. */
+    const addScrollFade = () => {
+      mm.add('(min-width: 768px) and (prefers-reduced-motion: no-preference)', () => {
+        const sheet = document.querySelector('[data-sheet]');
+        if (!sheet) return;
+
+        gsap.fromTo(
+          frame,
+          { opacity: 1, scale: 1 },
+          {
+            opacity: 0.4,
+            scale: 0.965,
+            ease: 'none',
+            immediateRender: false,
+            /* clamp(): on a wide screen the sheet's top is already inside the
+               viewport at load, so 'top bottom' lay above scroll 0 and the
+               hero rested part-faded (0.86) before any scroll. Clamped, the
+               fade starts at the page top. */
+            scrollTrigger: { trigger: sheet, start: 'clamp(top bottom)', end: 'top top', scrub: true },
+          },
+        );
+      });
+    };
 
     if (state && !prefersReducedMotion()) {
       Flip.from(state, {
-        targets: frameRef.current!,
+        targets: frame,
         scale: true,
         absolute: true,
         duration: DURATION.slow,
         ease: EASE.inOut,
+        onComplete: addScrollFade,
       });
 
       gsap.from(headingRef.current, {
@@ -105,21 +139,9 @@ export default function StickyHero({
         delay: 0.12,
         ease: EASE.out,
       });
+    } else {
+      addScrollFade();
     }
-
-    const mm = gsap.matchMedia();
-
-    mm.add('(min-width: 768px) and (prefers-reduced-motion: no-preference)', () => {
-      const sheet = document.querySelector('[data-sheet]');
-      if (!sheet || !frameRef.current) return;
-
-      gsap.to(frameRef.current, {
-        opacity: 0.4,
-        scale: 0.965,
-        ease: 'none',
-        scrollTrigger: { trigger: sheet, start: 'top bottom', end: 'top top', scrub: true },
-      });
-    });
 
     return () => mm.revert();
   });
@@ -148,7 +170,7 @@ export default function StickyHero({
       >
         {children}
         {scrim === 'frame' ? (
-          <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/55 to-transparent" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-surface via-surface/55 to-transparent" />
         ) : null}
 
         {/* The band: whatever else scrolls away, this is what remains.
