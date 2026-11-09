@@ -101,7 +101,12 @@ function Portrait() {
         src="/portrait-rim-v2.webp"
         alt={portfolioConfig.name}
         fill
-        priority
+        /* Next 16: `preload` replaces the deprecated `priority`, and neither
+           sets the image's own fetch priority. Without fetchPriority the
+           portrait was fetched at Low priority and could queue behind
+           scripts on a slow phone connection. */
+        preload
+        fetchPriority="high"
         sizes="(min-width: 1024px) 24rem, 7rem"
         className="object-contain"
       />
