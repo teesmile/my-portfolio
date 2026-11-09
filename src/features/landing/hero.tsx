@@ -31,9 +31,16 @@ export default function Hero() {
   const fixedWord = flagWords[flagWords.length - 1];
 
   return (
-    /* At least one screen tall, so the hero owns the first view on its own
-       and Selected work is always something you scroll to. */
-    <section className="editor-surface relative flex min-h-[calc(100dvh-var(--nav-height))] flex-col justify-center overflow-hidden px-4 py-16 sm:px-6 md:py-20">
+    /* A full screen tall, and pulled up under the fixed nav: the negative
+       margin cancels <main>'s top padding and the extra top padding puts the
+       content back where it was, so the hero's surface and glow run to the
+       very top of the screen (under the status bar too, with
+       viewport-fit: cover) while the nav is transparent over it.
+       data-home-hero is what the nav watches to turn solid. */
+    <section
+      data-home-hero
+      className="editor-surface relative -mt-(--nav-height) flex min-h-dvh flex-col justify-center overflow-hidden px-4 pb-16 pt-[calc(var(--nav-height)+4rem)] sm:px-6 md:pb-20 md:pt-[calc(var(--nav-height)+5rem)]"
+    >
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_55%_at_22%_28%,var(--ill-glow),transparent_70%),radial-gradient(38%_45%_at_82%_26%,var(--ill-glow),transparent_70%)]"
