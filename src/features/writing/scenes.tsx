@@ -7,10 +7,14 @@ import { ILL } from "@/lib/illustration";
  * piece is about — a ward chart, a browser, the actual portrait — rather than
  * abstract lines.
  *
- * One visual language across all three: a warm light from the top left
- * (--ill-glow), application windows that cast a shadow (--ill-shadow), the
- * same window chrome, and the illustration palette for meaning — amber for
- * the right reading, red only for the wrong one.
+ * One visual language across all three — application windows that cast a
+ * shadow (--ill-shadow), the same window chrome, the illustration palette
+ * for meaning — and each piece its own light, placed on its subject and
+ * coloured by what the subject is: the renal chart is lit red at the misread
+ * cell with a smaller amber light at the correct reading (a piece about an
+ * error caught); the routes browser is lit amber (a piece about the fix);
+ * the image piece is split, faint red on the oversized file and amber on
+ * the phone (before and after).
  *
  * Every scene is drawn at 1200×630, the share-card size, with its key
  * content in the upper two-thirds: the share image shows the whole frame
@@ -31,13 +35,18 @@ const mono = "var(--font-mono)";
 const display = "var(--font-display)";
 const text = "var(--font-text)";
 
-function Defs({ id }: { id: string }) {
+/** A light on the scene: centre and radius as fractions of the frame. */
+type Light = { color: string; cx: number; cy: number; r: number };
+
+function Defs({ id, lights }: { id: string; lights: Light[] }) {
   return (
     <defs>
-      <radialGradient id={`${id}-light`} cx="0.22" cy="0.1" r="0.9">
-        <stop offset="0" style={{ stopColor: ILL.glow }} />
-        <stop offset="0.6" style={{ stopColor: "transparent" }} />
-      </radialGradient>
+      {lights.map((light, i) => (
+        <radialGradient key={i} id={`${id}-light-${i}`} cx={light.cx} cy={light.cy} r={light.r}>
+          <stop offset="0" style={{ stopColor: light.color }} />
+          <stop offset="1" style={{ stopColor: "transparent" }} />
+        </radialGradient>
+      ))}
       <filter id={`${id}-shadow`} x="-20%" y="-20%" width="140%" height="160%">
         <feDropShadow dx="0" dy="22" stdDeviation="26" style={{ floodColor: ILL.shadow }} />
       </filter>
@@ -51,14 +60,28 @@ function Defs({ id }: { id: string }) {
   );
 }
 
-function Backdrop({ id }: { id: string }) {
+function Backdrop({ id, lights }: { id: string; lights: Light[] }) {
   return (
     <>
       <rect width="1200" height="630" fill="var(--surface)" />
-      <rect width="1200" height="630" fill={`url(#${id}-light)`} />
+      {lights.map((_, i) => (
+        <rect key={i} width="1200" height="630" fill={`url(#${id}-light-${i})`} />
+      ))}
     </>
   );
 }
+
+const LIGHTS: Record<string, Light[]> = {
+  ward: [
+    { color: ILL.glowError, cx: 0.56, cy: 0.42, r: 0.42 },
+    { color: ILL.glow, cx: 0.86, cy: 0.62, r: 0.3 },
+  ],
+  routes: [{ color: ILL.glow, cx: 0.3, cy: 0.3, r: 0.75 }],
+  portrait: [
+    { color: ILL.glowError, cx: 0.2, cy: 0.35, r: 0.42 },
+    { color: ILL.glow, cx: 0.78, cy: 0.35, r: 0.42 },
+  ],
+};
 
 /** A desktop application window: shadow, title bar, three lights. */
 function Window({
@@ -113,8 +136,8 @@ export function WardChartScene({ id, className, preserveAspectRatio, viewBox = "
 
   return (
     <svg viewBox={viewBox} className={className} preserveAspectRatio={preserveAspectRatio} role="img" aria-label={`A ward chart of synthetic patients. ${trap.patient_id}'s creatinine of ${trap.correct.creatinine.value} ${trap.correct.creatinine.unit} is lit red, read as mg/dL to give a clearance of ${trap.careless.crcl_ml_min}; the correct reading, in amber, gives ${trap.correct.crcl_ml_min} mL/min.`}>
-      <Defs id={id} />
-      <Backdrop id={id} />
+      <Defs id={id} lights={LIGHTS.ward} />
+      <Backdrop id={id} lights={LIGHTS.ward} />
       <Window
         id={id}
         x={80}
@@ -193,8 +216,8 @@ export function BrowserRoutesScene({ id, className, preserveAspectRatio, viewBox
 
   return (
     <svg viewBox={viewBox} className={className} preserveAspectRatio={preserveAspectRatio} role="img" aria-label="A browser open on anthonyugwuja.dev/work, with the writing, about and contact routes open in windows behind it.">
-      <Defs id={id} />
-      <Backdrop id={id} />
+      <Defs id={id} lights={LIGHTS.routes} />
+      <Backdrop id={id} lights={LIGHTS.routes} />
 
       {behind.map((path, k) => {
         const depth = behind.length - k;
@@ -256,8 +279,8 @@ export function BrowserRoutesScene({ id, className, preserveAspectRatio, viewBox
 export function PortraitBytesScene({ id, className, preserveAspectRatio, viewBox = "0 0 1200 630" }: SceneProps) {
   return (
     <svg viewBox={viewBox} className={className} preserveAspectRatio={preserveAspectRatio} role="img" aria-label="The portrait as a 1254 by 1254, 16-bit PNG of 2,507,195 bytes, beside a phone showing it at 320 pixels as an 11,582-byte WebP.">
-      <Defs id={id} />
-      <Backdrop id={id} />
+      <Defs id={id} lights={LIGHTS.portrait} />
+      <Backdrop id={id} lights={LIGHTS.portrait} />
       <clipPath id={`${id}-tile`}>
         <rect x={100} y={178} width={500} height={200} />
       </clipPath>

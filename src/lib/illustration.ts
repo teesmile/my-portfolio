@@ -33,4 +33,5 @@ export const ILL = {
   errorSoft: "var(--ill-error-soft)",
   shadow: "var(--ill-shadow)",
   glow: "var(--ill-glow)",
+  glowError: "var(--ill-glow-error)",
 } as const;

@@ -1,14 +1,13 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import Link from 'next/link';
 import type { Route } from 'next';
 import gsap from 'gsap';
 import { Flip } from 'gsap/Flip';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { takeFlip } from '@/lib/flip-state';
-import { ChevronLeftIcon } from '@/components/ui/icons';
+import BackPill from '@/components/ui/back-pill';
 import { DURATION, EASE, prefersReducedMotion } from '@/lib/motion';
 
 gsap.registerPlugin(Flip, ScrollTrigger, useGSAP);
@@ -160,7 +159,10 @@ export default function StickyHero({
             band, whatever height the title makes it. */}
         <div
           ref={headingRef}
-          className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-surface via-surface/90 to-transparent px-4 pb-4 pt-10 sm:px-6 md:p-10"
+          /* Phones: a solid backing (with a short feather above it), because
+             the see-through gradient let the banner show through the title.
+             Desktop keeps the gradient over the artwork. */
+          className="absolute inset-x-0 bottom-0 bg-surface px-4 pb-4 pt-4 before:pointer-events-none before:absolute before:inset-x-0 before:-top-8 before:h-8 before:bg-gradient-to-t before:from-surface before:to-transparent sm:px-6 md:bg-transparent md:bg-gradient-to-t md:from-surface md:via-surface/90 md:to-transparent md:p-10 md:before:hidden"
         >
           {/* The title has its line to itself, at every width. Wraps: a
               heading a reader cannot finish is not a heading. */}
@@ -170,13 +172,7 @@ export default function StickyHero({
               its own row under the title, at the right; from md up it sits
               at the right end of the meta line. */}
           <div className="mt-2 flex flex-col gap-2 md:mt-3 md:flex-row md:items-center md:justify-between md:gap-6">
-            <Link
-              href={backHref}
-              className="order-first inline-flex items-center gap-1 self-end rounded-pill border border-line bg-surface/80 py-1.5 pl-2 pr-3.5 text-2xs text-ink transition-colors hover:border-ink hover:bg-raised active:bg-raised md:order-last md:self-auto"
-            >
-              <ChevronLeftIcon className="h-3.5 w-3.5" />
-              {backLabel}
-            </Link>
+            <BackPill href={backHref} label={backLabel} className="order-first self-end md:order-last md:self-auto" />
             <p className="text-2xs text-muted">{meta}</p>
           </div>
         </div>
