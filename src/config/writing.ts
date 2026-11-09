@@ -17,7 +17,14 @@ export type WritingEntry = {
   slug: string;
   topic: Topic;
   title: string;
-  date: string;
+  /**
+   * When the piece went out, as a full timestamp in West Africa Time, e.g.
+   * "2026-11-06T22:22:32+01:00". A bare date was read as UTC midnight, so
+   * anyone west of Greenwich (and LinkedIn's Post Inspector) saw the evening
+   * before. The date shown on the page is taken from this, never typed
+   * separately, so the two cannot disagree.
+   */
+  published: string;
   standfirst: string;
   sections: Section[];
   /**
@@ -35,7 +42,7 @@ export const writing: WritingEntry[] = [
     slug: "building-a-renal-dose-check-benchmark",
     topic: "AI",
     title: "Ten ways to misread a ward chart, and proving the tests catch them",
-    date: "2026-11-07",
+    published: "2026-11-08T01:15:15+01:00",
     standfirst:
       "I built a small benchmark where an AI agent checks drug doses against kidney function. The maths is handed over in the instruction. The hard part is reading the chart, and then proving the grading is fair.",
     sections: [
@@ -123,7 +130,7 @@ export const writing: WritingEntry[] = [
     slug: "every-section-is-a-route",
     topic: "Engineering",
     title: "Every section is its own route",
-    date: "2026-11-06",
+    published: "2026-11-06T22:22:32+01:00",
     standfirst:
       "I replaced a single page of anchor links with six routes, and three bugs disappeared without being fixed.",
     sections: [
@@ -168,7 +175,7 @@ export const writing: WritingEntry[] = [
     slug: "what-unoptimized-turns-off",
     topic: "Engineering",
     title: "A 2.4 MB portrait, and what unoptimized actually turns off",
-    date: "2026-11-06",
+    published: "2026-11-06T22:22:32+01:00",
     standfirst:
       "One image was larger than the rest of the site combined. The fix was four lines, but the interesting part is why it was that large.",
     sections: [
@@ -208,6 +215,19 @@ export const writing: WritingEntry[] = [
     ],
   },
 ];
+
+const WAT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+01:00$/;
+for (const entry of writing) {
+  if (!WAT.test(entry.published)) {
+    throw new Error(`${entry.slug}: published must be a full +01:00 timestamp, got "${entry.published}"`);
+  }
+}
+
+/** The calendar date in West Africa Time, as the page shows it. */
+export const dateOf = (entry: WritingEntry) => entry.published.slice(0, 10);
+
+/** The author, for metadata, article tags and structured data alike. */
+export const AUTHOR = { name: "Anthony Ugwuja", url: "https://anthonyugwuja.dev/about" } as const;
 
 /** What /writing, the sitemap and the home page list. Drafts are left out. */
 export const published = writing.filter((entry) => !entry.draft);

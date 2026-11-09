@@ -33,6 +33,7 @@ export function pageMetadata({
   type = "website",
   noindex = false,
   image = "/opengraph-image",
+  article,
 }: {
   title: string;
   description: string;
@@ -49,6 +50,12 @@ export function pageMetadata({
   noindex?: boolean;
   /** The share card. Defaults to the site's; routes with their own pass it. */
   image?: string;
+  /**
+   * For a piece of writing: who wrote it and when it went out. Becomes
+   * <meta name="author">, <link rel="author">, article:author and
+   * article:published_time. Without it LinkedIn reports "No author found".
+   */
+  article?: { publishedTime: string; author: { name: string; url: string } };
 }): Metadata {
   const shareTitle = `${title} — ${portfolioConfig.name}`;
   const images = [image];
@@ -57,7 +64,17 @@ export function pageMetadata({
     title,
     description,
     alternates: { canonical: path },
-    openGraph: { title: shareTitle, description, url: path, type, images },
+    ...(article ? { authors: [article.author] } : {}),
+    openGraph: {
+      title: shareTitle,
+      description,
+      url: path,
+      type,
+      images,
+      ...(article && type === "article"
+        ? { publishedTime: article.publishedTime, authors: [article.author.url] }
+        : {}),
+    },
     twitter: { card: "summary_large_image", title: shareTitle, description, images },
     ...(noindex ? { robots: { index: false, follow: true } } : {}),
   };
