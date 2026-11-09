@@ -99,7 +99,7 @@ export default function AboutPage() {
                 pasted into — and in light mode that box was white. */}
             <div className="relative aspect-square w-full">
               <Image
-                src="/profile.webp"
+                src="/portrait-clean-v2.webp"
                 alt={`${portfolioConfig.name} portrait`}
                 fill
                 sizes="(min-width: 1024px) 24rem, 100vw"

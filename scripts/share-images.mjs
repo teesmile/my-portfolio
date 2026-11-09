@@ -8,7 +8,7 @@
  *
  * 1:1 is the point: a share card rendered at another size and resampled
  * blurs its type, and this one is mostly type and hairlines. The script
- * waits for fonts and images (the portrait scene embeds /profile.webp),
+ * waits for fonts and images (the portrait scene embeds /portrait-clean-v2.webp),
  * hides the site chrome, and checks each PNG's header reads 1200×630.
  */
 import { spawn } from "node:child_process";
@@ -83,7 +83,7 @@ for (const slug of slugs) {
   await evaluate("document.fonts.ready.then(() => true)");
   /* SVG <image> elements have no load promise to await; wait until the
      portrait (if this scene has one) is in the resource timeline. */
-  await ready(() => evaluate("![...document.querySelectorAll('svg image')].length || performance.getEntriesByType('resource').some((e) => e.name.includes('/profile.webp') && e.responseEnd > 0)"), `${slug} images`);
+  await ready(() => evaluate("![...document.querySelectorAll('svg image')].length || performance.getEntriesByType('resource').some((e) => e.name.includes('/portrait-clean-v2.webp') && e.responseEnd > 0)"), `${slug} images`);
   await evaluate(`(() => { const s = document.createElement('style'); s.textContent = 'nav, footer { display: none !important } main { padding: 0 !important }'; document.head.append(s); document.documentElement.classList.remove('light'); return true; })()`);
   await wait(500);
   const box = await evaluate("(() => { const r = document.querySelector('[data-share-frame]').getBoundingClientRect(); return { x: r.x, y: r.y + scrollY, w: r.width, h: r.height }; })()");
