@@ -25,7 +25,11 @@ export default function RenalLoop({ coveredBy }: { coveredBy?: string } = {}) {
   const unit = correct.creatinine.unit;
 
   return (
-    <LeaseGate id="renal" coveredBy={coveredBy} className="renal-gate h-full w-full">
+    /* It takes turns with anything waiting: 6 s in, inside the hold where
+       both readings and the caption are showing — exactly the resting frame
+       a held loop shows — it passes the lease on, so the hand-over does not
+       jump. With nothing waiting it keeps looping (8 s cycle). */
+    <LeaseGate id="renal" coveredBy={coveredBy} yieldAfterMs={6000} cycleMs={8000} className="renal-gate h-full w-full">
       <svg
         viewBox="0 0 320 200"
         className="renal-loop h-full w-full"
