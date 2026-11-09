@@ -14,7 +14,7 @@ export const metadata: Metadata = pageMetadata({
 
 export default function WritingPage() {
   return (
-    <section className="px-6 py-20 md:py-24">
+    <section className="px-4 sm:px-6 py-20 md:py-24">
       <Reveals />
       <div className="mx-auto max-w-(--container-view)">
         <h1 data-reveal className="max-w-[20ch] text-xl text-ink md:text-2xl">

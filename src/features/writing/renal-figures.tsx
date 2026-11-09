@@ -1,12 +1,15 @@
 import { renal, renalTraps } from "@/content/renal-dosing";
+import { ILL } from "@/lib/illustration";
 
 /* Inline figures for the renal benchmark write-up. They read the same
    snapshot as the showcase, so a number in a drawing can never disagree with
-   the number on /work/renal-dosing-task. Drawn from the tokens; --warn marks
-   the misread value, as it does in the showcase's chart tables. */
+   the number on /work/renal-dosing-task. Drawn from the illustration
+   palette: amber for the correct reading, red only for the wrong one. */
 
-const label = { fontSize: 8, fill: "var(--muted)" } as const;
-const strong = { fontSize: 8, fill: "var(--ink)" } as const;
+const label = { fontSize: 8, fill: ILL.detail } as const;
+const strong = { fontSize: 8, fill: ILL.text } as const;
+const good = { fontSize: 8, fill: ILL.accent } as const;
+const bad = { fontSize: 8, fill: ILL.error } as const;
 const mono = { fontFamily: "var(--font-mono)" } as const;
 
 function Frame({
@@ -42,22 +45,24 @@ export function OneRowTwoReadings() {
       caption="Same row, same formula. The only difference is whether the unit column was read."
     >
       <text x="8" y="14" {...label} {...mono}>labs.csv</text>
-      <rect x="8" y="22" width="190" height="22" fill="none" stroke="var(--line)" />
+      <rect x="8" y="22" width="190" height="22" fill={ILL.panel} stroke={ILL.edge} />
       <text x="16" y="37" {...strong} {...mono}>{trap.patient_id}, {correct.creatinine.value},</text>
       <text x="100" y="37" {...strong} {...mono}>{correct.creatinine.unit}</text>
-      <path d="M100 41q3 -2 6 0t6 0t6 0t6 0t6 0" stroke="var(--warn)" fill="none" />
+      <path d="M100 41q3 -2 6 0t6 0t6 0t6 0t6 0" stroke={ILL.error} fill="none" />
 
-      <path d="M198 33c30 0 30 -14 56 -14" stroke="var(--line)" fill="none" />
-      <path d="M198 33c30 0 30 64 56 64" stroke="var(--line)" fill="none" />
+      <path d="M198 33c30 0 30 -14 52 -14" stroke={ILL.accent} fill="none" />
+      <path d="M198 33c30 0 30 64 52 64" stroke={ILL.error} fill="none" />
 
-      <text x="262" y="12" {...label}>reads the unit: ÷ 88.4</text>
-      <text x="262" y="24" {...strong} {...mono}>{correct.creatinine.mg_dl.toFixed(2)} mg/dL</text>
-      <text x="262" y="38" {...strong}>CrCl {correct.crcl_ml_min} mL/min</text>
+      <rect x="254" y="2" width="160" height="44" fill={ILL.accentSoft} stroke={ILL.accent} />
+      <text x="262" y="14" {...strong}>reads the unit: ÷ 88.4</text>
+      <text x="262" y="26" {...strong} {...mono}>{correct.creatinine.mg_dl.toFixed(2)} mg/dL</text>
+      <text x="262" y="40" {...good}>CrCl {correct.crcl_ml_min} mL/min</text>
 
-      <text x="262" y="82" {...label}>skips the unit</text>
-      <text x="262" y="94" {...strong} {...mono}>{careless.creatinine.mg_dl} mg/dL</text>
-      <text x="262" y="108" fontSize="8" fill="var(--warn)">CrCl {careless.crcl_ml_min} mL/min</text>
-      <text x="262" y="122" {...label}>flags an order that was fine</text>
+      <rect x="254" y="72" width="160" height="56" fill={ILL.errorSoft} stroke={ILL.error} />
+      <text x="262" y="84" {...strong}>skips the unit</text>
+      <text x="262" y="96" {...strong} {...mono}>{careless.creatinine.mg_dl} mg/dL</text>
+      <text x="262" y="110" {...bad}>CrCl {careless.crcl_ml_min} mL/min</text>
+      <text x="262" y="122" {...strong}>flags an order that was fine</text>
     </Frame>
   );
 }
@@ -72,7 +77,7 @@ export function TrapIsolation() {
     <Frame
       viewBox={`0 0 ${left + patients.length * cell + 8} ${30 + renalTraps.length * 14 + 8}`}
       title="A grid of the ten simulated mistakes against the fifteen patients. Each mistake changes only the patients built for its trap family, and no patient is changed by two families."
-      caption="Ten mistakes, fifteen patients. Every row hits only its own family's patients, and no column is hit by two families. PT015 is the control: nothing moves it."
+      caption="Ten mistakes, fifteen patients. A red cell is an answer the mistake gets wrong. Every row hits only its own family's patients, and no column is hit by two families. PT015 is the control: nothing moves it."
     >
       {patients.map((id, i) => (
         <text key={id} x={left + i * cell + cell / 2} y="20" textAnchor="middle" {...label} {...mono}>
@@ -83,7 +88,7 @@ export function TrapIsolation() {
         const hit = new Set([trap.patient_id, ...trap.also_changed]);
         return (
           <g key={trap.slug}>
-            <text x="8" y={36 + row * 14} {...label}>
+            <text x="8" y={36 + row * 14} {...strong}>
               {trap.name.length > 26 ? `${trap.name.slice(0, 25)}…` : trap.name}
             </text>
             {patients.map((id, i) => (
@@ -93,8 +98,8 @@ export function TrapIsolation() {
                 y={28 + row * 14}
                 width={cell - 8}
                 height="9"
-                fill={hit.has(id) ? "var(--ink)" : "none"}
-                stroke="var(--line)"
+                fill={hit.has(id) ? ILL.error : ILL.panel}
+                stroke={hit.has(id) ? ILL.error : ILL.edge}
               />
             ))}
           </g>
@@ -112,11 +117,11 @@ export function MagnitudeRule() {
   const row = (y: number, rule: string, input: string, wrong: string, right: string, flags: string) => (
     <g>
       <text x="8" y={y} {...label}>rule: {rule}</text>
-      <rect x="8" y={y + 6} width="96" height="20" fill="none" stroke="var(--line)" />
+      <rect x="8" y={y + 6} width="96" height="20" fill={ILL.panel} stroke={ILL.edge} />
       <text x="14" y={y + 20} {...strong} {...mono}>{input}</text>
-      <path d={`M110 ${y + 16}h20m0 0-5-4m5 4-5 4`} stroke="var(--ink)" fill="none" />
-      <text x="138" y={y + 14} fontSize="8" fill="var(--warn)">{wrong}</text>
-      <text x="138" y={y + 26} {...label}>should be {right}</text>
+      <path d={`M110 ${y + 16}h20m0 0-5-4m5 4-5 4`} stroke={ILL.text} fill="none" />
+      <text x="138" y={y + 14} {...bad}>{wrong}</text>
+      <text x="138" y={y + 26} {...good}>should be {right}</text>
       <text x="300" y={y + 20} {...strong}>{flags}</text>
     </g>
   );
@@ -153,15 +158,18 @@ export function MagnitudeRule() {
 export function GradingEvidence() {
   const pass = renal.agents.filter((a) => a.expect_pass);
   const fail = renal.agents.filter((a) => !a.expect_pass);
-  const square = (i: number, x0: number, ok: boolean, filled: boolean) => (
+  /* Amber passed, red-tinted failed. A square on the wrong side would get a
+     heavy primary-colour outline; none does. */
+  const square = (i: number, x0: number, ok: boolean, passed: boolean) => (
     <rect
       key={i}
       x={x0 + (i % 9) * 18}
       y={34 + Math.floor(i / 9) * 18}
       width="13"
       height="13"
-      fill={filled ? "var(--ink)" : "none"}
-      stroke={ok ? "var(--line)" : "var(--warn)"}
+      fill={passed ? ILL.accentFill : ILL.errorSoft}
+      stroke={ok ? (passed ? ILL.accent : ILL.error) : ILL.text}
+      strokeWidth={ok ? 1 : 2.5}
     />
   );
 
@@ -169,7 +177,7 @@ export function GradingEvidence() {
     <Frame
       viewBox="0 0 420 100"
       title={`${pass.length} configurations must pass and all ${pass.filter((a) => a.passed).length} do. ${fail.length} must fail and all ${fail.filter((a) => !a.passed).length} do.`}
-      caption="Filled squares passed the real test file; hollow ones failed it. Every square is on the side it was supposed to land on."
+      caption="Amber squares passed the real test file; red ones failed it. Every square is on the side it was supposed to land on."
     >
       <text x="8" y="16" {...strong}>must pass</text>
       <text x="8" y="26" {...label}>reference, baseline, 6 defensible variants</text>
@@ -196,13 +204,13 @@ export function ToleranceMargin() {
       title={`${tightest.patient_id}: reference CrCl ${crcl}, nearest band edge ${edge}, a ${(margin * 100).toFixed(1)}% gap. The accepted range, plus or minus 1%, stops well short of the edge.`}
       caption={`The closest any patient gets to a band edge is ${(margin * 100).toFixed(1)}%. Anything the 1% tolerance accepts stays in the same band, so it can't turn a right flag into a wrong one.`}
     >
-      <line x1="20" y1="48" x2="400" y2="48" stroke="var(--line)" />
-      <rect x={x(crcl - tol)} y="38" width={x(crcl + tol) - x(crcl - tol)} height="20" fill="var(--ink)" opacity="0.14" />
-      <line x1={x(crcl)} y1="32" x2={x(crcl)} y2="64" stroke="var(--ink)" />
-      <text x={x(crcl)} y="24" textAnchor="middle" {...strong}>{tightest.patient_id} {crcl}</text>
-      <text x={x(crcl)} y="78" textAnchor="middle" {...label}>±1% accepted</text>
-      <line x1={x(edge)} y1="28" x2={x(edge)} y2="68" stroke="var(--accent)" strokeDasharray="3 3" />
-      <text x={x(edge)} y="20" textAnchor="middle" {...label}>band edge {edge}</text>
+      <line x1="20" y1="48" x2="400" y2="48" stroke={ILL.edge} />
+      <rect x={x(crcl - tol)} y="38" width={x(crcl + tol) - x(crcl - tol)} height="20" fill={ILL.accentSoft} stroke={ILL.accent} />
+      <line x1={x(crcl)} y1="32" x2={x(crcl)} y2="64" stroke={ILL.accent} strokeWidth="1.5" />
+      <text x={x(crcl)} y="24" textAnchor="middle" {...good}>{tightest.patient_id} {crcl}</text>
+      <text x={x(crcl)} y="78" textAnchor="middle" {...strong}>±1% accepted</text>
+      <line x1={x(edge)} y1="28" x2={x(edge)} y2="68" stroke={ILL.text} strokeDasharray="3 3" />
+      <text x={x(edge)} y="20" textAnchor="middle" {...strong}>band edge {edge}</text>
     </Frame>
   );
 }

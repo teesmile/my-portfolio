@@ -35,6 +35,35 @@
   --accent-strong: #f0b429;
   --accent-ink: #0c0d0f;
   --focus-halo: transparent;
+
+  /* The illustration palette: every figure, diagram, banner and the renal
+     loop draw from these and nothing else. Content colour, not chrome.
+     Measured (scripts in docs/decisions.md, 2026-11-09): every text pairing
+     is at least 4.5:1, edges at least 3:1, in both themes.
+       text    primary labels and values
+       detail  secondary labels only
+       accent  emphasis and correct values; accent-soft fills highlighted shapes
+       panel   filled boxes, edged in amber-tinted edge
+       shape   neutral filled shapes (text lines, bars)
+       error   wrong values only; error-soft fills a wrong shape */
+  --ill-text: var(--ink);
+  --ill-detail: var(--muted);
+  --ill-accent: #f0b429;
+  --ill-accent-soft: color-mix(in oklab, #f0b429 18%, var(--raised));
+  /* Solid amber shapes: the brand amber in both themes. On white it is
+     1.8:1, so a solid shape that carries meaning keeps an --ill-accent
+     outline, which is the part that meets 3:1. */
+  --ill-accent-fill: #f0b429;
+  --ill-panel: color-mix(in oklab, #f0b429 8%, var(--raised));
+  --ill-edge: color-mix(in oklab, #f0b429 62%, var(--line));
+  --ill-shape: color-mix(in oklab, var(--ink) 22%, var(--raised));
+  --ill-error: var(--wrong);
+  --ill-error-soft: color-mix(in oklab, var(--wrong) 16%, var(--raised));
+  /* Depth and light for the banner and share scenes: the shadow a window
+     casts, and the warm light that falls on it. */
+  --ill-shadow: rgb(0 0 0 / 0.55);
+  --ill-glow: color-mix(in oklab, #f0b429 26%, transparent);
+  --ill-glow-error: color-mix(in oklab, var(--wrong) 24%, transparent);
 }
 
 .light {
@@ -54,6 +83,18 @@
   --focus-halo: #14171a;
   /* 5.5:1 on light --raised: --warn there is only 2.8:1. */
   --wrong: #c0362b;
+
+  /* Brand amber is 1.8:1 on white, so text and edges take a deep amber;
+     the bright amber stays in the fills, where it reads as the brand. */
+  --ill-accent: #8a5a00;
+  --ill-accent-soft: color-mix(in oklab, #f0b429 30%, var(--raised));
+  --ill-panel: color-mix(in oklab, #f0b429 10%, var(--raised));
+  --ill-edge: color-mix(in oklab, #8a5a00 72%, var(--line));
+  --ill-shape: color-mix(in oklab, var(--ink) 18%, var(--raised));
+  --ill-error-soft: color-mix(in oklab, var(--wrong) 12%, var(--raised));
+  --ill-shadow: rgb(20 23 26 / 0.16);
+  --ill-glow: color-mix(in oklab, #f0b429 30%, transparent);
+  --ill-glow-error: color-mix(in oklab, var(--wrong) 20%, transparent);
 }
 
 @theme inline {
@@ -69,6 +110,19 @@
      showcase's chart tables. Never chrome. */
   --color-warn: var(--warn);
   --color-wrong: var(--wrong);
+  --color-ill-text: var(--ill-text);
+  --color-ill-detail: var(--ill-detail);
+  --color-ill-accent: var(--ill-accent);
+  --color-ill-accent-soft: var(--ill-accent-soft);
+  --color-ill-accent-fill: var(--ill-accent-fill);
+  --color-ill-panel: var(--ill-panel);
+  --color-ill-edge: var(--ill-edge);
+  --color-ill-shape: var(--ill-shape);
+  --color-ill-error: var(--ill-error);
+  --color-ill-error-soft: var(--ill-error-soft);
+  --color-ill-shadow: var(--ill-shadow);
+  --color-ill-glow: var(--ill-glow);
+  --color-ill-glow-error: var(--ill-glow-error);
 
   --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
   --font-text: var(--font-source-serif), ui-serif, Georgia, serif;
@@ -124,6 +178,8 @@
   --radius-sm: 2px;
   --radius-md: 4px;
   --radius-lg: 8px;
+  /* Pills: the hero's back button. */
+  --radius-pill: 9999px;
 
   --container-reading: 38rem;
   --container-view: 74rem;
@@ -478,13 +534,7 @@
   animation-play-state: paused;
 }
 
-/* The home page's tools row: logos stay the colour of the text beside them,
-   at rest and on hover. It sits under the work, and a strip of brand colours
-   would pull the eye away from it. */
-.quiet-marks .tech-mark,
-.light .quiet-marks .tech-mark {
-  color: currentColor;
-}
+
 
 @media (prefers-reduced-motion: reduce) {
   .marquee-track {
@@ -498,15 +548,31 @@
   }
 }
 
-/* The deck's auto-advance clock. The fill under the current card scales
-   across over the dwell time and its animationend advances the deck (see
-   deck-interactive.tsx). Transform only, so the compositor runs it. Two
-   identical keyframes, swapped by data-lap, restart it without a reflow.
-   data-auto is only ever set outside reduced motion; without it the fill is
-   simply solid. */
+/* The deck's auto-advance clock: the progress bar above the deck. Its fill
+   scales across over the dwell time and its animationend advances the deck
+   (see deck-interactive.tsx). Transform only. Two identical keyframes,
+   swapped by data-lap, restart it without a reflow. data-auto is only ever
+   set outside reduced motion; without it the current segment is simply
+   full. */
+/* The one-time swipe hint (deck-interactive.tsx): in, drag left twice,
+   out, about 2.5 s. Only runs when data-hint="play" is set, which never
+   happens under reduced motion. */
+[data-hint='play'] [data-swipe-hint] {
+  animation: swipe-hint 2.5s ease-in-out forwards;
+}
+
+@keyframes swipe-hint {
+  0% { opacity: 0; transform: translateX(36px); }
+  12% { opacity: 1; transform: translateX(36px); }
+  42% { opacity: 1; transform: translateX(-44px); }
+  52% { opacity: 1; transform: translateX(36px); }
+  82% { opacity: 1; transform: translateX(-44px); }
+  100% { opacity: 0; transform: translateX(-44px); }
+}
+
 [data-auto] [data-fill] {
   transform: scaleX(0);
-  animation: var(--deck-dwell, 5s) linear forwards;
+  animation: var(--deck-dwell, 4s) linear forwards;
 }
 
 [data-auto][data-lap='a'] [data-fill] {
@@ -596,11 +662,8 @@
   97.5%, 100% { opacity: 0; }
 }
 
-/* The hero as a file open in an editor.
-   Its own surface, ending where the hero ends: a line-number gutter aligned
-   to the headline's line boxes, faint indent guides, and a little grain for
-   depth. All of it is CSS and one inline SVG — no canvas, no particles, and
-   nothing that animates. */
+/* The hero's own surface, ending where the hero ends, with a little grain
+   for depth. CSS and one inline SVG: no canvas, nothing that animates. */
 .editor-surface {
   background-color: var(--raised);
   border-bottom: 1px solid var(--line);
@@ -619,37 +682,5 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Indent guides: evenly spaced hairlines behind the content, the way an
-   editor marks nesting depth. */
-.editor-guides::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-image: repeating-linear-gradient(
-    to right,
-    color-mix(in oklab, var(--line) 70%, transparent) 0 1px,
-    transparent 1px 4rem
-  );
-  opacity: 0.5;
-}
 
-/* The gutter's line boxes are the headline's line boxes, so the numbers sit
-   on the lines rather than near them. */
-.editor-gutter {
-  line-height: calc(var(--text-headline-sm) * var(--text-headline-sm--line-height));
-  counter-reset: gutter;
-}
 
-/* Generated content is painted but is not document text: it never reaches
-   textContent, a copy or a crawler. decimal-leading-zero gives 01, 02… */
-.editor-gutter > div::before {
-  counter-increment: gutter;
-  content: counter(gutter, decimal-leading-zero);
-}
-
-@media (min-width: 1024px) {
-  .editor-gutter {
-    line-height: calc(var(--text-headline) * var(--text-headline--line-height));
-  }
-}

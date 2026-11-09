@@ -1,69 +1,96 @@
+import Image from "next/image";
 import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
 import DefectDeck from "./defect-deck";
-import HeroSequence from "./hero-sequence";
+import CorrectedLine from "./corrected-line";
 
+/**
+ * The home hero: the headline, a supporting line that corrects itself once
+ * ("…what AI gets right" → "right" struck in red → "wrong" in amber), the
+ * portrait cutout under an amber rim light, and the deck.
+ *
+ * The headline is plain server-rendered text with no entrance, so it is the
+ * page's first paint. The page's one orchestrated moment is the correction
+ * (corrected-line.tsx), and the deck's clock waits for it to settle.
+ *
+ * Warmth comes from a static amber glow behind the headline and portrait,
+ * two radial gradients in the --ill-glow token. Nothing in the background
+ * moves.
+ *
+ * Phones: the portrait is small and sits beside the supporting paragraph,
+ * not above the deck, so the headline and the deck both stay within
+ * reach. Desktop: it takes the right of the headline row.
+ */
 export default function Hero() {
+  const { headline, monoLine, monoFlag, copy } = portfolioConfig;
+  const at = monoLine.indexOf(monoFlag);
+  const before = monoLine.slice(0, at);
+  const after = monoLine.slice(at + monoFlag.length);
+  const flagWords = monoFlag.split(" ");
+  const lead = `${before}${flagWords.slice(0, -1).join(" ")} `;
+  const fixedWord = flagWords[flagWords.length - 1];
+
   return (
     /* At least one screen tall, so the hero owns the first view on its own
-       and Selected work is always something you scroll to, never something
-       half-visible competing with the entrance. */
-    <section className="editor-surface flex min-h-[calc(100dvh-var(--nav-height))] flex-col justify-center px-6 py-16 md:py-20">
-      <div className="editor-guides relative mx-auto w-full max-w-(--container-view)">
-        <div className="flex gap-4 md:gap-6">
-          {/* The gutter: decorative, so its numbers are not text at all.
-              aria-hidden kept them from screen readers but not from the
-              document — crawlers indexed "01 02 03 04 05" and a copied
-              headline brought them along. They are drawn by a CSS counter
-              now, which renders but is never part of the page's text. */}
-          <div
-            aria-hidden="true"
-            className="editor-gutter hidden shrink-0 select-none font-mono text-2xs text-muted/50 sm:block"
-          >
-            {[1, 2, 3, 4, 5].map((line) => (
-              <div key={line} />
-            ))}
-          </div>
-
-          <div className="min-w-0 flex-1">
-        {/* Full container width is not a style choice: at the hero size the
-            statement only fits three lines at 1280 across the whole container,
-            which /lab/type measures rather than guesses. */}
-        <HeroSequence
-          headline={portfolioConfig.headline}
-          monoLine={portfolioConfig.monoLine}
-          flag={portfolioConfig.monoFlag}
-        />
-
-        <div className="mt-14 grid gap-12 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-4">
-            <div className="flex items-baseline gap-8">
-              <Link
-                href="/work"
-                className="text-lg text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
-              >
-                See the work
-              </Link>
-              <Link
-                href="/about"
-                className="text-sm text-muted transition-colors hover:text-ink"
-              >
-                How I got here
-              </Link>
-            </div>
-
-            <p className="mt-10 max-w-[34ch] text-sm text-muted">
-              {portfolioConfig.copy.heroSupport}
-            </p>
-          </div>
-
-          <div data-hero-deck className="lg:col-span-7 lg:col-start-6">
-            <DefectDeck />
-          </div>
+       and Selected work is always something you scroll to. */
+    <section className="editor-surface relative flex min-h-[calc(100dvh-var(--nav-height))] flex-col justify-center overflow-hidden px-4 py-16 sm:px-6 md:py-20">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_55%_at_22%_28%,var(--ill-glow),transparent_70%),radial-gradient(38%_45%_at_82%_26%,var(--ill-glow),transparent_70%)]"
+      />
+      {/* One grid, two arrangements, and a single portrait element in both:
+          two copies (one per breakpoint) meant two downloads, and the
+          phone's lazy copy became the page's LCP at 2.9 s.
+            phone    headline / links / [paragraph | portrait] / deck
+            desktop  [headline | portrait] / [links + paragraph | deck] */}
+      <div className="relative mx-auto grid w-full max-w-(--container-view) grid-cols-[1fr_7rem] gap-x-4 lg:grid-cols-12 lg:grid-rows-[auto_auto_1fr] lg:gap-x-16">
+        <div className="col-span-2 lg:col-span-8 lg:row-start-1 lg:self-center">
+          <h1 className="text-headline-sm text-ink lg:text-headline">{headline}</h1>
+          <CorrectedLine before={lead} wrong="right" right={fixedWord} after={after} />
         </div>
-          </div>
+
+        <div className="col-span-2 mt-12 flex items-baseline gap-8 lg:col-span-4 lg:row-start-2 lg:mt-14">
+          <Link
+            href="/work"
+            className="text-lg text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
+          >
+            See the work
+          </Link>
+          <Link href="/about" className="text-sm text-muted transition-colors hover:text-ink">
+            How I got here
+          </Link>
+        </div>
+
+        <p className="mt-8 self-end text-sm text-muted lg:col-span-4 lg:row-start-3 lg:mt-10 lg:max-w-[34ch] lg:self-start">
+          {copy.heroSupport}
+        </p>
+
+        <div className="mt-8 self-end lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:mt-0 lg:self-center">
+          <Portrait />
+        </div>
+
+        <div data-hero-deck className="col-span-2 mt-10 lg:col-span-7 lg:col-start-6 lg:row-span-2 lg:row-start-2 lg:mt-14">
+          <DefectDeck />
         </div>
       </div>
     </section>
+  );
+}
+
+/* The cutout under an amber rim light: stacked drop-shadows follow the
+   cutout's alpha edge, a tight bright one for the rim and a wide soft one
+   for the glow, offset left so the light reads as coming from one side. */
+function Portrait() {
+  return (
+    <div className="relative aspect-square w-full">
+      <Image
+        src="/profile.webp"
+        alt={portfolioConfig.name}
+        fill
+        priority
+        sizes="(min-width: 1024px) 24rem, 7rem"
+        className="object-contain [filter:drop-shadow(-1.5px_0_0_var(--ill-accent-fill))_drop-shadow(-10px_-2px_24px_color-mix(in_oklab,var(--ill-accent-fill)_45%,transparent))]"
+      />
+    </div>
   );
 }

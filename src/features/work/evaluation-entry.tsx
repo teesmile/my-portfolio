@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
+import RenalLoop from "@/features/landing/renal-loop";
 
 /**
  * The evaluation work on /work.
@@ -8,15 +9,29 @@ import { portfolioConfig } from "@/config/site";
  * Same rule and rhythm as a project entry, different anatomy: where a project
  * has a screenshot, this has the sample task, because the real work cannot be
  * shown. The copy says "the sample below", so the sample sits under the
- * paragraph at every width rather than beside it on desktop. A server
- * component: nothing here moves except the shared reveal.
+ * paragraph at every width rather than beside it on desktop.
+ *
+ * Its visual is the sample itself: the renal loop, in the same 16:10 frame
+ * a project's screenshot gets, so every entry on /work shows its work. It
+ * plays while in view and holds the motion lease; under reduced motion it
+ * rests on its finished frame.
  */
 export default function EvaluationEntry() {
   const { evaluation } = portfolioConfig;
 
   return (
-    <article data-reveal className="grid border-t border-line pt-10 lg:grid-cols-12 lg:gap-12">
-      <div className="lg:col-span-7">
+    <article data-reveal className="grid gap-8 border-t border-line pt-10 lg:grid-cols-12 lg:gap-12">
+      <Link
+        href="/work/renal-dosing-task"
+        aria-label="See the renal dose check showcase"
+        className="block lg:col-span-5 lg:col-start-8 lg:row-start-1"
+      >
+        <div className="relative flex aspect-[16/10] w-full items-center justify-center overflow-clip border border-line bg-raised p-3">
+          <RenalLoop />
+        </div>
+      </Link>
+
+      <div className="lg:col-span-7 lg:row-start-1">
         <p className="text-2xs text-muted">
           {evaluation.period} &middot; {evaluation.role}
         </p>

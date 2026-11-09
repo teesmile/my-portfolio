@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import Link from 'next/link';
 import type { Route } from 'next';
 import gsap from 'gsap';
 import { Flip } from 'gsap/Flip';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { takeFlip } from '@/lib/flip-state';
+import BackPill from '@/components/ui/back-pill';
 import { DURATION, EASE, prefersReducedMotion } from '@/lib/motion';
 
 gsap.registerPlugin(Flip, ScrollTrigger, useGSAP);
@@ -43,8 +43,18 @@ export default function StickyHero({
   title,
   meta,
   flipId,
+  mobileAspect = "16/10",
+  scrim = "frame",
   children,
 }: {
+  /* "frame" darkens the whole visual from the bottom up, which suits a photo
+     or a banner. "band" leaves the visual at full strength and relies on the
+     title band's own scrim: for a diagram whose meaning is in its colours. */
+  scrim?: "frame" | "band";
+  /* Square on phones for a visual that carries text (the renal loop): at
+     16:10 the band left it ~100px of height on a 390px screen. Desktop is
+     21:9 either way. */
+  mobileAspect?: "16/10" | "square";
   /* Route rather than string: typedRoutes will not accept an untyped href,
      which is the point of having it on. */
   backHref: Route;
@@ -117,18 +127,29 @@ export default function StickyHero({
   return (
     <header
       ref={headerRef}
-      /* The inline value is the pre-measurement fallback, used for the first
-         paint and by anything that never runs the effect. */
-      style={{ '--band-height': '4.75rem' } as React.CSSProperties}
-      className="sticky top-[calc(var(--nav-height)-62.5vw+var(--band-height))] z-0 md:top-(--nav-height)"
+      /* The inline band value is the pre-measurement fallback, used for the
+         first paint and by anything that never runs the effect. --hero-h is
+         the frame's height on a phone, from its aspect ratio: 62.5vw for
+         16:10, 100vw for square. */
+      style={
+        {
+          '--band-height': '4.75rem',
+          '--hero-h': mobileAspect === 'square' ? '100vw' : '62.5vw',
+        } as React.CSSProperties
+      }
+      className="sticky top-[calc(var(--nav-height)-var(--hero-h)+var(--band-height))] z-0 md:top-(--nav-height)"
     >
       <div
         ref={frameRef}
         data-flip-id={flipId}
-        className="relative aspect-[16/10] w-full origin-top overflow-clip bg-raised md:aspect-[21/9]"
+        className={`relative w-full origin-top overflow-clip bg-raised md:aspect-[21/9] ${
+          mobileAspect === 'square' ? 'aspect-square' : 'aspect-[16/10]'
+        }`}
       >
         {children}
-        <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/55 to-transparent" />
+        {scrim === 'frame' ? (
+          <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/55 to-transparent" />
+        ) : null}
 
         {/* The band: whatever else scrolls away, this is what remains.
             It carries its own scrim. The frame's gradient is sized to the
@@ -138,18 +159,21 @@ export default function StickyHero({
             band, whatever height the title makes it. */}
         <div
           ref={headingRef}
-          className="absolute inset-x-0 bottom-0 flex items-end gap-4 bg-gradient-to-t from-surface via-surface/90 to-transparent p-5 pt-10 md:p-10"
+          /* Phones: a solid backing (with a short feather above it), because
+             the see-through gradient let the banner show through the title.
+             Desktop keeps the gradient over the artwork. */
+          className="absolute inset-x-0 bottom-0 bg-surface px-4 pb-4 pt-4 before:pointer-events-none before:absolute before:inset-x-0 before:-top-8 before:h-8 before:bg-gradient-to-t before:from-surface before:to-transparent sm:px-6 md:bg-transparent md:bg-gradient-to-t md:from-surface md:via-surface/90 md:to-transparent md:p-10 md:before:hidden"
         >
-          <Link
-            href={backHref}
-            className="shrink-0 pb-1 text-2xs text-muted transition-colors hover:text-accent"
-          >
-            <span aria-hidden="true">&larr;</span> {backLabel}
-          </Link>
-          <div className="min-w-0">
-            {/* Wraps. A heading a reader cannot finish is not a heading. */}
-            <h1 className="text-balance text-lg text-ink md:text-2xl">{title}</h1>
-            <p className="mt-1 text-2xs text-muted md:mt-3">{meta}</p>
+          {/* The title has its line to itself, at every width. Wraps: a
+              heading a reader cannot finish is not a heading. */}
+          <h1 className="text-balance text-lg text-ink md:text-2xl">{title}</h1>
+
+          {/* The back button is never on the title's line. On a phone it is
+              its own row under the title, at the right; from md up it sits
+              at the right end of the meta line. */}
+          <div className="mt-2 flex flex-col gap-2 md:mt-3 md:flex-row md:items-center md:justify-between md:gap-6">
+            <BackPill href={backHref} label={backLabel} className="order-first self-end md:order-last md:self-auto" />
+            <p className="text-2xs text-muted">{meta}</p>
           </div>
         </div>
       </div>

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/metadata";
-import Link from "next/link";
+import PinnedBack from "@/components/layout/pinned-back";
 import { portfolioConfig } from "@/config/site";
+import { ExternalLinkIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = pageMetadata({
   title: "Archive",
@@ -12,16 +13,11 @@ export const metadata: Metadata = pageMetadata({
 
 export default function ArchivePage() {
   return (
-    <section className="px-6 py-20 md:py-24">
+    <section className="px-4 sm:px-6 py-20 md:py-24">
       <div className="mx-auto max-w-(--container-view)">
-        <Link
-          href="/work"
-          className="text-2xs text-muted transition-colors hover:text-ink"
-        >
-          &larr; Work
-        </Link>
+        <PinnedBack href="/work" label="All work" />
 
-        <h1 className="mt-8 max-w-[20ch] text-xl text-ink md:text-2xl">
+        <h1 className="max-w-[20ch] text-xl text-ink md:text-2xl">
           {portfolioConfig.copy.archiveHeading}
         </h1>
 
@@ -55,9 +51,11 @@ export default function ArchivePage() {
                       href={item.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-accent underline decoration-accent/40 underline-offset-[6px]"
+                      className="inline-flex items-center gap-1 text-accent underline decoration-accent/40 underline-offset-[6px]"
                     >
                       Open
+                      <ExternalLinkIcon className="h-3 w-3" />
+                      <span className="sr-only">(opens in a new tab)</span>
                     </a>
                   ) : (
                     <span className="text-muted">&mdash;</span>

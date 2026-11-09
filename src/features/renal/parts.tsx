@@ -81,10 +81,15 @@ export function TrapGrid({ traps, label }: { traps: Trap[]; label: string }) {
 /* ---- the trap page ---------------------------------------------------- */
 
 /** A wide table on a narrow phone scrolls inside its own box, and the box
- *  takes focus so a keyboard can scroll it too. */
+ *  takes focus so a keyboard can scroll it too.
+ *
+ *  `relative` is load-bearing: an absolutely positioned descendant (the
+ *  sr-only "Note" header is one) escapes an overflow clip unless an ancestor
+ *  inside the clip is positioned. Without it that 1px label sat at the wide
+ *  table's far edge and widened the whole page to 464px at 390. */
 export function Scroller({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div role="region" aria-label={label} tabIndex={0} className="mt-3 overflow-x-auto">
+    <div role="region" aria-label={label} tabIndex={0} className="relative mt-3 overflow-x-auto">
       {children}
     </div>
   );
