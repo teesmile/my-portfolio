@@ -57,7 +57,7 @@ export default async function CaseStudyPage({ params }: Params) {
             src={project.preview}
             alt={project.title}
             fill
-            priority
+            preload
             sizes="100vw"
             className="object-cover object-top"
           />
