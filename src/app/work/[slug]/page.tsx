@@ -66,7 +66,7 @@ export default async function CaseStudyPage({ params }: Params) {
       {/* The sheet: a solid surface that rides up over the hero. It owns the
           page background from here down, which is what makes it read as a
           sheet rather than a transparent column. */}
-      <div data-sheet className="relative z-10 min-h-screen bg-surface px-6 py-16 md:py-20">
+      <div data-sheet className="relative z-10 min-h-screen bg-surface px-4 sm:px-6 py-16 md:py-20">
         <Link
           href="/work"
           className="sticky top-(--nav-height) z-20 -mt-6 mb-10 hidden w-fit bg-surface py-2 text-2xs text-muted transition-colors hover:text-ink md:block"

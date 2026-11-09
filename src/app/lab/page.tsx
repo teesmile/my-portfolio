@@ -15,7 +15,7 @@ export const metadata: Metadata = pageMetadata({
    empty page costs more than the page is worth. */
 export default function LabPage() {
   return (
-    <section className="flex flex-1 items-center px-6 py-20">
+    <section className="flex flex-1 items-center px-4 sm:px-6 py-20">
       <div className="mx-auto w-full max-w-(--container-view)">
         <h1 className="max-w-[18ch] text-xl text-ink md:text-2xl">
           {portfolioConfig.copy.labHeading}

@@ -85,7 +85,7 @@ export default function Navbar() {
   return (
     <>
       <nav className="fixed inset-x-0 top-0 z-50 border-b border-line bg-surface/85 pt-(--safe-top) backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-(--container-view) items-center justify-between px-6">
+      <div className="mx-auto flex h-16 max-w-(--container-view) items-center justify-between px-4 sm:px-6">
         <Link
           href="/"
           aria-label={`${portfolioConfig.name} — go to the home page`}
@@ -165,7 +165,7 @@ export default function Navbar() {
         <div
           id="mobile-menu"
           ref={panelRef}
-          className="fixed inset-x-0 top-(--nav-height) bottom-0 z-45 bg-surface px-6 pt-10 md:hidden"
+          className="fixed inset-x-0 top-(--nav-height) bottom-0 z-45 bg-surface px-4 sm:px-6 pt-10 md:hidden"
         >
           <ul className="flex flex-col">
             {[...portfolioConfig.navLinks, { name: 'Resume', href: '/resume' } as const].map((link) => (

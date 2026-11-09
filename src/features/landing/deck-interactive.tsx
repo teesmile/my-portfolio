@@ -23,8 +23,13 @@ const slot = (index: number) => ({
 /** Past this fraction of the card's width, a drag becomes a dismissal. */
 const DRAG_RATIO = 0.25;
 const FLICK_VELOCITY = 450;
-/* A card holds for 5s before the deck moves on by itself: --deck-dwell in
-   globals.css, beside the keyframes that run it. */
+/* The deck's first move comes 3s after the hero entrance settles, then
+   every 4s: --deck-dwell in globals.css, set per lap below. */
+const FIRST_DWELL = '3s';
+const DWELL = '4s';
+/** Slide out, slide in, and the stack closing up behind: quick, so an
+ *  automatic move never feels like a wait. */
+const SLIDE = 0.35;
 
 export default function DeckInteractive({ cards }: { cards: Card[] }) {
   const [order, setOrder] = useState(() => cards.map((_, index) => index));
@@ -84,12 +89,12 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
         xPercent: -120,
         rotate: -6,
         opacity: 0,
-        duration: DURATION.base,
+        duration: SLIDE,
         ease: EASE.inOut,
       })
       /* Re-enter from the right, at the back, where a returning card belongs. */
       .set(front, { xPercent: 0, x: back.x + 40, y: back.y, rotate: back.rotate, zIndex: back.zIndex })
-      .to(front, { x: back.x, opacity: back.opacity, duration: DURATION.base, ease: EASE.out });
+      .to(front, { x: back.x, opacity: back.opacity, duration: SLIDE, ease: EASE.out });
 
     setOrder((current) => [...current.slice(1), current[0]]);
   };
@@ -119,7 +124,7 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
         gsap.to(node, {
           ...target,
           xPercent: 0,
-          duration: DURATION.base,
+          duration: SLIDE,
           ease: EASE.inOut,
           overwrite: 'auto',
         });
@@ -189,7 +194,11 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
 
       const sync = () => element.toggleAttribute('data-paused', !running());
 
+      /* 3s for the first lap after the hero settles, 4s for every lap
+         after it, including any restart a reader causes. */
+      let firstLap = true;
       const restart = () => {
+        element.style.setProperty('--deck-dwell', firstLap ? FIRST_DWELL : DWELL);
         lap = lap === 'a' ? 'b' : 'a';
         element.dataset.lap = lap;
         sync();
@@ -197,6 +206,7 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
 
       const finished = (event: AnimationEvent) => {
         if (!event.animationName.startsWith('deck-dwell')) return;
+        firstLap = false;
         /* Mid-gesture or mid-flight: count again rather than skip. */
         if (busy.current) restart();
         else latest.current.advance();
@@ -204,6 +214,7 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
 
       const hold = (key: 'hover' | 'focus' | 'touch', on: boolean) => {
         state[key] = on;
+        if (!on) firstLap = false;
         if (on) sync();
         else restart();
       };
@@ -224,7 +235,10 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
       const focusOut = (event: FocusEvent) => {
         if (!element.contains(event.relatedTarget as Node | null)) hold('focus', false);
       };
-      const key = () => restart();
+      const key = () => {
+        firstLap = false;
+        restart();
+      };
 
       element.addEventListener('animationend', finished);
       element.addEventListener('pointerenter', enter);
@@ -324,7 +338,7 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
         if (far || fast) {
           latest.current.advance();
         } else {
-          gsap.to(front, { ...slot(0), duration: DURATION.base, ease: EASE.out });
+          gsap.to(front, { ...slot(0), duration: SLIDE, ease: EASE.out });
         }
       },
     });
@@ -379,6 +393,18 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
 
   return (
     <div ref={root}>
+      {/* The progress bar, above the deck and as wide as it. With
+          auto-advance it is the clock: its fill runs across over the dwell
+          and its animationend moves the deck. Without auto-advance (reduced
+          motion, no JavaScript) it shows position instead: filled to the
+          current card's share of the deck. */}
+      <div aria-hidden="true" className="relative mb-4 h-1 w-full overflow-hidden bg-line">
+        <span
+          data-fill
+          className="absolute inset-0 origin-left bg-accent"
+          style={{ '--deck-pos': (order[0] + 1) / cards.length } as React.CSSProperties}
+        />
+      </div>
       <div
         ref={container}
         className="relative h-[27rem] w-full overflow-x-clip [perspective:1200px] sm:h-[23rem]"
@@ -421,22 +447,11 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
         })}
       </div>
 
-      <div className="mt-5 flex items-center gap-3">
-        {/* The position marks double as the progress indicator: the
-            current mark fills over the dwell time. Without auto-advance
-            (reduced motion, or no JavaScript) the fill is never scaled and
-            the current mark is simply solid, as it always was. */}
-        <div className="flex gap-1.5" aria-hidden="true">
-          {cards.map((card, index) => (
-            <span key={card.context} className="relative h-1 w-4 overflow-hidden bg-line">
-              {/* Only the current mark carries a fill, so a new card mounts a
-                  fresh element and its animation starts from zero. */}
-              {index === order[0] ? (
-                <span data-fill className="absolute inset-0 origin-left bg-accent" />
-              ) : null}
-            </span>
-          ))}
-        </div>
+      {/* Clear of the stack. The cards behind sit lower and rotate about
+          their top-left corner, so their far corner hangs below the deck's
+          box: measured 59-61px on a phone and up to 84px at tablet width.
+          The old 20px gap left the counter and "Next bug" underneath them. */}
+      <div className="mt-[4.75rem] flex items-center gap-3 md:mt-[6.5rem]">
         <p aria-live="polite" className="text-2xs text-muted tabular-nums">
           {order[0] + 1} of {cards.length}
           <span className="sr-only">: {cards[order[0]].context}</span>

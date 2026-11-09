@@ -8,7 +8,7 @@ export default function Hero() {
     /* At least one screen tall, so the hero owns the first view on its own
        and Selected work is always something you scroll to, never something
        half-visible competing with the entrance. */
-    <section className="editor-surface flex min-h-[calc(100dvh-var(--nav-height))] flex-col justify-center px-6 py-16 md:py-20">
+    <section className="editor-surface flex min-h-[calc(100dvh-var(--nav-height))] flex-col justify-center px-4 sm:px-6 py-16 md:py-20">
       <div className="editor-guides relative mx-auto w-full max-w-(--container-view)">
         <div className="flex gap-4 md:gap-6">
           {/* The gutter: decorative, so its numbers are not text at all.

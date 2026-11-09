@@ -79,7 +79,8 @@ const projects: Project[] = [
       "A product page built from a design file. Gallery thumbnails, a cart that counts correctly, and one layout that works on a phone without a separate mobile build.",
     role: "Frontend implementation",
     year: "2025",
-    tech: ["Vite", "JavaScript", "HTML", "CSS", "Tailwind CSS"],
+    /* From the repo's package.json: a Next.js app, not Vite. */
+    tech: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Zustand"],
     link: "https://shop.anthonyugwuja.dev",
     repo: "https://github.com/teesmile/e-commerce-product-page",
     highlights: [
@@ -358,7 +359,7 @@ export const portfolioConfig = {
   stack: [
     {
       layer: "Frontend",
-      items: ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "Vite", "HTML", "CSS"],
+      items: ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "HTML", "CSS"],
     },
     { layer: "Backend", items: ["Node.js", "Python", "Django"] },
     { layer: "Data", items: ["Supabase", "PostgreSQL", "IndexedDB"] },

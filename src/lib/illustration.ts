@@ -14,6 +14,7 @@
  *   panel / edge      filled boxes and their amber-tinted edges
  *   shape             neutral filled shapes (text lines, bars)
  *   error / errorSoft the wrong value, and the fill of a wrong shape
+ *   shadow / glow     depth and warm light for the banner and share scenes
  *
  * Contrast was measured for every text-on-fill pairing in both themes before
  * the values were set: text at least 4.5:1, edges at least 3:1. One pairing
@@ -30,4 +31,6 @@ export const ILL = {
   shape: "var(--ill-shape)",
   error: "var(--ill-error)",
   errorSoft: "var(--ill-error-soft)",
+  shadow: "var(--ill-shadow)",
+  glow: "var(--ill-glow)",
 } as const;
