@@ -5,8 +5,11 @@ import {
   siFarcaster, siGooglegemini, siReplicate,
 } from "simple-icons";
 import { cn } from "@/lib/utils";
+import { neynar, type BrandIcon } from "./brand-icons";
 
-type Icon = { hex: string; path: string };
+/* simple-icons draw in a 24x24 box; a brand mark from elsewhere may bring
+   its own viewBox. */
+type Icon = BrandIcon;
 
 const icons: Record<string, Icon> = {
   "React": siReact, "TypeScript": siTypescript, "JavaScript": siJavascript,
@@ -17,8 +20,9 @@ const icons: Record<string, Icon> = {
   "Framer Motion": siFramer, "Angular": siAngular, "DNS": siCloudflare,
   "Python": siPython, "Django": siDjango,
   "Supabase": siSupabase, "PostgreSQL": siPostgresql,
-  "Farcaster Mini App SDK": siFarcaster, "Gemini": siGooglegemini,
+  "Farcaster": siFarcaster, "Farcaster Mini App SDK": siFarcaster, "Gemini": siGooglegemini,
   "Replicate": siReplicate, "Vercel Blob": siVercel,
+  "Neynar": neynar, "Neynar API": neynar,
 };
 
 function luminance(hex: string) {
@@ -62,14 +66,14 @@ export function TechList({ items, className }: { items: string[]; className?: st
                 data-tech-mark
                 className="tech-mark relative inline-block h-3 w-3 shrink-0"
               >
-                <svg viewBox="0 0 24 24" className="absolute inset-0 fill-current" aria-hidden="true">
+                <svg viewBox={icon.viewBox ?? "0 0 24 24"} className="absolute inset-0 fill-current" aria-hidden="true">
                   <path d={icon.path} />
                 </svg>
                 {/* Two tinted copies, invisible until the split runs. */}
-                <svg data-ghost="r" viewBox="0 0 24 24" className="absolute inset-0 fill-[#ff3b30] opacity-0" aria-hidden="true">
+                <svg data-ghost="r" viewBox={icon.viewBox ?? "0 0 24 24"} className="absolute inset-0 fill-[#ff3b30] opacity-0" aria-hidden="true">
                   <path d={icon.path} />
                 </svg>
-                <svg data-ghost="c" viewBox="0 0 24 24" className="absolute inset-0 fill-[#00e5ff] opacity-0" aria-hidden="true">
+                <svg data-ghost="c" viewBox={icon.viewBox ?? "0 0 24 24"} className="absolute inset-0 fill-[#00e5ff] opacity-0" aria-hidden="true">
                   <path d={icon.path} />
                 </svg>
               </span>

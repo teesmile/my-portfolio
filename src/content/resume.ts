@@ -234,7 +234,9 @@ export const resumeContent = {
      AI version carries only the sample, because a health-AI reader is hiring
      for exactly that, and the rest is frontend work it skims. Space Tourism came
      off when the sample and the rebuilt todo app went on: it is the simplest
-     of the four, and it is still on /work. */
+     of the four, and it is still on /work. Roasted then replaced the
+     E-Commerce page on the master: it has a server side, three external
+     services and real users, where the product page is a frontend build. */
   projects: [
     {
       name: 'Renal dose check (AI agent benchmark)',
@@ -251,11 +253,18 @@ export const resumeContent = {
       place: { default: 1 } as Placement,
     },
     {
+      name: 'Roasted',
+      line: 'Farcaster mini app that writes a roast from a user\'s profile and recent casts, turns their avatar into a meme, and shares the card as a cast.',
+      url: 'https://castroast.vercel.app',
+      repo: 'https://github.com/teesmile/roasted-app',
+      place: { default: 2 } as Placement,
+    },
+    {
       name: 'E-Commerce Product Page',
       line: 'Product page with a gallery, cart state and one responsive layout built from a design file.',
       url: 'https://shop.anthonyugwuja.dev',
       repo: 'https://github.com/teesmile/e-commerce-product-page',
-      place: { default: 2 } as Placement,
+      place: {} as Placement,
     },
     {
       name: 'Space Tourism Website',

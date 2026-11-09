@@ -2,7 +2,9 @@ import { portfolioConfig } from "@/config/site";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-line px-4 sm:px-6 py-6 md:py-10">
+    /* Its own layer on the page surface: nothing in a page's content, however
+       it is transformed, can paint over the footer or take its clicks. */
+    <footer className="relative z-10 border-t border-line bg-surface px-4 sm:px-6 py-6 md:py-10">
       <div className="mx-auto flex max-w-(--container-view) flex-col items-start gap-4 text-left text-2xs text-muted sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <p>
           &copy; {new Date().getFullYear()} {portfolioConfig.name}

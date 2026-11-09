@@ -14,6 +14,9 @@ import BackPill from '@/components/ui/back-pill';
  * nav's bottom border, and sits at z-20 under the nav's z-50, so it never
  * covers the nav.
  *
+ * Opaque, with the nav's bottom rule: at 95% the line scrolling under it
+ * showed through around the pill and read as text overlapping the strip.
+ *
  *   mode "always"   the strip is the page's back control (the trap pages).
  *   mode "covered"  pages with a sticky hero already show the pill in the
  *                   hero's band; this one appears only once the content
@@ -55,7 +58,7 @@ export default function PinnedBack({
       <div
         aria-hidden={hidden || undefined}
         inert={hidden}
-        className={`sticky top-[calc(var(--nav-height)+1px)] z-20 -mx-4 flex h-11 items-center bg-surface/95 px-4 transition-opacity duration-(--duration-fast) sm:-mx-6 sm:px-6 ${
+        className={`sticky top-[calc(var(--nav-height)+1px)] z-20 -mx-4 flex h-11 items-center border-b border-line bg-surface px-4 transition-opacity duration-(--duration-fast) sm:-mx-6 sm:px-6 ${
           mode === 'covered' ? '-mt-16 mb-5 md:-mt-20' : 'mb-8'
         } ${hidden ? 'pointer-events-none opacity-0' : 'opacity-100'}`}
       >

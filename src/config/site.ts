@@ -386,6 +386,9 @@ export const portfolioConfig = {
     { layer: "Backend", items: ["Node.js", "Python", "Django"] },
     { layer: "Data", items: ["Supabase", "PostgreSQL", "IndexedDB"] },
     { layer: "Infrastructure", items: ["Git", "GitHub", "Vercel", "pnpm", "Linux"] },
+    /* The services Roasted is built on. Four, so on /about the row merges
+       into the one above as "Infrastructure and services". */
+    { layer: "Services", items: ["Farcaster", "Neynar", "Gemini", "Replicate"] },
     /* Practices rather than tools: no logos exist for them, so the row draws
        them as text chips instead of borrowing an icon that means something
        else. */
