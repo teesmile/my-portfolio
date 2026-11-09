@@ -105,7 +105,7 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
 
   /* Every card tweens to the slot it now occupies. The slots are a pure
      function of position, so no layout measurement is needed — which is why
-     this is not Flip. See docs/decisions.md. */
+     this is not Flip. */
   useGSAP(
     () => {
       const first = !placed.current;

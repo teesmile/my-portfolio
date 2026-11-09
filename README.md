@@ -44,7 +44,6 @@ pnpm build && pnpm start
 | Page sections | `src/features/<name>/` |
 | Shared layout (nav, footer, sticky hero, reveals) | `src/components/layout/` |
 | Design tokens, including the illustration palette | `src/app/globals.css` |
-| Design decisions and the reasoning behind them | `docs/decisions.md` |
 
 ## Resume PDFs
 

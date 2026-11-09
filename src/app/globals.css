@@ -38,7 +38,7 @@
 
   /* The illustration palette: every figure, diagram, banner and the renal
      loop draw from these and nothing else. Content colour, not chrome.
-     Measured (scripts in docs/decisions.md, 2026-11-09): every text pairing
+     Measured 2026-11-09: every text pairing
      is at least 4.5:1, edges at least 3:1, in both themes.
        text    primary labels and values
        detail  secondary labels only
