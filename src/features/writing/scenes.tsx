@@ -303,7 +303,7 @@ export function PortraitBytesScene({ id, className, preserveAspectRatio, viewBox
         <text x={120} y={128} fontFamily={mono} fontSize="16" fill={ILL.text}>1254 × 1254 · 16 bits per channel</text>
         <text x={120} y={156} fontFamily={display} fontSize="22" fill={ILL.error}>2,507,195 bytes sent</text>
         <rect x={100} y={178} width={500} height={200} fill={ILL.errorSoft} />
-        <image href="/profile.webp" x={100} y={178} width={500} height={200} preserveAspectRatio="xMidYMid slice" clipPath={`url(#${id}-tile)`} />
+        <image href="/portrait-clean-v2.webp" x={100} y={178} width={500} height={200} preserveAspectRatio="xMidYMid slice" clipPath={`url(#${id}-tile)`} />
         <rect x={100} y={178} width={500} height={200} fill="none" stroke={ILL.error} strokeWidth="3" />
       </Window>
 
@@ -320,7 +320,7 @@ export function PortraitBytesScene({ id, className, preserveAspectRatio, viewBox
       <rect x={905} y={66} width={60} height={8} rx="4" fill={ILL.shape} />
       <rect x={832} y={96} width={90} height={9} rx="3" fill={ILL.shape} />
       <circle cx={935} cy={208} r={80} fill={ILL.glow} />
-      <image href="/profile.webp" x={861} y={134} width={148} height={148} preserveAspectRatio="xMidYMid slice" clipPath={`url(#${id}-avatar)`} />
+      <image href="/portrait-clean-v2.webp" x={861} y={134} width={148} height={148} preserveAspectRatio="xMidYMid slice" clipPath={`url(#${id}-avatar)`} />
       <circle cx={935} cy={208} r={74} fill="none" stroke={ILL.accent} strokeWidth="2.5" />
       {[310, 332, 354, 376].map((y, i) => (
         <rect key={y} x={834} y={y} width={i === 3 ? 120 : 200} height={9} rx="3" fill={ILL.shape} opacity={i === 0 ? 1 : 0.6} />
