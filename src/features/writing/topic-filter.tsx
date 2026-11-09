@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import type { Topic, WritingEntry } from '@/config/writing';
-import { readingTime } from '@/config/writing';
+import { dateOf, readingTime } from '@/config/writing';
 
 /**
  * Filtering happens in the client because the list is small and the whole set
@@ -43,7 +43,7 @@ export default function TopicFilter({ entries }: { entries: WritingEntry[] }) {
         {shown.map((entry) => (
           <article key={entry.slug} data-reveal className="border-b border-line py-8">
             <p className="text-2xs text-muted tabular-nums">
-              {entry.date} &middot; {readingTime(entry)} min read &middot; {entry.topic}
+              {dateOf(entry)} &middot; {readingTime(entry)} min read &middot; {entry.topic}
             </p>
             <h2 className="mt-2 text-lg text-ink">
               <Link

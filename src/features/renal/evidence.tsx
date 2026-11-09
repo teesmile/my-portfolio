@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { renal, renalTraps } from "@/content/renal-dosing";
+import { ILL } from "@/lib/illustration";
 import { Scroller, TestName, familyLabel } from "./parts";
 
-const label = { fontSize: 9, fill: "var(--muted)" } as const;
-const strong = { fontSize: 9, fill: "var(--ink)" } as const;
+const label = { fontSize: 9, fill: ILL.detail } as const;
+const strong = { fontSize: 9, fill: ILL.text } as const;
+const good = { fontSize: 9, fill: ILL.accent } as const;
 
 /** What a benchmark run is, left to right: the chart goes in, an answer file
  *  comes out, and tests that never see the agent's reasoning decide. */
@@ -18,27 +20,27 @@ export function PipelineFigure() {
       >
         {["patients.csv", "labs.csv", "meds.csv", "rules.json"].map((file, i) => (
           <g key={file}>
-            <rect x="6" y={10 + i * 23} width="86" height="18" fill="none" stroke="var(--line)" />
-            <text x="12" y={22 + i * 23} {...label} fontFamily="var(--font-mono)">{file}</text>
+            <rect x="6" y={10 + i * 23} width="86" height="18" fill={ILL.panel} stroke={ILL.edge} />
+            <text x="12" y={22 + i * 23} {...strong} fontFamily="var(--font-mono)">{file}</text>
           </g>
         ))}
-        <path d="M98 56h24m0 0-5-4m5 4-5 4" stroke="var(--ink)" fill="none" />
+        <path d="M98 56h24m0 0-5-4m5 4-5 4" stroke={ILL.text} fill="none" />
 
-        <rect x="128" y="30" width="96" height="52" fill="none" stroke="var(--ink)" />
+        <rect x="128" y="30" width="96" height="52" fill={ILL.panel} stroke={ILL.text} />
         <text x="176" y="52" textAnchor="middle" {...strong}>agent</text>
         <text x="176" y="68" textAnchor="middle" {...label}>in a terminal</text>
-        <path d="M230 56h24m0 0-5-4m5 4-5 4" stroke="var(--ink)" fill="none" />
+        <path d="M230 56h24m0 0-5-4m5 4-5 4" stroke={ILL.text} fill="none" />
 
-        <rect x="260" y="44" width="88" height="24" fill="none" stroke="var(--line)" />
-        <text x="304" y="60" textAnchor="middle" {...label} fontFamily="var(--font-mono)">dose_check.jsonl</text>
-        <path d="M352 56h18m0 0-5-4m5 4-5 4" stroke="var(--ink)" fill="none" />
+        <rect x="256" y="44" width="100" height="24" fill={ILL.panel} stroke={ILL.edge} />
+        <text x="306" y="60" textAnchor="middle" {...strong} fontFamily="var(--font-mono)">dose_check.jsonl</text>
+        <path d="M358 56h12m0 0-5-4m5 4-5 4" stroke={ILL.text} fill="none" />
 
-        <rect x="374" y="30" width="60" height="52" fill="none" stroke="var(--accent)" />
+        <rect x="374" y="30" width="60" height="52" fill={ILL.accentSoft} stroke={ILL.accent} />
         <text x="404" y="52" textAnchor="middle" {...strong}>{renal.testCount} tests</text>
         <text x="404" y="68" textAnchor="middle" {...label}>pass / fail</text>
 
         <text x="49" y="106" textAnchor="middle" {...label}>the chart</text>
-        <text x="304" y="106" textAnchor="middle" {...label}>one line per patient</text>
+        <text x="306" y="106" textAnchor="middle" {...label}>one line per patient</text>
       </svg>
       <figcaption className="mt-4 text-2xs text-muted">
         The tests read only the answer file. A confident explanation earns nothing; a number outside 1% or one wrong order id fails.
@@ -65,13 +67,13 @@ export function MarginFigure() {
         role="img"
         aria-label={`${tightest.patient_id}: reference CrCl ${crcl}, band edge at ${edge}, a ${(margin * 100).toFixed(1)}% gap. The 1% tolerance spans ${(crcl - tol).toFixed(1)} to ${(crcl + tol).toFixed(1)} and never reaches the edge.`}
       >
-        <line x1="20" y1="50" x2="420" y2="50" stroke="var(--line)" />
-        <rect x={x(crcl - tol)} y="40" width={x(crcl + tol) - x(crcl - tol)} height="20" fill="var(--ink)" opacity="0.14" />
-        <line x1={x(crcl)} y1="34" x2={x(crcl)} y2="66" stroke="var(--ink)" />
-        <text x={x(crcl)} y="26" textAnchor="middle" {...strong}>{crcl} reference</text>
-        <text x={x(crcl)} y="80" textAnchor="middle" {...label}>±1% accepted</text>
-        <line x1={x(edge)} y1="30" x2={x(edge)} y2="70" stroke="var(--accent)" strokeDasharray="3 3" />
-        <text x={x(edge)} y="22" textAnchor="middle" {...label}>band edge {edge}</text>
+        <line x1="20" y1="50" x2="420" y2="50" stroke={ILL.edge} />
+        <rect x={x(crcl - tol)} y="40" width={x(crcl + tol) - x(crcl - tol)} height="20" fill={ILL.accentSoft} stroke={ILL.accent} />
+        <line x1={x(crcl)} y1="34" x2={x(crcl)} y2="66" stroke={ILL.accent} strokeWidth="1.5" />
+        <text x={x(crcl)} y="26" textAnchor="middle" {...good}>{crcl} reference</text>
+        <text x={x(crcl)} y="80" textAnchor="middle" {...strong}>±1% accepted</text>
+        <line x1={x(edge)} y1="30" x2={x(edge)} y2="70" stroke={ILL.text} strokeDasharray="3 3" />
+        <text x={x(edge)} y="22" textAnchor="middle" {...strong}>band edge {edge}</text>
       </svg>
       <figcaption className="mt-4 text-2xs text-muted">
         The tightest case, {tightest.patient_id}: {(margin * 100).toFixed(1)}% from the nearest band edge. The task requires at least 2% for every patient, twice the tolerance, so any answer the test accepts still lands in the right band.

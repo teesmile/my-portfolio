@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { portfolioConfig } from "@/config/site";
 import { pageMetadata } from "@/lib/metadata";
 import { TechList } from "@/components/ui/tech";
 import StickyHero from "@/components/layout/sticky-hero";
+import PinnedBack from "@/components/layout/pinned-back";
 import Image from "next/image";
 import Reveals from "@/components/layout/reveals";
+import { ExternalLinkIcon } from "@/components/ui/icons";
 import TechGlitch from "@/components/ui/tech-glitch";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -46,7 +47,7 @@ export default async function CaseStudyPage({ params }: Params) {
       <TechGlitch />
       <StickyHero
         backHref="/work"
-        backLabel="Work"
+        backLabel="All work"
         title={project.title}
         meta={`${project.year} · ${project.role}`}
         flipId={`work-${project.slug}`}
@@ -66,13 +67,8 @@ export default async function CaseStudyPage({ params }: Params) {
       {/* The sheet: a solid surface that rides up over the hero. It owns the
           page background from here down, which is what makes it read as a
           sheet rather than a transparent column. */}
-      <div data-sheet className="relative z-10 min-h-screen bg-surface px-6 py-16 md:py-20">
-        <Link
-          href="/work"
-          className="sticky top-(--nav-height) z-20 -mt-6 mb-10 hidden w-fit bg-surface py-2 text-2xs text-muted transition-colors hover:text-ink md:block"
-        >
-          <span aria-hidden="true">&larr;</span> Work
-        </Link>
+      <div data-sheet className="relative z-10 min-h-screen bg-surface px-4 sm:px-6 py-16 md:py-20">
+        <PinnedBack href="/work" label="All work" mode="covered" />
 
         <div className="mx-auto max-w-(--container-view)">
           <div className="grid gap-12 lg:grid-cols-12">
@@ -135,9 +131,11 @@ export default async function CaseStudyPage({ params }: Params) {
                   href={project.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
+                  className="inline-flex w-fit items-center gap-1.5 text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
                 >
                   Open the live project
+                  <ExternalLinkIcon className="h-3.5 w-3.5" />
+                  <span className="sr-only">(opens in a new tab)</span>
                 </a>
                 {project.repo ? (
                   <a
