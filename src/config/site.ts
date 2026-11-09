@@ -43,22 +43,32 @@ const projects: Project[] = [
     slug: "todo-app",
     preview: "/work/todo-app.webp",
     title: "React Todo / Productivity App",
-    /* Only what the live app does today, from its README. Sign-in and sync
-       are being built in the repo; they go here the day they ship. */
+    /* What the live app does today. Sync shipped in November 2026; the
+       repo README still describes the offline-only version. */
     description:
-      "A local-first task list, built for a phone first. Tasks are grouped by when they're due and kept in IndexedDB on your device, with no account. Edit in place, delete with Undo, and search and filters that survive a reload.",
-    role: "Frontend implementation",
+      "A local-first task list that works offline, with optional Google sign-in that syncs tasks and labels across devices. Tasks are grouped by when they're due, with Vital tasks, labels, search, and delete with Undo.",
+    role: "Full-stack implementation",
     year: "2026",
-    tech: ["Next.js", "React", "TypeScript", "Dexie", "IndexedDB", "Tailwind CSS"],
+    tech: ["Next.js", "React", "TypeScript", "Dexie", "IndexedDB", "Supabase", "Tailwind CSS"],
     link: "https://todo.anthonyugwuja.dev",
     repo: "https://github.com/teesmile/todo-app-tsc",
     highlights: [
+      "Works offline: tasks live in IndexedDB on the device, and edits made in two tabs at once don't silently replace each other",
+      "Optional Google sign-in syncs tasks and labels across devices; without it, nothing leaves the device",
       "Grouped by when it's due: Overdue, Today, Tomorrow, Upcoming, No date and Done, re-grouped at midnight",
-      "Add, edit in place, complete, and delete with Undo; Ctrl+Z works too",
       "Vital tasks and colour labels, with search and filters that survive a reload",
-      "Local-first: tasks live in IndexedDB and are never overwritten, and edits made in two tabs at once don't silently replace each other",
+      "Add, edit in place, complete, and delete with Undo; Ctrl+Z works too",
       "Keyboard and screen-reader friendly: n adds, / searches, a skip link, and no axe violations, contrast included",
-    ]
+    ],
+    /* The first project with a server. Every line checked against the repo:
+       supabase/migrations, supabase/config.toml and src/features/tasks/sync. */
+    architecture: {
+      dataModel:
+        "Dexie over IndexedDB on the device is what the interface reads and writes. Signed in, tasks and labels mirror to two Supabase Postgres tables under row-level security, so each account only ever reads and writes its own rows.",
+      api: "No API routes. A client-side sync engine pushes and pulls in batches against Supabase. A database trigger settles conflicts: last write wins, a device clock running fast can win by at most five minutes, and a deletion is final.",
+      auth: "Optional Google sign-in through Supabase Auth. Without an account the app works fully offline on one device.",
+      hosting: "Vercel for the app; Supabase for Postgres and sign-in.",
+    },
   },
   {
     id: 2,
@@ -343,15 +353,15 @@ export const portfolioConfig = {
     },
   ] as { year: string; title: string; stack: string[]; training: boolean; link: string | null }[],
   // Grouped by layer, and only tools that appear in a listed project or role.
-  // The data row is empty on purpose: nothing I have shipped has a database
-  // yet, and pretending otherwise is the easiest lie on a portfolio.
+  // The data row stayed empty until something shipped with a database: the
+  // todo app's sync (Supabase Postgres) is the first.
   stack: [
     {
       layer: "Frontend",
       items: ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "Vite", "HTML", "CSS"],
     },
     { layer: "Backend", items: ["Node.js", "Python", "Django"] },
-    { layer: "Data", items: [] },
+    { layer: "Data", items: ["Supabase", "PostgreSQL", "IndexedDB"] },
     { layer: "Infrastructure", items: ["Git", "GitHub", "Vercel", "pnpm", "Linux"] },
     /* Practices rather than tools: no logos exist for them, so the row draws
        them as text chips instead of borrowing an icon that means something
@@ -377,10 +387,9 @@ export const portfolioConfig = {
       "I trained as a pharmacist at the University of Nigeria, Nsukka. I wrote my first code in 2020, partway through the degree, and kept going after it: HTML and CSS first, then JavaScript, then React.",
       "Now I build interfaces in React and TypeScript, and I use AI tools while I do it. In the same week I get paid to read code a model wrote and say exactly what is wrong with it — the bug, why it bites, and the version that works.",
       "The second job changed how I do the first. Read enough confident, broken answers and you stop trusting code that merely looks right. Including your own.",
-      "I am working across the whole stack now. The app I am building has a server, a database and real sign-in, and it goes on the Work page the day it ships.",
+      "I am working across the whole stack now. The todo app on the Work page has a database and Google sign-in behind it, and syncs across devices.",
     ],
     aboutStackHeading: "What I work with",
-    aboutDataEmpty: "Nothing I have shipped has a database yet.",
     workHeading: "Things I\u2019ve built, and what each one taught me.",
     workArchiveLink: "Everything else, including the training work",
     writingHeading: "Decisions, and what they cost.",

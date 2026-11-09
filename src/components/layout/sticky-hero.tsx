@@ -43,8 +43,18 @@ export default function StickyHero({
   title,
   meta,
   flipId,
+  mobileAspect = "16/10",
+  scrim = "frame",
   children,
 }: {
+  /* "frame" darkens the whole visual from the bottom up, which suits a photo
+     or a banner. "band" leaves the visual at full strength and relies on the
+     title band's own scrim: for a diagram whose meaning is in its colours. */
+  scrim?: "frame" | "band";
+  /* Square on phones for a visual that carries text (the renal loop): at
+     16:10 the band left it ~100px of height on a 390px screen. Desktop is
+     21:9 either way. */
+  mobileAspect?: "16/10" | "square";
   /* Route rather than string: typedRoutes will not accept an untyped href,
      which is the point of having it on. */
   backHref: Route;
@@ -117,18 +127,29 @@ export default function StickyHero({
   return (
     <header
       ref={headerRef}
-      /* The inline value is the pre-measurement fallback, used for the first
-         paint and by anything that never runs the effect. */
-      style={{ '--band-height': '4.75rem' } as React.CSSProperties}
-      className="sticky top-[calc(var(--nav-height)-62.5vw+var(--band-height))] z-0 md:top-(--nav-height)"
+      /* The inline band value is the pre-measurement fallback, used for the
+         first paint and by anything that never runs the effect. --hero-h is
+         the frame's height on a phone, from its aspect ratio: 62.5vw for
+         16:10, 100vw for square. */
+      style={
+        {
+          '--band-height': '4.75rem',
+          '--hero-h': mobileAspect === 'square' ? '100vw' : '62.5vw',
+        } as React.CSSProperties
+      }
+      className="sticky top-[calc(var(--nav-height)-var(--hero-h)+var(--band-height))] z-0 md:top-(--nav-height)"
     >
       <div
         ref={frameRef}
         data-flip-id={flipId}
-        className="relative aspect-[16/10] w-full origin-top overflow-clip bg-raised md:aspect-[21/9]"
+        className={`relative w-full origin-top overflow-clip bg-raised md:aspect-[21/9] ${
+          mobileAspect === 'square' ? 'aspect-square' : 'aspect-[16/10]'
+        }`}
       >
         {children}
-        <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/55 to-transparent" />
+        {scrim === 'frame' ? (
+          <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/55 to-transparent" />
+        ) : null}
 
         {/* The band: whatever else scrolls away, this is what remains.
             It carries its own scrim. The frame's gradient is sized to the

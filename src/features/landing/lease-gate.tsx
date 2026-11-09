@@ -14,9 +14,17 @@ import { subscribe, want } from '@/lib/motion-lease';
 export default function LeaseGate({
   id,
   className,
+  coveredBy,
   children,
 }: {
   id: string;
+  /**
+   * For a gate inside a sticky hero, which never leaves the viewport: the
+   * selector of a 1px marker at the top edge of the sheet that slides over
+   * it. The gate wants the lease while that edge is below 40% of the
+   * viewport, i.e. while the hero is still mostly showing.
+   */
+  coveredBy?: string;
   className?: string;
   children: React.ReactNode;
 }) {
@@ -26,8 +34,15 @@ export default function LeaseGate({
     const element = ref.current;
     if (!element) return;
 
-    const observer = new IntersectionObserver(([entry]) => want(id, entry.isIntersecting));
-    observer.observe(element);
+    const marker = coveredBy ? document.querySelector(coveredBy) : null;
+    const observer = marker
+      ? new IntersectionObserver(([entry]) => want(id, entry.isIntersecting), {
+          /* Top 40% excluded; bottom extended a full screen, so a marker
+             still below the fold (a tall hero) counts as "not covered". */
+          rootMargin: '-40% 0px 100% 0px',
+        })
+      : new IntersectionObserver(([entry]) => want(id, entry.isIntersecting));
+    observer.observe(marker ?? element);
     const unsubscribe = subscribe((owner) => element.toggleAttribute('data-held', owner !== id));
 
     return () => {
@@ -35,7 +50,7 @@ export default function LeaseGate({
       unsubscribe();
       want(id, false);
     };
-  }, [id]);
+  }, [id, coveredBy]);
 
   return (
     <div ref={ref} data-held="" className={className}>

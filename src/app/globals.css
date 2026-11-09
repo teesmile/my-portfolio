@@ -35,6 +35,30 @@
   --accent-strong: #f0b429;
   --accent-ink: #0c0d0f;
   --focus-halo: transparent;
+
+  /* The illustration palette: every figure, diagram, banner and the renal
+     loop draw from these and nothing else. Content colour, not chrome.
+     Measured (scripts in docs/decisions.md, 2026-11-09): every text pairing
+     is at least 4.5:1, edges at least 3:1, in both themes.
+       text    primary labels and values
+       detail  secondary labels only
+       accent  emphasis and correct values; accent-soft fills highlighted shapes
+       panel   filled boxes, edged in amber-tinted edge
+       shape   neutral filled shapes (text lines, bars)
+       error   wrong values only; error-soft fills a wrong shape */
+  --ill-text: var(--ink);
+  --ill-detail: var(--muted);
+  --ill-accent: #f0b429;
+  --ill-accent-soft: color-mix(in oklab, #f0b429 18%, var(--raised));
+  /* Solid amber shapes: the brand amber in both themes. On white it is
+     1.8:1, so a solid shape that carries meaning keeps an --ill-accent
+     outline, which is the part that meets 3:1. */
+  --ill-accent-fill: #f0b429;
+  --ill-panel: color-mix(in oklab, #f0b429 8%, var(--raised));
+  --ill-edge: color-mix(in oklab, #f0b429 62%, var(--line));
+  --ill-shape: color-mix(in oklab, var(--ink) 22%, var(--raised));
+  --ill-error: var(--wrong);
+  --ill-error-soft: color-mix(in oklab, var(--wrong) 16%, var(--raised));
 }
 
 .light {
@@ -54,6 +78,15 @@
   --focus-halo: #14171a;
   /* 5.5:1 on light --raised: --warn there is only 2.8:1. */
   --wrong: #c0362b;
+
+  /* Brand amber is 1.8:1 on white, so text and edges take a deep amber;
+     the bright amber stays in the fills, where it reads as the brand. */
+  --ill-accent: #8a5a00;
+  --ill-accent-soft: color-mix(in oklab, #f0b429 30%, var(--raised));
+  --ill-panel: color-mix(in oklab, #f0b429 10%, var(--raised));
+  --ill-edge: color-mix(in oklab, #8a5a00 72%, var(--line));
+  --ill-shape: color-mix(in oklab, var(--ink) 18%, var(--raised));
+  --ill-error-soft: color-mix(in oklab, var(--wrong) 12%, var(--raised));
 }
 
 @theme inline {
@@ -69,6 +102,16 @@
      showcase's chart tables. Never chrome. */
   --color-warn: var(--warn);
   --color-wrong: var(--wrong);
+  --color-ill-text: var(--ill-text);
+  --color-ill-detail: var(--ill-detail);
+  --color-ill-accent: var(--ill-accent);
+  --color-ill-accent-soft: var(--ill-accent-soft);
+  --color-ill-accent-fill: var(--ill-accent-fill);
+  --color-ill-panel: var(--ill-panel);
+  --color-ill-edge: var(--ill-edge);
+  --color-ill-shape: var(--ill-shape);
+  --color-ill-error: var(--ill-error);
+  --color-ill-error-soft: var(--ill-error-soft);
 
   --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
   --font-text: var(--font-source-serif), ui-serif, Georgia, serif;
