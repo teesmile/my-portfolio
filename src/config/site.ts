@@ -72,6 +72,34 @@ const projects: Project[] = [
     },
   },
   {
+    id: 4,
+    slug: "roasted",
+    preview: "/work/roasted.webp",
+    title: "Roasted",
+    /* Checked against teesmile/roasted-app at d84e741 and the live app on
+       2026-11-09: a real roast and its avatar meme ran end to end; the
+       upload guard is in src/lib/uploadGuard.ts. */
+    description:
+      "A Farcaster mini app that reads a user's profile and recent casts, writes a short roast of them, turns their avatar into a meme, and shares the result as a cast.",
+    role: "Design and build",
+    year: "2025",
+    tech: ["Next.js", "React", "TypeScript", "Farcaster Mini App SDK", "Neynar API", "Gemini", "Replicate", "Vercel Blob", "Tailwind CSS"],
+    link: "https://castroast.vercel.app",
+    repo: "https://github.com/teesmile/roasted-app",
+    highlights: [
+      "Runs inside Farcaster clients, where the mini app SDK fills in the signed-in user's handle",
+      "Three services at two speeds: the roast text shows as soon as Gemini answers, and the avatar meme from Replicate swaps in when it is ready",
+      "Sharing draws a 1080×1080 card on a canvas in the browser and uploads it, because a cast can only embed a public URL; outside Farcaster it downloads instead",
+      "Uploads only with a signed, single-use token issued with each roast: one 1080×1080 PNG up to 3 MB, five per minute per address, named by the server",
+    ],
+    architecture: {
+      dataModel: "No database: each roast is computed on request from the profile and its 30 most recent casts. Share cards are stored in Vercel Blob.",
+      api: "Next.js server actions: a Neynar lookup, the Gemini roast, a Replicate image edit, and a guarded Blob upload. API keys stay on the server.",
+      auth: "None of its own. Inside Farcaster the client supplies the viewer's identity; the upload token ties each share to the roast it came from.",
+      hosting: "Vercel, with a domain-signed manifest at /.well-known/farcaster.json that Farcaster checks before listing the app.",
+    },
+  },
+  {
     id: 2,
     slug: "ecommerce-product-page",
     preview: "/work/ecommerce-product-page.webp",

@@ -2,6 +2,7 @@ import {
   siAngular, siCloudflare, siCss, siDjango, siFramer, siGit, siGithub, siHtml5,
   siJavascript, siLinux, siNextdotjs, siNodedotjs, siPnpm, siPython, siReact,
   siPostgresql, siSupabase, siTailwindcss, siTypescript, siVercel, siVite,
+  siFarcaster, siGooglegemini, siReplicate,
 } from "simple-icons";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +17,8 @@ const icons: Record<string, Icon> = {
   "Framer Motion": siFramer, "Angular": siAngular, "DNS": siCloudflare,
   "Python": siPython, "Django": siDjango,
   "Supabase": siSupabase, "PostgreSQL": siPostgresql,
+  "Farcaster Mini App SDK": siFarcaster, "Gemini": siGooglegemini,
+  "Replicate": siReplicate, "Vercel Blob": siVercel,
 };
 
 function luminance(hex: string) {

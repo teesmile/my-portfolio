@@ -186,7 +186,17 @@ async function capture(target) {
   throw new Error(`${slug} is ${Math.round(size / 1024)} KB, over the 200 KB budget`);
 }
 
-const list = await targets();
+/* Projects whose preview is captured by hand. Roasted's result card exists
+   only after a live roast (three paid APIs, a different result each time),
+   so an automatic capture would freeze its splash or empty form, and would
+   overwrite the real result card in public/work/roasted.webp. */
+const HAND_CAPTURED = new Set(["roasted"]);
+
+const list = (await targets()).filter(({ slug }) => {
+  if (!HAND_CAPTURED.has(slug)) return true;
+  console.log(`${slug.padEnd(24)} skipped: preview is captured by hand`);
+  return false;
+});
 
 if (list.length === 0) {
   console.error("No targets found in src/config/site.ts");
