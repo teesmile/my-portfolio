@@ -1,4 +1,3 @@
-import { resumeContent } from "@/content/resume";
 
 
 export type StackLayer = {
@@ -141,9 +140,10 @@ const projects: Project[] = [
 export const portfolioConfig = {
   name: "Anthony Ugwuja",
   brandName: "Teesmile",
-  /* The resume's own title line, not a copy of it: the share cards and the
-     document a recruiter downloads should never describe two people. */
-  title: resumeContent.titles.default,
+  /* The site's own title line, used on the share cards. It used to be the
+     resume's master title by reference; the CVs now say "Pharmacist" while
+     the site keeps "Registered pharmacist", so the site states its own. */
+  title: "Full-stack developer and AI evaluator · Registered pharmacist",
   /* Search and social copy. One title and one description for the home page,
      used by the root layout for <title>, Open Graph and Twitter alike, so the
      three cannot drift apart the way they did when each was typed out. */

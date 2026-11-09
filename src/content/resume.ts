@@ -70,9 +70,9 @@ export const resumeContent = {
     skills: 'Skills',
   },
   titles: {
-    default: 'Full-stack developer and AI evaluator · Registered pharmacist',
-    ai: 'AI evaluation specialist · Registered pharmacist',
-    general: 'AI evaluation and data quality specialist · Registered pharmacist',
+    default: 'Full-stack developer and AI evaluator · Pharmacist',
+    ai: 'AI evaluation specialist · Pharmacist',
+    general: 'AI evaluation and data quality specialist · Pharmacist',
   },
 
   /* Written out as text so a parser reads them, and linked so a human can
@@ -97,15 +97,15 @@ export const resumeContent = {
        merge says both things once and buys back the lines that kept
        Education off page one. */
     default: [
-      'Full-stack developer (React, Next.js, TypeScript, Node.js) and registered pharmacist who builds accessible product interfaces and evaluates AI model output, catching confident but wrong clinical answers.',
+      'Full-stack developer (React, Next.js, TypeScript, Node.js) and pharmacist who builds accessible product interfaces and evaluates AI model output, catching confident but wrong clinical answers.',
     ],
     ai: [
-      'Registered pharmacist who evaluates AI models and catches confident but incorrect answers in clinical and scientific content.',
+      'Pharmacist who evaluates AI models and catches confident but incorrect answers in clinical and scientific content.',
       'Authors and reviews expert-level evaluation tasks across text, image, video and terminal-based formats, grading for accuracy, instruction following, reasoning quality and safety.',
     ],
     general: [
       'AI training and evaluation specialist working on data quality: grading model output against detailed guidelines and flagging subtle factual and reasoning errors.',
-      'Registered pharmacist with front-line customer service, sales growth and regulated record-keeping experience.',
+      'Pharmacist with front-line customer service, sales growth and regulated record-keeping experience.',
     ],
   } as Record<Variant, string[]>,
 
@@ -304,7 +304,7 @@ export const resumeContent = {
   ],
 
   credentials: [
-    { label: 'Registered Pharmacist', issuer: 'Pharmacists Council of Nigeria', date: '', place: { default: 0, ai: 0, general: 0 } as Placement },
+    { label: 'Pharmacist', issuer: 'Pharmacists Council of Nigeria', date: '', place: { default: 0, ai: 0, general: 0 } as Placement },
     { label: 'AI Fluency Framework', issuer: 'Anthropic', date: 'Jul 2026', place: { default: 1, ai: 1, general: 1 } as Placement },
   ],
 
