@@ -15,16 +15,20 @@
  */
 type Listener = (owner: string | null) => void;
 
-const PRIORITY: Record<string, number> = { deck: 3, renal: 2, tools: 1 };
+/* The tools row outranks the renal loop: at desktop width the home page's
+   last screen shows both, and the row should move whenever it is visible;
+   the loop rests on its finished frame while the row is in view. */
+const PRIORITY: Record<string, number> = { deck: 3, tools: 2, renal: 1 };
 
 const wanting = new Set<string>();
+const rank = (id: string) => PRIORITY[id] ?? 0;
 const listeners = new Set<Listener>();
 let owner: string | null = null;
 
 function decide() {
   let next: string | null = null;
   for (const id of wanting) {
-    if (next === null || (PRIORITY[id] ?? 0) > (PRIORITY[next] ?? 0)) next = id;
+    if (next === null || rank(id) > rank(next)) next = id;
   }
   if (next === owner) return;
   owner = next;
