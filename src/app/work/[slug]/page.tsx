@@ -7,6 +7,7 @@ import { TechList } from "@/components/ui/tech";
 import StickyHero from "@/components/layout/sticky-hero";
 import Image from "next/image";
 import Reveals from "@/components/layout/reveals";
+import { ExternalLinkIcon } from "@/components/ui/icons";
 import TechGlitch from "@/components/ui/tech-glitch";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -46,7 +47,7 @@ export default async function CaseStudyPage({ params }: Params) {
       <TechGlitch />
       <StickyHero
         backHref="/work"
-        backLabel="Work"
+        backLabel="All work"
         title={project.title}
         meta={`${project.year} · ${project.role}`}
         flipId={`work-${project.slug}`}
@@ -135,9 +136,11 @@ export default async function CaseStudyPage({ params }: Params) {
                   href={project.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
+                  className="inline-flex w-fit items-center gap-1.5 text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
                 >
                   Open the live project
+                  <ExternalLinkIcon className="h-3.5 w-3.5" />
+                  <span className="sr-only">(opens in a new tab)</span>
                 </a>
                 {project.repo ? (
                   <a

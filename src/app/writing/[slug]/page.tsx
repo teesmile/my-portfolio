@@ -66,7 +66,7 @@ export default async function WritingEntryPage({ params }: Params) {
 
       <StickyHero
         backHref="/writing"
-        backLabel="Writing"
+        backLabel="All writing"
         title={entry.title}
         meta={`${dateOf(entry)} · ${readingTime(entry)} min read · ${entry.topic}`}
         scrim="band"

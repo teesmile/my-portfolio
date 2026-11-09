@@ -64,3 +64,23 @@ export function MoonIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+/** Back, in a pill: "All work", "All writing". */
+export function ChevronLeftIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="m14.5 6-6 6 6 6" />
+    </svg>
+  );
+}
+
+/** A link that leaves the site, opening in a new tab. */
+export function ExternalLinkIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M14 4h6v6" />
+      <path d="m20 4-8.5 8.5" />
+      <path d="M18 13.5V19a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5.5" />
+    </svg>
+  );
+}
