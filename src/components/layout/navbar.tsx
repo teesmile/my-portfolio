@@ -18,6 +18,28 @@ export default function Navbar() {
   const isMenuOpen = menuPath === pathname;
   const panelRef = useRef<HTMLDivElement>(null);
 
+  /* Over the home hero the bar is transparent, so the hero's surface and
+     glow run to the top of the screen; once the hero has scrolled away it is
+     the usual solid bar with a blur. Keyed by pathname like the menu: on "/"
+     it starts transparent (the server render agrees, so nothing flashes),
+     every other route is solid without any effect running. */
+  const [heroGoneOn, setHeroGoneOn] = useState<string | null>(null);
+  const overHero = pathname === '/' && heroGoneOn !== pathname && !isMenuOpen;
+
+  useEffect(() => {
+    if (pathname !== '/') return;
+    const hero = document.querySelector('[data-home-hero]');
+    if (!hero) return;
+    const nav = document.querySelector('nav')?.getBoundingClientRect().height ?? 64;
+    /* Intersecting = some of the hero is still showing below the bar. */
+    const observer = new IntersectionObserver(
+      ([entry]) => setHeroGoneOn(entry.isIntersecting ? null : '/'),
+      { rootMargin: `-${Math.round(nav)}px 0px 0px 0px` },
+    );
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, [pathname]);
+
   const prefersReducedMotion = () =>
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -84,7 +106,12 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed inset-x-0 top-0 z-50 border-b border-line bg-surface/85 pt-(--safe-top) backdrop-blur-md">
+      <nav
+        data-over-hero={overHero ? '' : undefined}
+        className={`fixed inset-x-0 top-0 z-50 border-b pt-(--safe-top) transition-[background-color,border-color,backdrop-filter] duration-(--duration-base) ${
+          overHero ? 'border-transparent bg-transparent' : 'border-line bg-surface/85 backdrop-blur-md'
+        }`}
+      >
       <div className="mx-auto flex h-16 max-w-(--container-view) items-center justify-between px-4 sm:px-6">
         <Link
           href="/"
