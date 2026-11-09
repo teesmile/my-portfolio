@@ -42,11 +42,11 @@ const projects: Project[] = [
     id: 1,
     slug: "todo-app",
     preview: "/work/todo-app.webp",
-    title: "React Todo / Productivity App",
-    /* What the live app does today. Sync shipped in November 2026; the
-       repo README still describes the offline-only version. */
+    title: "Todo App",
+    /* What v1 shipped and verified (todo-app-tsc docs/plan.md, Phases 0–12):
+       sync in Phase 10, install and offline in Phase 11. */
     description:
-      "A local-first task list that works offline, with optional Google sign-in that syncs tasks and labels across devices. Tasks are grouped by when they're due, with Vital tasks, labels, search, and delete with Undo.",
+      "A local-first task list that installs like an app and works fully offline, with optional Google sign-in that syncs tasks and labels across devices. New tasks land at the top, or switch to grouping by due date, with Vital tasks, labels, search, and delete with Undo.",
     role: "Full-stack implementation",
     year: "2026",
     tech: ["Next.js", "React", "TypeScript", "Dexie", "IndexedDB", "Supabase", "Tailwind CSS"],
@@ -55,7 +55,8 @@ const projects: Project[] = [
     highlights: [
       "Works offline: tasks live in IndexedDB on the device, and edits made in two tabs at once don't silently replace each other",
       "Optional Google sign-in syncs tasks and labels across devices; without it, nothing leaves the device",
-      "Grouped by when it's due: Overdue, Today, Tomorrow, Upcoming, No date and Done, re-grouped at midnight",
+      "Installs like an app and opens offline: a service worker precaches the whole static export and never caches Supabase data",
+      "Newest first, or grouped by when it's due: Overdue, Today, Tomorrow, Upcoming, No date and Done, re-grouped at midnight",
       "Vital tasks and colour labels, with search and filters that survive a reload",
       "Add, edit in place, complete, and delete with Undo; Ctrl+Z works too",
       "Keyboard and screen-reader friendly: n adds, / searches, a skip link, and no axe violations, contrast included",
@@ -67,7 +68,7 @@ const projects: Project[] = [
         "Dexie over IndexedDB on the device is what the interface reads and writes. Signed in, tasks and labels mirror to two Supabase Postgres tables under row-level security, so each account only ever reads and writes its own rows.",
       api: "No API routes. A client-side sync engine pushes and pulls in batches against Supabase. A database trigger settles conflicts: last write wins, a device clock running fast can win by at most five minutes, and a deletion is final.",
       auth: "Optional Google sign-in through Supabase Auth. Without an account the app works fully offline on one device.",
-      hosting: "Vercel for the app; Supabase for Postgres and sign-in.",
+      hosting: "Vercel serves the static export as plain files, and a service worker precaches it so it installs and opens offline. Supabase for Postgres and sign-in.",
     },
   },
   {
