@@ -63,6 +63,7 @@
      casts, and the warm light that falls on it. */
   --ill-shadow: rgb(0 0 0 / 0.55);
   --ill-glow: color-mix(in oklab, #f0b429 26%, transparent);
+  --ill-glow-error: color-mix(in oklab, var(--wrong) 24%, transparent);
 }
 
 .light {
@@ -93,6 +94,7 @@
   --ill-error-soft: color-mix(in oklab, var(--wrong) 12%, var(--raised));
   --ill-shadow: rgb(20 23 26 / 0.16);
   --ill-glow: color-mix(in oklab, #f0b429 30%, transparent);
+  --ill-glow-error: color-mix(in oklab, var(--wrong) 20%, transparent);
 }
 
 @theme inline {
@@ -120,6 +122,7 @@
   --color-ill-error-soft: var(--ill-error-soft);
   --color-ill-shadow: var(--ill-shadow);
   --color-ill-glow: var(--ill-glow);
+  --color-ill-glow-error: var(--ill-glow-error);
 
   --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
   --font-text: var(--font-source-serif), ui-serif, Georgia, serif;
@@ -549,10 +552,22 @@
    scales across over the dwell time and its animationend advances the deck
    (see deck-interactive.tsx). Transform only. Two identical keyframes,
    swapped by data-lap, restart it without a reflow. data-auto is only ever
-   set outside reduced motion; without it the fill shows the current card's
-   position in the deck instead (--deck-pos). */
-[data-fill] {
-  transform: scaleX(var(--deck-pos, 1));
+   set outside reduced motion; without it the current segment is simply
+   full. */
+/* The one-time swipe hint (deck-interactive.tsx): in, drag left twice,
+   out, about 2.5 s. Only runs when data-hint="play" is set, which never
+   happens under reduced motion. */
+[data-hint='play'] [data-swipe-hint] {
+  animation: swipe-hint 2.5s ease-in-out forwards;
+}
+
+@keyframes swipe-hint {
+  0% { opacity: 0; transform: translateX(36px); }
+  12% { opacity: 1; transform: translateX(36px); }
+  42% { opacity: 1; transform: translateX(-44px); }
+  52% { opacity: 1; transform: translateX(36px); }
+  82% { opacity: 1; transform: translateX(-44px); }
+  100% { opacity: 0; transform: translateX(-44px); }
 }
 
 [data-auto] [data-fill] {
@@ -647,11 +662,8 @@
   97.5%, 100% { opacity: 0; }
 }
 
-/* The hero as a file open in an editor.
-   Its own surface, ending where the hero ends: a line-number gutter aligned
-   to the headline's line boxes, faint indent guides, and a little grain for
-   depth. All of it is CSS and one inline SVG — no canvas, no particles, and
-   nothing that animates. */
+/* The hero's own surface, ending where the hero ends, with a little grain
+   for depth. CSS and one inline SVG: no canvas, nothing that animates. */
 .editor-surface {
   background-color: var(--raised);
   border-bottom: 1px solid var(--line);
@@ -670,37 +682,5 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Indent guides: evenly spaced hairlines behind the content, the way an
-   editor marks nesting depth. */
-.editor-guides::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-image: repeating-linear-gradient(
-    to right,
-    color-mix(in oklab, var(--line) 70%, transparent) 0 1px,
-    transparent 1px 4rem
-  );
-  opacity: 0.5;
-}
 
-/* The gutter's line boxes are the headline's line boxes, so the numbers sit
-   on the lines rather than near them. */
-.editor-gutter {
-  line-height: calc(var(--text-headline-sm) * var(--text-headline-sm--line-height));
-  counter-reset: gutter;
-}
 
-/* Generated content is painted but is not document text: it never reaches
-   textContent, a copy or a crawler. decimal-leading-zero gives 01, 02… */
-.editor-gutter > div::before {
-  counter-increment: gutter;
-  content: counter(gutter, decimal-leading-zero);
-}
-
-@media (min-width: 1024px) {
-  .editor-gutter {
-    line-height: calc(var(--text-headline) * var(--text-headline--line-height));
-  }
-}

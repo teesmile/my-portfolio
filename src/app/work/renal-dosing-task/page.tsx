@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import StickyHero from "@/components/layout/sticky-hero";
+import PinnedBack from "@/components/layout/pinned-back";
 import RenalLoop from "@/features/landing/renal-loop";
 import { pageMetadata } from "@/lib/metadata";
 import Reveals from "@/components/layout/reveals";
@@ -50,6 +51,7 @@ export default function RenalDosingPage() {
 
       <div data-sheet className="relative z-10 min-h-screen bg-surface px-4 sm:px-6 py-16 md:py-20">
         <div id="renal-sheet-edge" aria-hidden="true" className="absolute inset-x-0 top-0 h-px" />
+        <PinnedBack href="/work" label="All work" mode="covered" />
         <div className="mx-auto max-w-(--container-view)">
           <FictionalNote />
 
