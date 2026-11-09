@@ -164,7 +164,7 @@ export const portfolioConfig = {
   timeline: [
     { period: "2017 – 2023", label: "B.Pharm, University of Nigeria, Nsukka", track: "pharmacy" },
     { period: "2020", label: "First code, written during pharmacy school", track: "code" },
-    { period: "May 2022 – Sep 2022", label: "Full stack developer trainee, Zuri Team", track: "code" },
+    { period: "May 2022 – Sep 2022", label: "Full stack developer trainee, Zuri Team and I4G", track: "code" },
     { period: "Feb 2024", label: "Provisional pharmacist licence", track: "pharmacy" },
     { period: "Oct 2024 – Oct 2025", label: "Diploma in Frontend Engineering, AltSchool Africa", track: "code" },
     { period: "May 2025 – May 2026", label: "Pharmacy intern, Federal Medical Centre, Keffi", track: "pharmacy" },
@@ -173,6 +173,18 @@ export const portfolioConfig = {
     { period: "Aug 2026 – Present", label: "Pharmacist, NYSC, Nasarawa State University clinic", track: "pharmacy" },
     { period: "Oct 2026", label: "Full pharmacist licence", track: "pharmacy" },
   ] as { period: string | null; label: string; track: "pharmacy" | "code" }[],
+  // Talks on /about, in the timeline's grid. The deck is the talk as given:
+  // its own site, plus the PDF it exports.
+  talks: [
+    {
+      period: "Aug 2025",
+      title: "Basics of Antimicrobial Stewardship in Hospitals",
+      venue: "Pharmacy interns' presentation, Federal Medical Centre, Keffi",
+      slides: "https://talks.anthonyugwuja.dev",
+      pdf: "https://talks.anthonyugwuja.dev/presentation.pdf",
+      track: "pharmacy",
+    },
+  ] as { period: string; title: string; venue: string; slides: string; pdf: string; track: "pharmacy" | "code" }[],
   // The deck on /. Every example is written for this purpose, never taken from
   // paid evaluation work, and every bug is real enough to verify by reading.
   defects: [
@@ -335,25 +347,6 @@ export const portfolioConfig = {
   ],
   // /lab exists as a route but stays out of the nav until it holds one
   // experiment. An empty page linked from the nav is worse than no link.
-  // /work/archive. TODO(human): the other projects — year, stack, and links if
-  // they are still up. The two training rows below are what the spine already
-  // establishes; everything else needs your list.
-  archive: [
-    {
-      year: "2022",
-      title: "Zuri and I4G training projects",
-      stack: ["HTML", "CSS", "JavaScript"],
-      training: true,
-      link: null,
-    },
-    {
-      year: "2020",
-      title: "First projects, written during pharmacy school",
-      stack: ["HTML", "CSS"],
-      training: true,
-      link: null,
-    },
-  ] as { year: string; title: string; stack: string[]; training: boolean; link: string | null }[],
   // Grouped by layer, and only tools that appear in a listed project or role.
   // The data row stayed empty until something shipped with a database: the
   // todo app's sync (Supabase Postgres) is the first.
@@ -393,14 +386,12 @@ export const portfolioConfig = {
     ],
     aboutStackHeading: "What I work with",
     workHeading: "Things I\u2019ve built, and what each one taught me.",
-    workArchiveLink: "Everything else, including the training work",
     writingHeading: "Decisions, and what they cost.",
     contactHeading: "Open to remote AI evaluation and full-stack work.",
     contactNote: "Email reaches me fastest.",
     labHeading: "Interaction experiments, one at a time.",
     labIntro:
       "Where I try the things a client project would not pay for, and where I settle arguments with a measurement instead of an opinion.",
-    archiveHeading: "Everything else.",
   },
   navLinks: [
     { name: "Work", href: "/work" },

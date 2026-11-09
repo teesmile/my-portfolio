@@ -14,7 +14,7 @@ import BackPill from '@/components/ui/back-pill';
  * nav's bottom border, and sits at z-20 under the nav's z-50, so it never
  * covers the nav.
  *
- *   mode "always"   the strip is the page's back control (archive, traps).
+ *   mode "always"   the strip is the page's back control (the trap pages).
  *   mode "covered"  pages with a sticky hero already show the pill in the
  *                   hero's band; this one appears only once the content
  *                   sheet has covered the hero, i.e. its top edge has

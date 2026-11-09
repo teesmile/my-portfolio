@@ -35,6 +35,10 @@ const nextConfig: NextConfig = {
          still asks for /profile.webp; it gets the new portrait instead of a
          404. Listed first so it also applies after a host redirect. */
       { source: "/profile.webp", destination: "/portrait-clean-v2.webp", permanent: true },
+      /* The archive page was removed: the site lists finished, working
+         projects only, and the early training it held is on the About
+         timeline. Old links and search results land on /work, not a 404. */
+      { source: "/work/archive", destination: "/work", permanent: true },
       ...LEGACY_HOSTS.map((host) => ({
         source: "/:path*",
         has: [{ type: "host" as const, value: host.replace(/\./g, "\\.") }],

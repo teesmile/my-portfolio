@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/metadata";
-import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
 import WorkEntry from "@/features/work/work-entry";
 import EvaluationEntry from "@/features/work/evaluation-entry";
@@ -31,14 +30,6 @@ export default function WorkPage() {
             <WorkEntry key={project.slug} project={project} index={index} />
           ))}
         </div>
-
-        <Link
-          data-reveal
-          href="/work/archive"
-          className="mt-20 inline-block border-t border-line pt-6 text-sm text-muted transition-colors hover:text-ink"
-        >
-          {portfolioConfig.copy.workArchiveLink} &rarr;
-        </Link>
       </div>
     </section>
   );
