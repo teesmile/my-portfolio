@@ -255,14 +255,19 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
       window.addEventListener('keydown', key);
       document.addEventListener('visibilitychange', sync);
 
+      /* "In view" means a quarter or more of the deck is on screen, read from
+         intersectionRatio rather than isIntersecting. With a single 0.6
+         threshold, a deck that loaded 60% visible (a 1280×800 laptop) never
+         counted as in view, so it waited for a scroll. Several thresholds
+         make the callback fire as the share crosses 25% either way. */
       const observer = new IntersectionObserver(
         ([entry]) => {
-          state.visible = entry.isIntersecting;
+          state.visible = entry.intersectionRatio >= 0.25;
           want('deck', state.visible);
           sync();
           hint();
         },
-        { threshold: 0.6 },
+        { threshold: [0, 0.25, 0.5, 0.75, 1] },
       );
       observer.observe(stack);
 

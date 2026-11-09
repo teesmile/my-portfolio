@@ -29,12 +29,19 @@ const nextConfig: NextConfig = {
    * and search engines treat it as permanent either way.
    */
   async redirects() {
-    return LEGACY_HOSTS.map((host) => ({
-      source: "/:path*",
-      has: [{ type: "host" as const, value: host.replace(/\./g, "\\.") }],
-      destination: `${SITE_URL}/:path*`,
-      permanent: true,
-    }));
+    return [
+      /* The portrait was replaced by new file names so no cache could serve
+         the old cutout. A page, share card or link saved before the swap
+         still asks for /profile.webp; it gets the new portrait instead of a
+         404. Listed first so it also applies after a host redirect. */
+      { source: "/profile.webp", destination: "/portrait-clean-v2.webp", permanent: true },
+      ...LEGACY_HOSTS.map((host) => ({
+        source: "/:path*",
+        has: [{ type: "host" as const, value: host.replace(/\./g, "\\.") }],
+        destination: `${SITE_URL}/:path*`,
+        permanent: true,
+      })),
+    ];
   },
 };
 
