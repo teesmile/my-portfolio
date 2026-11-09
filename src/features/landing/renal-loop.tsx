@@ -25,6 +25,8 @@ export default function RenalLoop({ coveredBy }: { coveredBy?: string } = {}) {
   const unit = correct.creatinine.unit;
 
   return (
+    /* Below the deck and the tools row in the motion lease: while either is
+       in view the loop rests on its finished frame. */
     <LeaseGate id="renal" coveredBy={coveredBy} className="renal-gate h-full w-full">
       <svg
         viewBox="0 0 320 200"
