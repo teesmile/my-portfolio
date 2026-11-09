@@ -245,7 +245,7 @@ export const resumeContent = {
     },
     {
       name: 'React Todo / Productivity App',
-      line: 'Local-first task list on IndexedDB: due-date groups, edit in place, Undo, persistent filters.',
+      line: 'Local-first, offline task list; optional Google sign-in syncs tasks across devices.',
       url: 'https://todo.anthonyugwuja.dev',
       repo: 'https://github.com/teesmile/todo-app-tsc',
       place: { default: 1 } as Placement,

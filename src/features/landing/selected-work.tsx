@@ -26,7 +26,7 @@ export default function SelectedWork() {
   const { evaluation, projects } = portfolioConfig;
   const todo = projects.find((project) => project.slug === "todo-app")!;
   /* Newest first; on a tie the config order stands (Array sort is stable). */
-  const latest = [...published].sort((a, b) => b.date.localeCompare(a.date))[0];
+  const latest = [...published].sort((a, b) => Date.parse(b.published) - Date.parse(a.published))[0];
 
   const cards: Card[] = [
     {
