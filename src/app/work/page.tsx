@@ -16,7 +16,7 @@ export const metadata: Metadata = pageMetadata({
 
 export default function WorkPage() {
   return (
-    <section className="px-6 py-20 md:py-24">
+    <section className="px-4 sm:px-6 py-20 md:py-24">
       <Reveals />
       <TechGlitch />
       <div className="mx-auto max-w-(--container-view)">

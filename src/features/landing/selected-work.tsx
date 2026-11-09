@@ -82,7 +82,7 @@ export default function SelectedWork() {
       aria-labelledby="selected-work"
       /* Below the fold by construction (the hero is a full screen), so the
          browser may skip its style, layout and paint until it is near. */
-      className="px-6 py-20 [contain-intrinsic-size:auto_56rem] [content-visibility:auto] md:py-28"
+      className="px-4 sm:px-6 py-20 [contain-intrinsic-size:auto_56rem] [content-visibility:auto] md:py-28"
     >
       <div className="mx-auto max-w-(--container-view)">
         <h2 data-reveal id="selected-work" className="text-xl text-ink">

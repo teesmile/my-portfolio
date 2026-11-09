@@ -21,10 +21,10 @@ export default function ContactPage() {
   const github = portfolioConfig.socials.find((s) => s.name === "GitHub");
 
   return (
-    <section className="flex flex-1 items-center px-6 py-6 md:py-10">
+    <section className="flex flex-1 items-center px-4 sm:px-6 py-6 md:py-10">
       <ContactEntrance />
       <div className="mx-auto w-full min-w-0 max-w-(--container-view)">
-        <h1 className="max-w-[18ch] text-lg text-ink md:text-xl">
+        <h1 className="text-lg text-ink sm:max-w-[18ch] md:text-xl">
           {portfolioConfig.copy.contactHeading}
         </h1>
 

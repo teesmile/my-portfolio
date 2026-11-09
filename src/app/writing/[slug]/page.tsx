@@ -69,11 +69,13 @@ export default async function WritingEntryPage({ params }: Params) {
         backLabel="Writing"
         title={entry.title}
         meta={`${dateOf(entry)} · ${readingTime(entry)} min read · ${entry.topic}`}
+        scrim="band"
+        mobileAspect="square"
       >
         <HeroArt slug={entry.slug} />
       </StickyHero>
 
-      <div data-sheet className="relative z-10 min-h-screen bg-surface px-6 py-16 md:py-20">
+      <div data-sheet className="relative z-10 min-h-screen bg-surface px-4 sm:px-6 py-16 md:py-20">
         <div className="mx-auto max-w-(--container-view)">
           {entry.draft ? (
             <p className="mb-8 max-w-(--container-reading) border-y border-line py-3 text-2xs text-muted">

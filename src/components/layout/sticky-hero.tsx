@@ -159,15 +159,18 @@ export default function StickyHero({
             band, whatever height the title makes it. */}
         <div
           ref={headingRef}
-          className="absolute inset-x-0 bottom-0 flex items-end gap-4 bg-gradient-to-t from-surface via-surface/90 to-transparent p-5 pt-10 md:p-10"
+          /* On a phone the back link sits above the title, not beside it:
+             beside it, the title started ~90px in and long titles stacked
+             into a tall, thin column. Desktop keeps them side by side. */
+          className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-2 bg-gradient-to-t from-surface via-surface/90 to-transparent px-4 pb-4 pt-10 sm:px-6 md:flex-row md:items-end md:gap-4 md:p-10"
         >
           <Link
             href={backHref}
-            className="shrink-0 pb-1 text-2xs text-muted transition-colors hover:text-accent"
+            className="shrink-0 text-2xs text-muted transition-colors hover:text-accent md:pb-1"
           >
             <span aria-hidden="true">&larr;</span> {backLabel}
           </Link>
-          <div className="min-w-0">
+          <div className="w-full min-w-0">
             {/* Wraps. A heading a reader cannot finish is not a heading. */}
             <h1 className="text-balance text-lg text-ink md:text-2xl">{title}</h1>
             <p className="mt-1 text-2xs text-muted md:mt-3">{meta}</p>

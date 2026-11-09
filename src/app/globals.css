@@ -59,6 +59,10 @@
   --ill-shape: color-mix(in oklab, var(--ink) 22%, var(--raised));
   --ill-error: var(--wrong);
   --ill-error-soft: color-mix(in oklab, var(--wrong) 16%, var(--raised));
+  /* Depth and light for the banner and share scenes: the shadow a window
+     casts, and the warm light that falls on it. */
+  --ill-shadow: rgb(0 0 0 / 0.55);
+  --ill-glow: color-mix(in oklab, #f0b429 26%, transparent);
 }
 
 .light {
@@ -87,6 +91,8 @@
   --ill-edge: color-mix(in oklab, #8a5a00 72%, var(--line));
   --ill-shape: color-mix(in oklab, var(--ink) 18%, var(--raised));
   --ill-error-soft: color-mix(in oklab, var(--wrong) 12%, var(--raised));
+  --ill-shadow: rgb(20 23 26 / 0.16);
+  --ill-glow: color-mix(in oklab, #f0b429 30%, transparent);
 }
 
 @theme inline {
@@ -112,6 +118,8 @@
   --color-ill-shape: var(--ill-shape);
   --color-ill-error: var(--ill-error);
   --color-ill-error-soft: var(--ill-error-soft);
+  --color-ill-shadow: var(--ill-shadow);
+  --color-ill-glow: var(--ill-glow);
 
   --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
   --font-text: var(--font-source-serif), ui-serif, Georgia, serif;
@@ -521,13 +529,7 @@
   animation-play-state: paused;
 }
 
-/* The home page's tools row: logos stay the colour of the text beside them,
-   at rest and on hover. It sits under the work, and a strip of brand colours
-   would pull the eye away from it. */
-.quiet-marks .tech-mark,
-.light .quiet-marks .tech-mark {
-  color: currentColor;
-}
+
 
 @media (prefers-reduced-motion: reduce) {
   .marquee-track {
@@ -541,15 +543,19 @@
   }
 }
 
-/* The deck's auto-advance clock. The fill under the current card scales
-   across over the dwell time and its animationend advances the deck (see
-   deck-interactive.tsx). Transform only, so the compositor runs it. Two
-   identical keyframes, swapped by data-lap, restart it without a reflow.
-   data-auto is only ever set outside reduced motion; without it the fill is
-   simply solid. */
+/* The deck's auto-advance clock: the progress bar above the deck. Its fill
+   scales across over the dwell time and its animationend advances the deck
+   (see deck-interactive.tsx). Transform only. Two identical keyframes,
+   swapped by data-lap, restart it without a reflow. data-auto is only ever
+   set outside reduced motion; without it the fill shows the current card's
+   position in the deck instead (--deck-pos). */
+[data-fill] {
+  transform: scaleX(var(--deck-pos, 1));
+}
+
 [data-auto] [data-fill] {
   transform: scaleX(0);
-  animation: var(--deck-dwell, 5s) linear forwards;
+  animation: var(--deck-dwell, 4s) linear forwards;
 }
 
 [data-auto][data-lap='a'] [data-fill] {

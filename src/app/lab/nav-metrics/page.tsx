@@ -12,7 +12,7 @@ export const metadata: Metadata = pageMetadata({
 
 export default function NavMetricsPage() {
   return (
-    <section className="px-6 py-16">
+    <section className="px-4 sm:px-6 py-16">
       <div className="mx-auto max-w-(--container-view)">
         <h1 className="text-xl text-ink">Nav active state, measured</h1>
         <p className="mt-3 max-w-(--container-reading) text-sm text-muted">
