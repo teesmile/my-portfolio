@@ -15,13 +15,13 @@
  */
 type Listener = (owner: string | null) => void;
 
-const PRIORITY: Record<string, number> = { deck: 3, renal: 2, tools: 1 };
+/* The tools row outranks the renal loop: at desktop width the home page's
+   last screen shows both, and the row should move whenever it is visible;
+   the loop rests on its finished frame while the row is in view. */
+const PRIORITY: Record<string, number> = { deck: 3, tools: 2, renal: 1 };
 
 const wanting = new Set<string>();
-/* Claimants that have passed the lease on: they rank below everyone until
-   they leave the screen. */
-const yielded = new Set<string>();
-const rank = (id: string) => (yielded.has(id) ? -1 : (PRIORITY[id] ?? 0));
+const rank = (id: string) => PRIORITY[id] ?? 0;
 const listeners = new Set<Listener>();
 let owner: string | null = null;
 
@@ -38,25 +38,8 @@ function decide() {
 /** Say whether `id` currently wants to move (it is visible and allowed to). */
 export function want(id: string, wants: boolean) {
   if (wants) wanting.add(id);
-  else {
-    wanting.delete(id);
-    yielded.delete(id);
-  }
+  else wanting.delete(id);
   decide();
-}
-
-/**
- * Pass the lease to whoever else is waiting, if anyone is. Taking turns
- * keeps "one moving thing at a time" without starving the lower claimant:
- * at desktop width the home page's last screen shows both the renal loop
- * and the tools row, so the row could otherwise never move. Returns false
- * (and changes nothing) when nobody else wants the lease.
- */
-export function yieldLease(id: string) {
-  if (![...wanting].some((other) => other !== id)) return false;
-  yielded.add(id);
-  decide();
-  return true;
 }
 
 export function subscribe(listener: Listener) {

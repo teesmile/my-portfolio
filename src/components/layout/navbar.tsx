@@ -18,9 +18,11 @@ export default function Navbar() {
   const isMenuOpen = menuPath === pathname;
   const panelRef = useRef<HTMLDivElement>(null);
 
-  /* Over the home hero the bar is transparent, so the hero's surface and
-     glow run to the top of the screen; once the hero has scrolled away it is
-     the usual solid bar with a blur. Keyed by pathname like the menu: on "/"
+  /* At the very top of the home page the bar is transparent, so the hero's
+     surface and glow run to the top of the screen. From the first few
+     pixels of scrolling it is the usual solid bar with a blur: transparent
+     any longer, and the hero's links, paragraph and deck slid under the bar
+     and mixed with the name and links. Keyed by pathname like the menu: on "/"
      it starts transparent (the server render agrees, so nothing flashes),
      every other route is solid without any effect running. */
   const [heroGoneOn, setHeroGoneOn] = useState<string | null>(null);
@@ -28,15 +30,14 @@ export default function Navbar() {
 
   useEffect(() => {
     if (pathname !== '/') return;
-    const hero = document.querySelector('[data-home-hero]');
-    if (!hero) return;
-    const nav = document.querySelector('nav')?.getBoundingClientRect().height ?? 64;
-    /* Intersecting = some of the hero is still showing below the bar. */
-    const observer = new IntersectionObserver(
-      ([entry]) => setHeroGoneOn(entry.isIntersecting ? null : '/'),
-      { rootMargin: `-${Math.round(nav)}px 0px 0px 0px` },
+    /* A 4px sentinel at the very top of the hero: visible only while the
+       page is scrolled less than 4px. No scroll listener needed. */
+    const top = document.querySelector('[data-home-top]');
+    if (!top) return;
+    const observer = new IntersectionObserver(([entry]) =>
+      setHeroGoneOn(entry.isIntersecting ? null : '/'),
     );
-    observer.observe(hero);
+    observer.observe(top);
     return () => observer.disconnect();
   }, [pathname]);
 

@@ -35,12 +35,14 @@ export default function Hero() {
        margin cancels <main>'s top padding and the extra top padding puts the
        content back where it was, so the hero's surface and glow run to the
        very top of the screen (under the status bar too, with
-       viewport-fit: cover) while the nav is transparent over it.
-       data-home-hero is what the nav watches to turn solid. */
+       viewport-fit: cover) while the nav is transparent over it. The nav
+       turns solid once the 4px sentinel below has scrolled out of view. */
     <section
       data-home-hero
       className="editor-surface relative -mt-(--nav-height) flex min-h-dvh flex-col justify-center overflow-hidden px-4 pb-16 pt-[calc(var(--nav-height)+4rem)] sm:px-6 md:pb-20 md:pt-[calc(var(--nav-height)+5rem)]"
     >
+      {/* The nav is transparent only while this is in view: the first 4px. */}
+      <span data-home-top aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-1" />
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_55%_at_22%_28%,var(--ill-glow),transparent_70%),radial-gradient(38%_45%_at_82%_26%,var(--ill-glow),transparent_70%)]"
@@ -84,19 +86,24 @@ export default function Hero() {
   );
 }
 
-/* The cutout under an amber rim light: stacked drop-shadows follow the
-   cutout's alpha edge, a tight bright one for the rim and a wide soft one
-   for the glow, offset left so the light reads as coming from one side. */
+/* The cutout with its amber rim light baked into the file
+   (portrait-rim-v2.webp): a 2px rim just outside the silhouette and a soft
+   halo centred on it. It used to be two CSS drop-shadows, and the wide one
+   was offset 10px left: a blurred copy of the whole silhouette that read as
+   a second, ghostly head beside the real one, while the thin one outlined
+   every jag in a semi-transparent band along the hair. Baked, the light is
+   identical in every browser and costs nothing to render. A new file name,
+   so no image-optimizer or browser cache can serve the old cutout. */
 function Portrait() {
   return (
     <div className="relative aspect-square w-full">
       <Image
-        src="/profile.webp"
+        src="/portrait-rim-v2.webp"
         alt={portfolioConfig.name}
         fill
         priority
         sizes="(min-width: 1024px) 24rem, 7rem"
-        className="object-contain [filter:drop-shadow(-1.5px_0_0_var(--ill-accent-fill))_drop-shadow(-10px_-2px_24px_color-mix(in_oklab,var(--ill-accent-fill)_45%,transparent))]"
+        className="object-contain"
       />
     </div>
   );
