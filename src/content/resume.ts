@@ -244,8 +244,8 @@ export const resumeContent = {
       place: { default: 0, ai: 0 } as Placement,
     },
     {
-      name: 'React Todo / Productivity App',
-      line: 'Local-first, offline task list; optional Google sign-in syncs tasks across devices.',
+      name: 'Todo App',
+      line: 'Local-first task list that installs and works offline; optional Google sign-in syncs tasks across devices.',
       url: 'https://todo.anthonyugwuja.dev',
       repo: 'https://github.com/teesmile/todo-app-tsc',
       place: { default: 1 } as Placement,

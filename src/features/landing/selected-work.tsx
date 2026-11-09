@@ -48,7 +48,7 @@ export default function SelectedWork() {
         <div className="absolute inset-y-0 left-1/2 w-[46%] -translate-x-1/2 border-x border-line">
           <Image
             src="/work/todo-app-phone.webp"
-            alt={`${todo.title} on a phone: tasks grouped into Overdue and Today`}
+            alt={`${todo.title} on a phone: a greeting, search, filters and the Order switch, then the newest tasks`}
             fill
             sizes="(min-width: 768px) 14vw, 46vw"
             loading="lazy"
