@@ -20,7 +20,7 @@ export default function AboutPage() {
   const { copy, stack, timeline } = portfolioConfig;
 
   return (
-    <section className="px-6 py-20 md:py-24">
+    <section className="px-4 sm:px-6 py-20 md:py-24">
       <Reveals />
       <TechGlitch />
       <div className="mx-auto max-w-(--container-view)">

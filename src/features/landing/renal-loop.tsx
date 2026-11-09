@@ -1,4 +1,5 @@
 import { renalTraps } from "@/content/renal-dosing";
+import { ILL } from "@/lib/illustration";
 import LeaseGate from "./lease-gate";
 
 /**
@@ -17,14 +18,14 @@ import LeaseGate from "./lease-gate";
  * first frame. The loop starts and ends on the same frame (header only), so
  * it repeats without a seam.
  */
-export default function RenalLoop() {
+export default function RenalLoop({ coveredBy }: { coveredBy?: string } = {}) {
   const trap = renalTraps.find((t) => t.mistake === "cr_umol_as_mgdl")!;
   const { correct, careless } = trap;
   const value = String(correct.creatinine.value);
   const unit = correct.creatinine.unit;
 
   return (
-    <LeaseGate id="renal" className="renal-gate h-full w-full">
+    <LeaseGate id="renal" coveredBy={coveredBy} className="renal-gate h-full w-full">
       <svg
         viewBox="0 0 320 200"
         className="renal-loop h-full w-full"
@@ -33,40 +34,45 @@ export default function RenalLoop() {
       >
         <g fontFamily="var(--font-mono)" fontSize="9">
           {/* The header never animates: the loop's first and last frame. */}
-          <text x="20" y="24" fill="var(--muted)">labs.csv</text>
-          <text x="20" y="44" fill="var(--muted)">patient_id</text>
-          <text x="110" y="44" fill="var(--muted)">creatinine</text>
-          <text x="200" y="44" fill="var(--muted)">unit</text>
-          <line x1="20" y1="50" x2="300" y2="50" stroke="var(--line)" />
+          <rect x="12" y="10" width="296" height="74" fill={ILL.panel} stroke={ILL.edge} />
+          <text x="20" y="24" fill={ILL.detail}>labs.csv</text>
+          <text x="20" y="44" fill={ILL.detail}>patient_id</text>
+          <text x="110" y="44" fill={ILL.detail}>creatinine</text>
+          <text x="200" y="44" fill={ILL.detail}>unit</text>
+          <line x1="20" y1="50" x2="300" y2="50" stroke={ILL.edge} />
 
-          <rect className="rl-sweep" x="16" y="55" width="288" height="18" fill="var(--ink)" />
+          <rect className="rl-sweep" x="16" y="55" width="288" height="18" fill={ILL.accentFill} />
           <g className="rl-row">
-            <text x="20" y="68" fill="var(--ink)">{trap.patient_id}</text>
-            <text x="110" y="68" fill="var(--ink)">{value}</text>
-            <text x="200" y="68" fill="var(--ink)">{unit}</text>
-            <line x1="20" y1="78" x2="300" y2="78" stroke="var(--line)" />
+            <text x="20" y="68" fill={ILL.text}>{trap.patient_id}</text>
+            <text x="110" y="68" fill={ILL.text}>{value}</text>
+            <text x="200" y="68" fill={ILL.text}>{unit}</text>
+            <line x1="20" y1="78" x2="300" y2="78" stroke={ILL.edge} />
           </g>
 
-          <path className="rl-link" d="M160 80 C160 92 84 88 84 100" pathLength={1} stroke="var(--line)" fill="none" />
-          <path className="rl-link" d="M160 80 C160 92 236 88 236 100" pathLength={1} stroke="var(--line)" fill="none" />
+          <path className="rl-link" d="M160 84 C160 94 80 92 80 102" pathLength={1} stroke={ILL.accent} fill="none" />
+          <path className="rl-link" d="M160 84 C160 94 238 92 238 102" pathLength={1} stroke={ILL.error} fill="none" />
 
+          {/* Each reading lands on its own tinted panel; the panel is inside
+              the animated group, so it arrives with its reading. */}
           <g className="rl-good" textAnchor="middle">
-            <text x="84" y="114" fill="var(--muted)" fontSize="8">with the unit column</text>
-            <text x="84" y="136" fill="var(--accent)" fontSize="17" fontFamily="var(--font-display)">
+            <rect x="6" y="102" width="148" height="58" fill={ILL.accentSoft} stroke={ILL.accent} />
+            <text x="80" y="116" fill={ILL.text} fontSize="8">with the unit column</text>
+            <text x="80" y="138" fill={ILL.accent} fontSize="17" fontFamily="var(--font-display)">
               {correct.crcl_ml_min} mL/min
             </text>
-            <text x="84" y="151" fill="var(--accent)" fontSize="8">correct</text>
+            <text x="80" y="153" fill={ILL.accent} fontSize="8">correct</text>
           </g>
 
           <g className="rl-bad" textAnchor="middle">
-            <text x="236" y="114" fill="var(--muted)" fontSize="8">without it</text>
-            <text x="236" y="136" fill="var(--wrong)" fontSize="17" fontFamily="var(--font-display)">
+            <rect x="158" y="102" width="160" height="58" fill={ILL.errorSoft} stroke={ILL.error} />
+            <text x="238" y="116" fill={ILL.text} fontSize="8">without it</text>
+            <text x="238" y="138" fill={ILL.error} fontSize="17" fontFamily="var(--font-display)">
               {careless.crcl_ml_min} mL/min
             </text>
-            <text x="236" y="151" fill="var(--wrong)" fontSize="8">kidneys &lsquo;failed&rsquo;, drug withheld</text>
+            <text x="238" y="153" fill={ILL.error} fontSize="7.5">kidneys &lsquo;failed&rsquo;, drug withheld</text>
           </g>
 
-          <text className="rl-cap" x="160" y="184" textAnchor="middle" fill="var(--ink)" fontSize="11" fontFamily="var(--font-display)">
+          <text className="rl-cap" x="160" y="186" textAnchor="middle" fill={ILL.text} fontSize="11" fontFamily="var(--font-display)">
             Same row. Two readings.
           </text>
         </g>

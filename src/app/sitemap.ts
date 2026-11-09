@@ -57,7 +57,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${SITE_URL}/writing/${entry.slug}`,
       /* A piece's own date, because that is when it last changed in any way
          a reader would care about. */
-      lastModified: new Date(entry.date),
+      lastModified: new Date(entry.published),
     })),
   ];
 }

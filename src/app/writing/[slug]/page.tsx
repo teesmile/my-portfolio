@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { writing, readingTime } from "@/config/writing";
+import { AUTHOR, dateOf, writing, readingTime } from "@/config/writing";
+import { SITE_URL } from "@/config/site-url";
 import { pageMetadata } from "@/lib/metadata";
 import StickyHero from "@/components/layout/sticky-hero";
+import PinnedBack from "@/components/layout/pinned-back";
 import Reveals from "@/components/layout/reveals";
 import HeroArt from "@/features/writing/hero-art";
 import OnThisPage from "@/features/writing/on-this-page";
@@ -30,6 +32,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     type: "article",
     image: `/writing/${entry.slug}/opengraph-image`,
     noindex: Boolean(entry.draft),
+    article: { publishedTime: entry.published, author: AUTHOR },
   });
 }
 
@@ -41,20 +44,40 @@ export default async function WritingEntryPage({ params }: Params) {
     notFound();
   }
 
+  /* Structured data for the piece: the same author and timestamp as the
+     meta tags, so a crawler reading either finds one answer. */
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: entry.title,
+    description: entry.standfirst,
+    datePublished: entry.published,
+    author: { "@type": "Person", name: AUTHOR.name, url: AUTHOR.url },
+    image: `${SITE_URL}/writing/${entry.slug}/opengraph-image`,
+    mainEntityOfPage: `${SITE_URL}/writing/${entry.slug}`,
+  };
+
   return (
     <article className="block">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <Reveals />
 
       <StickyHero
         backHref="/writing"
-        backLabel="Writing"
+        backLabel="All writing"
         title={entry.title}
-        meta={`${entry.date} · ${readingTime(entry)} min read · ${entry.topic}`}
+        meta={`${dateOf(entry)} · ${readingTime(entry)} min read · ${entry.topic}`}
+        scrim="band"
+        mobileAspect="square"
       >
         <HeroArt slug={entry.slug} />
       </StickyHero>
 
-      <div data-sheet className="relative z-10 min-h-screen bg-surface px-6 py-16 md:py-20">
+      <div data-sheet className="relative z-10 min-h-screen bg-surface px-4 sm:px-6 py-16 md:py-20">
+        <PinnedBack href="/writing" label="All writing" mode="covered" />
         <div className="mx-auto max-w-(--container-view)">
           {entry.draft ? (
             <p className="mb-8 max-w-(--container-reading) border-y border-line py-3 text-2xs text-muted">
@@ -104,7 +127,9 @@ export default async function WritingEntryPage({ params }: Params) {
                 <dl className="flex flex-col gap-3 text-2xs text-muted">
                   <div className="flex justify-between gap-4">
                     <dt>Published</dt>
-                    <dd className="tabular-nums text-ink">{entry.date}</dd>
+                    <dd className="tabular-nums text-ink">
+                      <time dateTime={entry.published}>{dateOf(entry)}</time>
+                    </dd>
                   </div>
                   <div className="flex justify-between gap-4">
                     <dt>Reading time</dt>
