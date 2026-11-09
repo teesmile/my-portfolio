@@ -29,7 +29,7 @@ Because: a recruiter reads the dates down the left edge before any bullet. The o
 Changed: `place` ranks in `resume.ts` now match the master's order in all three versions. The todo app moved to the last project and its line describes only the live deploy; it moves back up when the offline-first revamp merges. All six PDFs are one page and pass both extractors.
 Study: how ATS parsers derive "current title" and "years of experience" from entry order and date ranges — search "resume parsing most recent position heuristic".
 
-## 2026-11-06 — Codex review 5: three ways the resume pipeline could publish a lie (402fb1b)
+## 2026-11-06 — Codex review 5: three ways the resume pipeline could publish a lie (008bed9)
 Codex challenged: the pre-commit hook generates PDFs from the working tree while committing only the index, so a partially staged `resume.ts` ships a document describing content the commit does not contain; the build-freshness check looks at `resume.ts` alone, so a change to the page component or the print stylesheet prints with the old presentation while a text-only ATS check still passes; and `/resume?variant=ai` renders the AI ordering but its download button always points at the default PDF.
 Verdict: AGREE on all three, each confirmed by reading the code and each proven fixed
 Because: all three are the same failure in different places — a document that claims to represent something it was not generated from. The first is the worst, because it passes every check: the PDF is internally consistent, the ATS check passes, and the commit is still wrong. The second is the quietest: extraction only sees text, so a stale layout is invisible to it by construction. The third is the one a reader would hit first — downloading from the AI page and getting the general resume.
@@ -38,7 +38,7 @@ One self-inflicted bug surfaced while fixing: adding `pdf.ai` to the content mad
 Study: why "generated from the working tree, committed from the index" is a whole class of bug — the same shape as building from a dirty tree in CI.
 
 
-## 2026-11-06 — The headline shake was re-rasterisation, not movement (402fb1b)
+## 2026-11-06 — The headline shake was re-rasterisation, not movement (008bed9)
 Decided by: Anthony reported the headline shaking as it rises on a real phone.
 Claim: check three suspects — SplitText running before Syne loads, whole pixels instead of yPercent, and masks clipping mid-tween.
 Verdict: REPRODUCED by instrumentation; the third explanation was the right one, and none of the three as stated
@@ -47,7 +47,7 @@ Changed: `force3D: true` alone did not fix it — GSAP still wrote a 2D translat
 Study: why a compositor layer stops text shimmering — the difference between moving a rasterised bitmap and re-rendering glyphs at a fractional offset.
 
 
-## 2026-11-06 — One timing scale, and the reveal rule it serves (402fb1b)
+## 2026-11-06 — One timing scale, and the reveal rule it serves (008bed9)
 Decided by: Anthony — "everything reads too fast".
 Claim: define one shared scale of durations and eases, use it everywhere, and give every scrolling view the same reveal behaviour: the first screen arrives on load, everything below enters as it is reached, and scrolling back up reverses it.
 Verdict: SHIPPED
@@ -55,7 +55,7 @@ Because: `src/lib/motion.ts` is now the only place a duration is chosen, so "slo
 Changed: route transition, drawer, clock, case-study morph and reveals all read from the scale. Hidden state is still written in script rather than CSS, so a failed script leaves the page readable.
 Study: hysteresis as an interface idea — two thresholds instead of one wherever a boundary can be hovered.
 
-## 2026-11-06 — Batching scroll triggers, found by the gate (402fb1b)
+## 2026-11-06 — Batching scroll triggers, found by the gate (008bed9)
 Decided by: measurement, after the reveal rewrite.
 Claim: the new reveals and the tool-logo glitch each created one ScrollTrigger per element.
 Verdict: REGRESSION, caught and fixed
@@ -63,7 +63,7 @@ Because: the gate found it. Scrolling a case study measured a **66.7ms** longest
 Changed: both reveals and the glitch batch their triggers; the glitch staggers 60ms per logo so a row does not fire as one flash.
 Study: why per-element scroll listeners scale badly, and what `ScrollTrigger.batch` actually shares.
 
-## 2026-11-06 — The hero's two voices, and the deck as a travelling stack (402fb1b)
+## 2026-11-06 — The hero's two voices, and the deck as a travelling stack (008bed9)
 Decided by: Anthony.
 Claim: split the hero statement into a Syne headline and a monospace line that types itself with a caret and a lint squiggle; make the deck advance by travel rather than shuffle, with drag on touch; print the resume from the page itself.
 Verdict: SHIPPED, sizes measured
@@ -72,7 +72,7 @@ Changed: nine cards now, `pnpm resume` prints `public/Anthony-Ugwuja-Resume.pdf`
 Study: why a monospace face reads as "typed" and a proportional one does not, and what `preferCSSPageSize` and print margins do to a printed layout.
 
 
-## 2026-11-06 — Flip earns its cost on the case study and not in the deck (131de59)
+## 2026-11-06 — Flip earns its cost on the case study and not in the deck (d791d06)
 Decided by: measurement, during the Phase 2 gate.
 Claim: the brief asked for Flip in both places — the work card morphing into the case-study hero, and the deck bringing the next card forward.
 Verdict: KEPT on the case study, REPLACED in the deck
@@ -80,7 +80,7 @@ Because: Flip measures layout for every element before animating, and that measu
 Changed: deck reordering is now `gsap.to` per card with React owning order and z-index while GSAP owns transforms — if both wrote `style.transform` they would overwrite each other mid-tween. The case study keeps `Flip.from` with `scale: true`, the image only, and the heading cross-fading on its own tween. One gotcha cost a round of debugging and is worth recording: `Flip.from(state, vars)` falls back to `state.targets`, which are the elements that just unmounted, so the new element has to be passed explicitly as `vars.targets` for Flip to pair them by `data-flip-id`.
 Study: when a layout-reading animation is worth its forced reflow — the answer is "when you cannot compute the geometry yourself".
 
-## 2026-11-06 — The Phase 2 gate, and what the budget actually measures (131de59)
+## 2026-11-06 — The Phase 2 gate, and what the budget actually measures (d791d06)
 Decided by: the five recorded traces in `docs/plan.md`, run with `pnpm frames` at 4x CPU throttle.
 Claim: every scenario must keep its longest frame under 16.7ms.
 Verdict: MOTION PASSES; the navigation scenarios exceed the budget for reasons motion cannot fix
@@ -88,7 +88,7 @@ Because: the first run had all five over budget, which would normally mean simpl
 Changed: `scripts/measure-frames.mjs` is now `pnpm frames`, with a `--reduced` control flag, because a performance number without a control is not evidence. Nothing in the offline trace is left stranded: template opacity 1, no scroll lock, no open drawer.
 Study: why a control run belongs in every performance measurement — without one, any number invites you to optimise the wrong thing.
 
-## 2026-11-06 — Reveals, and keeping the hidden state out of CSS (131de59)
+## 2026-11-06 — Reveals, and keeping the hidden state out of CSS (d791d06)
 Decided by: Claude, per the rule that non-trivial motion ships with its reasoning.
 Claim: long views reveal their content as it comes into view, subtly, once.
 Verdict: SHIPPED
@@ -96,14 +96,14 @@ Because: `ScrollTrigger.batch` gives dozens of marked nodes one shared trigger a
 Study: `ScrollTrigger.batch` versus per-element triggers, and why progressive enhancement means hiding things in script rather than in stylesheets.
 
 
-## 2026-11-06 — Codex review 4: the clock was a hydration bug, not a warning (241c2b3)
+## 2026-11-06 — Codex review 4: the clock was a hydration bug, not a warning (e2d2bb8)
 Codex challenged: `/contact` is prerendered, so `useState(readClock)` renders build-time digits into static HTML while the client initialises from the visitor's clock. `suppressHydrationWarning` on the parent does not cover text inside the child spans, so cold loads hit a real hydration failure and re-render, not a hidden warning. Separately, the copy button silently no-ops when the Clipboard API is denied, and the mailto link my comment promised had been removed in the rewrite.
 Verdict: AGREE on both, reproduced before fixing
 Because: the built HTML carried `22:48:30` — hours stale for anyone loading later — and `grep mailto` over the same file returned nothing. I was wrong twice: wrong that the choice was "warning versus flash" when it was actually a failed hydration, and wrong in a comment that described a fallback the page did not have.
 Changed: the clock moved to `useSyncExternalStore`, whose third argument exists exactly for this — the server snapshot renders `--:--`, hydration uses that same value so the markup matches by construction, and the real time arrives on the first client tick. The address is now a real `mailto:` link with a separate Copy button beside it, so it works with JavaScript off and when the clipboard is blocked, and failures are announced through a live region. Verified: prerendered HTML contains `--`, the mailto is present, the clock reads real time after hydration, and the console is clean where it previously logged a mismatch.
 Study: `useSyncExternalStore` and why its `getServerSnapshot` is the correct tool for anything whose value is time-dependent.
 
-## 2026-11-06 — The drawer blink, found on the second attempt (241c2b3)
+## 2026-11-06 — The drawer blink, found on the second attempt (e2d2bb8)
 Decided by: Anthony reported the blink persisted on a real phone after the first fix.
 Claim: reproduce in dark mode with a mobile user agent, touch emulation and DPR 3, and check three suspects the first run could not see — a mount flash, the panel resizing when the browser bar hides, and an icon crossfade.
 Verdict: REPRODUCED and fixed; my first fix had been incomplete, not wrong
@@ -112,7 +112,7 @@ Changed: framer-motion removed from the drawer entirely — with no animation th
 Study: why a single-frame visual defect needs frame-rate instrumentation — any sampling slower than the display cannot prove absence.
 
 
-## 2026-11-06 — The drawer blink was the backdrop, not the icon (241c2b3)
+## 2026-11-06 — The drawer blink was the backdrop, not the icon (e2d2bb8)
 Decided by: measurement, after Anthony reported a blink on open and close.
 Claim: the mobile drawer flickers on a phone; find the cause before fixing it.
 Verdict: FIXED, cause identified by frame capture
@@ -120,7 +120,7 @@ Because: I drove Chromium over CDP at 390x844, captured a screenshot every 60ms 
 Changed: backdrop deleted; the panel keeps its own short fade. Re-measured: 239.4 → 243.5 → 244.5 opening and the reverse closing, monotonic, no dip below either steady state. The drawer links now have three distinct states (muted, hover/pressed ink with accent underline, active held), and the hamburger is a bordered button labelled Menu/Close.
 Study: compositing order for overlapping animated layers — when two layers cross-fade, the one underneath is visible for exactly the duration of the transition.
 
-## 2026-11-06 — Contact state: a clock that renders on the server, a copy button that forgets (241c2b3)
+## 2026-11-06 — Contact state: a clock that renders on the server, a copy button that forgets (e2d2bb8)
 Decided by: Claude, per the new rule that non-trivial state ships with its reasoning.
 Claim: the contact view needs a live Lagos clock, a copy-to-clipboard email that says "Copied" for two seconds, and no scrollbar at 1280x800 or 390x844.
 Verdict: SHIPPED
@@ -128,7 +128,7 @@ Because: the clock computes real time during render and marks the output `suppre
 Changed: the view measured 116px too tall at 390x844; mobile-only rhythm trims brought it to exactly 0 overflow at both sizes, with the desktop composition untouched.
 Study: `Intl.DateTimeFormat.formatToParts` as a way to read a time zone without a date library.
 
-## 2026-11-06 — Hero statement, writing topics and inline figures (241c2b3)
+## 2026-11-06 — Hero statement, writing topics and inline figures (e2d2bb8)
 Decided by: Anthony chose the statement and the rules; the sizes came from the lab.
 Claim: ship the first of two candidate statements that passes the type rule; give every Writing piece a topic with a filter; every piece carries inline diagrams where the explanation happens.
 Verdict: SHIPPED
@@ -137,14 +137,14 @@ Changed: six inline figures across the two pieces, drawn from tokens; per-piece 
 Study: why a closed vocabulary beats free tagging on a small site — the filter row is the user-visible consequence of the type.
 
 
-## 2026-11-06 — Codex review 3: menu state, mobile overflow, share metadata (6288a72)
+## 2026-11-06 — Codex review 3: menu state, mobile overflow, share metadata (3691261)
 Codex challenged: three defects — the mobile drawer stays open and keeps the body scroll locked when the wordmark navigates home; the contact email overflows the viewport at 320px; and articles and case studies publish the homepage's OpenGraph title and URL because Next merges metadata shallowly.
 Verdict: AGREE on all three, each reproduced before fixing
 Because: measured, not assumed. The drawer: `isMenuOpen` was component state with nothing resetting it on navigation, and the earlier `useEffect` that did reset it had been removed to satisfy `react-hooks/set-state-in-effect`. The email: at 320px the document measured `scrollWidth` 337 against `clientWidth` 320, with the link 313.3px wide at 22px and no break opportunity in an address. The metadata: the built HTML for both articles carried `og:url` `https://anthonyugwuja.dev` and the homepage title.
 Changed: menu state is now derived — it stores the path it was opened on, so any navigation including Back closes it with no effect syncing state; the email wraps with `overflow-wrap: anywhere` inside a `min-w-0` parent; `src/lib/metadata.ts` builds per-route OpenGraph and Twitter fields, applied to writing entries and case studies. Verified after: menu false and overflow cleared on wordmark and Back, `scrollWidth` 320 at 320px, and `og:url` now ends `/writing/what-unoptimized-turns-off`.
 Study: how Next merges `metadata` across segments — a child that sets only `title` inherits the parent's whole `openGraph` block.
 
-## 2026-11-06 — The scroll spy was broken, but not for the stated reason (6288a72)
+## 2026-11-06 — The scroll spy was broken, but not for the stated reason (3691261)
 Codex challenged: the on-this-page indicator never tracks because `rootMargin` percentages resolve against width per the IntersectionObserver spec, so `-60%` removed 864px at 1440x900 and collapsed the observation region.
 Verdict: AGREE the spy was broken, DISAGREE on the cause
 Because: I ran the experiment. Three observers on the same probe, `-60%` versus `-540px` (60% of the 900px height) versus `-864px` (60% of the 1440px width): the percentage matched the height value and not the width one, so the band was `[96, 360]`, not collapsed. The real defect was mine, in the selection rule — I sorted intersecting sections by `rect.top` and took the first, and a tall section you have already scrolled past keeps touching the band, so the rail always named the section above the one being read. A probe confirmed the observer fired on every scroll and that the component agreed with its own rule.
@@ -152,7 +152,7 @@ Changed: the rule now takes the last section whose top has crossed a reading lin
 Study: IntersectionObserver `rootMargin` percentage resolution, and why "topmost intersecting element" is the wrong primitive for a reading indicator.
 
 
-## 2026-11-06 — Amber-gold replaces cyan as the single accent (6288a72)
+## 2026-11-06 — Amber-gold replaces cyan as the single accent (3691261)
 Decided by: Anthony.
 Claim: drop the cyan. One amber-gold accent: bright gold on dark, a darker bronze-gold for link text on light, both measured; buttons and focus rings use the bright gold with ink text in both modes. Electric blue stays documented as a fallback and nothing more.
 Verdict: ADOPTED, with one measured addition
@@ -161,7 +161,7 @@ The addition: bright gold against the light surface measures **1.72:1**, well un
 Changed: colour tokens in `globals.css`, OG card rule, `--code-*` tokens deleted (Shiki owns code colour now).
 Study: WCAG 1.4.11 non-text contrast — why a focus ring is held to 3:1 against *adjacent* colours rather than 4.5:1.
 
-## 2026-11-06 — Syne is the display family (6288a72)
+## 2026-11-06 — Syne is the display family (3691261)
 Decided by: Anthony, after the `/lab/type` measurement.
 Claim: Syne at leading 1.05, 44px for the hero statement on desktop, mobile size taken from the lab. Body stays Source Serif 4, Bricolage leaves the build.
 Verdict: ADOPTED
@@ -169,7 +169,7 @@ Because: re-running `/lab/type` with leading 1.05 and a lower size sweep, Syne p
 Changed: `--font-display` now resolves to Syne, Bricolage dropped from `layout.tsx` and its WOFF deleted, OG card re-rendered in Syne (its own 28 KB WOFF, since Satori cannot read WOFF2), favicon apex sharpened to match Syne's pointed A — verified at 16, 32 and 64px beside the real letterform.
 Study: optical sizing and why a display face set at 44px needs different leading than the same face at 16px.
 
-## 2026-11-06 — Phase 1 fixes, and three standing decisions (6288a72)
+## 2026-11-06 — Phase 1 fixes, and three standing decisions (3691261)
 Decided by: Anthony.
 Claim: keep `prefers-color-scheme` as the default with no forcing; `/lab` stays out of the nav until Phase 2 puts a real piece there; the archive is generated from `gh repo list teesmile` once six repos are transferred.
 Verdict: ADOPTED, archive blocked on the transfer
@@ -178,7 +178,7 @@ Changed: nav active state is now colour and underline colour only, proved shift-
 Study: `backdrop-filter` and `transform` as containing blocks for fixed positioning — the most common cause of "my fixed overlay is invisible".
 
 
-## 2026-11-06 — Route per view replaces the single scrolling page (6288a72)
+## 2026-11-06 — Route per view replaces the single scrolling page (3691261)
 Decided by: Anthony. Not a Codex challenge — logged here because it changes the shape of every phase after it.
 Claim: anchor scrolling on one long page is the wrong container. Each section becomes a route — `/`, `/work`, `/work/[slug]`, `/about`, `/lab`, `/contact` — and navigation replaces the whole view with a continuous transition. A view scrolls only if its own content exceeds the viewport; in those views content reveals as you scroll; short views arrive and stay put.
 Verdict: ADOPTED
@@ -187,7 +187,7 @@ Costs accepted: the transition is now load-bearing rather than a flourish, so Ph
 Changed: `docs/plan.md` — Target structure rewritten, Q2 superseded, Phase 1 rebuilt around routes with instant navigation, Phase 2 rebuilt around view transitions and in-view reveals, Phase 4's nav task removed.
 Study: `template.tsx` vs `layout.tsx` in the App Router — a template re-mounts on every navigation, which is what a per-view enter animation needs and what a layout deliberately refuses to do.
 
-## 2026-11-06 — Phase 1 art direction settled (6288a72)
+## 2026-11-06 — Phase 1 art direction settled (3691261)
 Decided by: Anthony, from four option sets.
 Claim: Bricolage Grotesque display over Source Serif 4 body; colour as a rule rather than a value, dark primary with light from the same tokens, cold-neutral surfaces and one cold hue reserved for interaction; hero statement "I trained as a pharmacist. Now I build React interfaces — and get paid to find what's wrong with AI-written code."; the Anthony-specific composition is the annotated defect, built from a self-generated example, with the dated spine on `/about`.
 Verdict: ADOPTED
@@ -196,38 +196,38 @@ Changed: Phase 1 rows 1.1, 1.4, 1.8 and 1.18 now record decisions instead of ask
 Study: WCAG relative luminance — why a single hue rarely clears 4.5:1 on both a near-black and a near-white, and why themed accents are two values rather than one.
 
 
-## 2026-11-06 — Phase 0, clear the ground (6ded612)
+## 2026-11-06 — Phase 0, clear the ground (9781ec5)
 Codex challenged: nothing. Adversarial review of the working tree returned approve with no material findings; lint and tsc passed in its sandbox, and it flagged only that the build was unverified there (read-only workspace) and that profile.webp needed staging. Both were already handled here: `pnpm lint && pnpm build` pass locally and the image is in the commit.
 Verdict: AGREE (nothing to contest)
 Because: an empty review is only worth logging for what it does not cover. It read the working tree, so it never saw the one judgement call worth a second opinion — removing the four profile URLs before you supplied real ones, which traded four mislabelled "Source" links for no link at all. You confirmed the real URLs afterwards and all three return 200. The first `--base main` run also returned approve on a diff that excluded every Phase 0 file, which is a reminder that an approve verdict is scoped to what was actually diffed.
-Changed: nothing from this review. Phase 0's ten tasks are in 6ded612.
+Changed: nothing from this review. Phase 0's ten tasks are in 9781ec5.
 Study: why a review's scope matters more than its verdict — compare `git diff main...HEAD` with `git diff HEAD` and note which one contains your uncommitted work.
 
 Not done for Phase 0: the throttled DevTools scroll test in the phase gate. Phase 0 touched no motion code, so the frame budget is unchanged; the first real measurement is the Phase 1 static frame and the Phase 2 motion gate. Flagging it rather than quietly skipping it.
 
 
-## 2026-11-06 — Phase 1 Work links pointed at a route Phase 3 creates (e02cf8c)
+## 2026-11-06 — Phase 1 Work links pointed at a route Phase 3 creates (63330e7)
 Codex challenged: Task 1.12 links every Work entry to `/work/[slug]`, but that route is only scheduled for Phase 3, so Phase 1 ships 404s and Phase 2 has no destination to animate into. Lint and build do not prove a link resolves.
 Verdict: AGREE
 Because: it is a straight sequencing error of mine, and the gate I wrote could not catch it — `next build` has no opinion about a `<Link href>` string. Codex's own fix ("verify every Work link") is a discipline, and disciplines rot. The stronger fix is that `typedRoutes` is stable in Next 16 (`config-shared.d.ts:710`), so a link to a route that does not exist becomes a compiler error. Q2 had the same bug one layer down: it moved the scroll choreography onto `/work/[slug]` too, so Phase 2 had two tasks depending on a Phase 3 route.
 Changed: Phase 1 entries keep their live-project URLs (task 1.12). New task 0.10 turns on `typedRoutes: true`. New task 2.0 creates the route and switches the links in one commit, and Phase 3 now deepens those pages rather than creating them.
 Study: Next 16 typed routes — search "nextjs typedRoutes" — and the general shape, which is making an invariant the compiler's job instead of the reviewer's.
 
-## 2026-11-06 — GSAP Flip would have animated width and height (e02cf8c)
+## 2026-11-06 — GSAP Flip would have animated width and height (63330e7)
 Codex challenged: the card-to-header Flip is not transform-only by default. `Flip.js:695-712` animates `width` and `height` in px unless `scale: true` is passed, which contradicts the plan's own prohibition on animating layout properties.
 Verdict: AGREE
 Because: I read the file and it is exactly that — `if (scale) { tweenVars.scaleX/scaleY } else { tweenVars.width/height + autoRound }`. I wrote a hard rule against animating width/height and then specified a tool whose default does it. Width/height changes force layout and paint on every frame; `scaleX`/`scaleY` are composited. On a 4x-throttled mid-range Android that is the difference between a transition and a slideshow. The catch I would have hit in week three of Phase 2, blaming Lenis.
 Changed: task 2.3 now makes `scale: true` mandatory, Flips the image only, and cross-fades the heading on its own tween, because scaled text blurs and its metrics lie.
 Study: why `transform` and `opacity` are the only two cheap properties — search "CSS triggers layout paint composite" — and `scale` in the GSAP Flip docs.
 
-## 2026-11-06 — The new art direction would have shipped with Inter inside the artwork (e02cf8c)
+## 2026-11-06 — The new art direction would have shipped with Inter inside the artwork (63330e7)
 Codex challenged: the surviving template element is the Work imagery. The preview SVGs are generated mock interfaces, real screenshots are deferred to Phase 3, and the Phase 1 gate ("looks deliberate") would let a generic editorial developer portfolio pass.
 Verdict: AGREE
 Because: sharper than my own audit, which only called the previews "generated SVGs, not screenshots". All four hardcode `font-family="Inter"` and the two banned gradient stops `#5b5cff`/`#8b5cf6` — so the banned typeface and the banned gradient would survive Phase 1 inside the largest images on the page, where the token grep could never see them. And my acceptance test was unfalsifiable: "looks deliberate" is not something a screenshot can fail.
 Changed: task 1.17 replaces the SVGs with real captures in Phase 1 and the token/typeface greps now cover `public/work`. Task 1.18 requires one element a stranger could not reuse with a name swap, with three candidates to pick from or reject. The "Done when" list is now eight checkable lines.
 Study: the difference between a checkable acceptance criterion and a hopeful one — search "falsifiable acceptance criteria" — plus `prefers-color-scheme` behaviour of baked-in image colours.
 
-## 2026-11-06 — Skipping React View Transitions for a GSAP overlay (e02cf8c)
+## 2026-11-06 — Skipping React View Transitions for a GSAP overlay (63330e7)
 Codex challenged: Q1 rejects View Transitions on wrong evidence. `@types/react/canary.d.ts` declares `ViewTransition`, a TSX check passes with the documented `react/canary` reference and no cast, and shared-element transitions, JS animation control and reduced motion are all documented. Compare minimal implementations before settling the architecture.
 Verdict: AGREE on the evidence, DISAGREE on reopening the decision
 Because: Codex is right and I was wrong — `canary.d.ts:107` declares the component, the four lifecycle callbacks are typed, and "crossfade only / needs a cast / no reduced-motion path" were all false. I corrected Q1 to say so. What survives is the cost, not a capability gap: the typed `ViewTransitionInstance` has one member, `name: string` (`canary.d.ts:37-42`), so driving it from JS means untyped pseudo-element work; `canary.d.ts` augments `declare module "."`, so the opt-in is project-wide and makes canary APIs type-visible that the installed stable npm react does not export; and it needs an experimental Next flag for the one mechanism every navigation depends on. I decline the build-both spike concretely: it doubles the most expensive phase to choose between mechanisms, when the choice is one component and one `Flip` call to reverse, and Phase 2's stated purpose is learning to own a timeline. A one-field instance and four callbacks teaches less than a timeline I can stage, cancel and reverse.

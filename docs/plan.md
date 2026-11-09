@@ -2,7 +2,7 @@
 
 ## Audit of the current code (6 Nov 2026) — verified
 
-Verified against the working tree on branch `redesign` at commit `3e6ea4a`, 6 Nov 2026.
+Verified against the working tree on branch `redesign` at commit `83e8817`, 6 Nov 2026.
 Baseline at verification time: `pnpm lint` clean, `pnpm build` clean (5 static routes: `/`, `/resume`, `/icon.svg`, `/_not-found`).
 Each finding is marked CONFIRMED, CONFIRMED WITH CORRECTION, or WRONG, with file and line.
 
