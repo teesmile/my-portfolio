@@ -104,7 +104,7 @@ export default function AboutPage() {
                 fill
                 sizes="(min-width: 1024px) 24rem, 100vw"
                 className="object-contain"
-                priority
+                preload
               />
             </div>
 
