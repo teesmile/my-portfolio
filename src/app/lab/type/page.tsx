@@ -43,7 +43,7 @@ const widths = [
 
 export default function TypeLabPage() {
   return (
-    <section className="px-6 py-16">
+    <section className="px-4 sm:px-6 py-16">
       <div className="mx-auto max-w-(--container-view)">
         <h1 className="text-xl text-ink">Hero type specimen</h1>
         <p className="mt-3 max-w-(--container-reading) text-sm text-muted">

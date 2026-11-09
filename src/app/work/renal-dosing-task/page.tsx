@@ -48,7 +48,7 @@ export default function RenalDosingPage() {
         </div>
       </StickyHero>
 
-      <div data-sheet className="relative z-10 min-h-screen bg-surface px-6 py-16 md:py-20">
+      <div data-sheet className="relative z-10 min-h-screen bg-surface px-4 sm:px-6 py-16 md:py-20">
         <div id="renal-sheet-edge" aria-hidden="true" className="absolute inset-x-0 top-0 h-px" />
         <div className="mx-auto max-w-(--container-view)">
           <FictionalNote />

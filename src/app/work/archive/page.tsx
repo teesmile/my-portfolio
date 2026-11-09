@@ -12,7 +12,7 @@ export const metadata: Metadata = pageMetadata({
 
 export default function ArchivePage() {
   return (
-    <section className="px-6 py-20 md:py-24">
+    <section className="px-4 sm:px-6 py-20 md:py-24">
       <div className="mx-auto max-w-(--container-view)">
         <Link
           href="/work"

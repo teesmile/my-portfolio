@@ -52,7 +52,7 @@ export default async function ResumePage({
   const resume = resumeFor(variant, privateAllowed && params.private === "1");
 
   return (
-    <section className="px-6 py-20 md:py-24">
+    <section className="px-4 sm:px-6 py-20 md:py-24">
       <div className="mx-auto max-w-(--container-reading)">
         <header className="border-b border-line pb-6">
           <h1 className="text-xl text-ink md:text-2xl">{resume.name}</h1>

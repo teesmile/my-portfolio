@@ -49,7 +49,7 @@ export default async function TrapPage({ params }: Params) {
   );
 
   return (
-    <article className="px-6 py-20 md:py-24">
+    <article className="px-4 sm:px-6 py-20 md:py-24">
       <Reveals />
       <div className="mx-auto max-w-(--container-view)">
         <Link href="/work/renal-dosing-task" className="text-2xs text-muted transition-colors hover:text-ink">

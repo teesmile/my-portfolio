@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "capture": "node scripts/capture.mjs",
+    "share": "node scripts/share-images.mjs",
     "frames": "node scripts/measure-frames.mjs",
     "resume": "node scripts/resume-pdf.mjs",
     "snapshot:renal": "uv run --no-project --with pytest==8.3.3 python scripts/snapshot-renal.py",
