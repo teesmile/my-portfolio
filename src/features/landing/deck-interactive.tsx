@@ -23,6 +23,10 @@ const slot = (index: number) => ({
 /** Past this fraction of the card's width, a drag becomes a dismissal. */
 const DRAG_RATIO = 0.25;
 const FLICK_VELOCITY = 450;
+/* The swipe hint plays once per page load. Module scope, so a client-side
+   navigation back to / does not replay it; a reload does. */
+let hinted = false;
+
 /* The deck's first move comes 3s after the hero entrance settles, then
    every 4s: --deck-dwell in globals.css, set per lap below. */
 const FIRST_DWELL = '3s';
@@ -256,6 +260,7 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
           state.visible = entry.isIntersecting;
           want('deck', state.visible);
           sync();
+          hint();
         },
         { threshold: 0.6 },
       );
@@ -272,10 +277,21 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
 
       /* The count starts once the hero entrance has finished, or after 4s
          if it never reports (fonts that never resolve, for instance). */
+      const hint = () => {
+        if (hinted || !state.settled || !state.visible) return;
+        hinted = true;
+        element.dataset.hint = 'play';
+      };
+      const hintDone = (event: AnimationEvent) => {
+        if (event.animationName === 'swipe-hint') delete element.dataset.hint;
+      };
+      element.addEventListener('animationend', hintDone);
+
       const begin = () => {
         if (state.settled) return;
         state.settled = true;
         restart();
+        hint();
       };
       const cancelSettled = whenSettled(begin);
       const fallback = window.setTimeout(begin, 4000);
@@ -291,6 +307,8 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
         unsubscribe();
         want('deck', false);
         element.removeEventListener('animationend', finished);
+        element.removeEventListener('animationend', hintDone);
+        delete element.dataset.hint;
         element.removeEventListener('pointerenter', enter);
         element.removeEventListener('pointerleave', leave);
         element.removeEventListener('pointerdown', down);
@@ -393,22 +411,57 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
 
   return (
     <div ref={root}>
-      {/* The progress bar, above the deck and as wide as it. With
-          auto-advance it is the clock: its fill runs across over the dwell
-          and its animationend moves the deck. Without auto-advance (reduced
-          motion, no JavaScript) it shows position instead: filled to the
-          current card's share of the deck. */}
-      <div aria-hidden="true" className="relative mb-4 h-1 w-full overflow-hidden bg-line">
-        <span
-          data-fill
-          className="absolute inset-0 origin-left bg-accent"
-          style={{ '--deck-pos': (order[0] + 1) / cards.length } as React.CSSProperties}
-        />
+      {/* The progress bar: one segment per card, filling in turn like story
+          progress, above the deck and as wide as it. Past cards' segments
+          are full, later ones empty. The current segment is the clock: its
+          fill runs across over the dwell and its animationend moves the
+          deck. Without auto-advance (reduced motion, no JavaScript) the
+          current segment is simply full, so the bar shows position. */}
+      <div aria-hidden="true" className="mb-4 flex w-full gap-1">
+        {cards.map((card, index) => (
+          <span key={card.context} className="relative h-1 flex-1 overflow-hidden bg-line">
+            <span
+              {...(index === order[0] ? { 'data-fill': '' } : {})}
+              className="absolute inset-0 origin-left bg-accent"
+              style={index === order[0] ? undefined : { transform: `scaleX(${index < order[0] ? 1 : 0})` }}
+            />
+          </span>
+        ))}
       </div>
+      {/* The deck itself takes keyboard focus: arrow keys move to the next
+          bug (and focus pauses the clock). The bottom margin clears the
+          stack: the cards behind sit lower and rotate about their top-left
+          corner, so their far corner hangs 59-84px below this box. */}
       <div
         ref={container}
-        className="relative h-[27rem] w-full overflow-x-clip [perspective:1200px] sm:h-[23rem]"
+        tabIndex={0}
+        role="region"
+        aria-roledescription="carousel"
+        aria-label="Bugs in code a model wrote"
+        aria-describedby="deck-keys"
+        onKeyDown={(event) => {
+          if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+            event.preventDefault();
+            advance();
+          }
+        }}
+        className="relative mb-[4.25rem] h-[27rem] w-full overflow-x-clip [perspective:1200px] sm:h-[23rem] md:mb-[6rem]"
       >
+        <span id="deck-keys" className="sr-only">Use the arrow keys for the next bug.</span>
+        {/* The one-time swipe hint: a hand that drags across the front card
+            and fades. Only ever shown when data-hint="play" is set, which
+            happens outside reduced motion, once per page load. */}
+        <span data-swipe-hint aria-hidden="true" className="pointer-events-none absolute left-1/2 top-[45%] z-[80] -ml-6 opacity-0">
+          <svg viewBox="0 0 48 48" className="h-12 w-12 drop-shadow-[0_6px_10px_var(--ill-shadow)]">
+            <path
+              d="M19 22V9.5a3 3 0 0 1 6 0V20l.4-.1a3 3 0 0 1 5.6 1.5V22a3 3 0 0 1 5.6 1.2V25a3 3 0 0 1 5.4 1.8v7.7A11.5 11.5 0 0 1 30.5 46h-3.2a11 11 0 0 1-8.5-4L12 33.7a3.2 3.2 0 0 1 4.6-4.4L19 31.5z"
+              fill="var(--ink)"
+              stroke="var(--surface)"
+              strokeWidth="2"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
         {cards.map((card, cardIndex) => {
           const position = order.indexOf(cardIndex);
           const isFront = position === 0;
@@ -418,7 +471,7 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
                role="button" with an aria-label, and the label replaced
                everything inside it: a screen reader heard the card's title
                and never the code or the verdict. The pointer still taps the
-               card; keyboard and assistive tech use the button below.
+               card; the keyboard uses the arrow keys on the deck.
                Cards behind the front one are inert — out of the focus order
                and the accessibility tree together. */
             <article
@@ -447,29 +500,9 @@ export default function DeckInteractive({ cards }: { cards: Card[] }) {
         })}
       </div>
 
-      {/* Clear of the stack. The cards behind sit lower and rotate about
-          their top-left corner, so their far corner hangs below the deck's
-          box: measured 59-61px on a phone and up to 84px at tablet width.
-          The old 20px gap left the counter and "Next bug" underneath them. */}
-      <div className="mt-[4.75rem] flex items-center gap-3 md:mt-[6.5rem]">
-        <p aria-live="polite" className="text-2xs text-muted tabular-nums">
-          {order[0] + 1} of {cards.length}
-          <span className="sr-only">: {cards[order[0]].context}</span>
-        </p>
-        <button
-          type="button"
-          onClick={advance}
-          onKeyDown={(event) => {
-            if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-              event.preventDefault();
-              advance();
-            }
-          }}
-          className="ml-auto border border-line px-3 py-1.5 text-2xs text-ink transition-colors hover:border-ink"
-        >
-          Next bug
-        </button>
-      </div>
+      <p aria-live="polite" className="sr-only">
+        Bug {order[0] + 1} of {cards.length}: {cards[order[0]].context}
+      </p>
     </div>
   );
 }

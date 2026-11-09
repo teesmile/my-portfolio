@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { portfolioConfig } from "@/config/site";
 import { pageMetadata } from "@/lib/metadata";
 import { TechList } from "@/components/ui/tech";
 import StickyHero from "@/components/layout/sticky-hero";
+import PinnedBack from "@/components/layout/pinned-back";
 import Image from "next/image";
 import Reveals from "@/components/layout/reveals";
 import { ExternalLinkIcon } from "@/components/ui/icons";
@@ -68,12 +68,7 @@ export default async function CaseStudyPage({ params }: Params) {
           page background from here down, which is what makes it read as a
           sheet rather than a transparent column. */}
       <div data-sheet className="relative z-10 min-h-screen bg-surface px-4 sm:px-6 py-16 md:py-20">
-        <Link
-          href="/work"
-          className="sticky top-(--nav-height) z-20 -mt-6 mb-10 hidden w-fit bg-surface py-2 text-2xs text-muted transition-colors hover:text-ink md:block"
-        >
-          <span aria-hidden="true">&larr;</span> Work
-        </Link>
+        <PinnedBack href="/work" label="All work" mode="covered" />
 
         <div className="mx-auto max-w-(--container-view)">
           <div className="grid gap-12 lg:grid-cols-12">
