@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { resumeFor, type Variant } from "@/content/resume";
+import { ExternalLinkIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = pageMetadata({
   title: "Resume",
@@ -155,8 +156,13 @@ export default async function ResumePage({
                       page; then the source. Whichever exist, in that order. */}
                   {project.url ? (
                     <>
-                      <a className="whitespace-nowrap" href={project.url}>
+                      {/* A new tab on screen, so the portfolio stays open. The
+                          icon and the tab note are screen-only: the PDF's
+                          text is unchanged for the ATS check. */}
+                      <a className="whitespace-nowrap" href={project.url} target="_blank" rel="noopener noreferrer">
                         Live: {project.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                        <ExternalLinkIcon className="ml-1 inline h-3 w-3 align-[-0.1em] print:hidden" />
+                        <span className="sr-only print:hidden">(opens in a new tab)</span>
                       </a>
                       {" | "}
                     </>

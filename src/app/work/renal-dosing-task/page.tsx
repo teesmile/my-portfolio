@@ -37,7 +37,7 @@ export default function RenalDosingPage() {
           the sheet's top edge (the marker below) has covered most of it. */}
       <StickyHero
         backHref="/work"
-        backLabel="Work"
+        backLabel="All work"
         title="Renal dose check: a ward chart with ten ways to be wrong"
         meta="Sample benchmark task · AI evaluation"
         mobileAspect="square"

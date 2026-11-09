@@ -8,6 +8,7 @@ import { Flip } from 'gsap/Flip';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { takeFlip } from '@/lib/flip-state';
+import { ChevronLeftIcon } from '@/components/ui/icons';
 import { DURATION, EASE, prefersReducedMotion } from '@/lib/motion';
 
 gsap.registerPlugin(Flip, ScrollTrigger, useGSAP);
@@ -159,21 +160,24 @@ export default function StickyHero({
             band, whatever height the title makes it. */}
         <div
           ref={headingRef}
-          /* On a phone the back link sits above the title, not beside it:
-             beside it, the title started ~90px in and long titles stacked
-             into a tall, thin column. Desktop keeps them side by side. */
-          className="absolute inset-x-0 bottom-0 flex flex-col items-start gap-2 bg-gradient-to-t from-surface via-surface/90 to-transparent px-4 pb-4 pt-10 sm:px-6 md:flex-row md:items-end md:gap-4 md:p-10"
+          className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-surface via-surface/90 to-transparent px-4 pb-4 pt-10 sm:px-6 md:p-10"
         >
-          <Link
-            href={backHref}
-            className="shrink-0 text-2xs text-muted transition-colors hover:text-accent md:pb-1"
-          >
-            <span aria-hidden="true">&larr;</span> {backLabel}
-          </Link>
-          <div className="w-full min-w-0">
-            {/* Wraps. A heading a reader cannot finish is not a heading. */}
-            <h1 className="text-balance text-lg text-ink md:text-2xl">{title}</h1>
-            <p className="mt-1 text-2xs text-muted md:mt-3">{meta}</p>
+          {/* The title has its line to itself, at every width. Wraps: a
+              heading a reader cannot finish is not a heading. */}
+          <h1 className="text-balance text-lg text-ink md:text-2xl">{title}</h1>
+
+          {/* The back button is never on the title's line. On a phone it is
+              its own row under the title, at the right; from md up it sits
+              at the right end of the meta line. */}
+          <div className="mt-2 flex flex-col gap-2 md:mt-3 md:flex-row md:items-center md:justify-between md:gap-6">
+            <Link
+              href={backHref}
+              className="order-first inline-flex items-center gap-1 self-end rounded-pill border border-line bg-surface/80 py-1.5 pl-2 pr-3.5 text-2xs text-ink transition-colors hover:border-ink hover:bg-raised active:bg-raised md:order-last md:self-auto"
+            >
+              <ChevronLeftIcon className="h-3.5 w-3.5" />
+              {backLabel}
+            </Link>
+            <p className="text-2xs text-muted">{meta}</p>
           </div>
         </div>
       </div>
