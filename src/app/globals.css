@@ -175,6 +175,8 @@
   --radius-sm: 2px;
   --radius-md: 4px;
   --radius-lg: 8px;
+  /* Pills: the hero's back button. */
+  --radius-pill: 9999px;
 
   --container-reading: 38rem;
   --container-view: 74rem;

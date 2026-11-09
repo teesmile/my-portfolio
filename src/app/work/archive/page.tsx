@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
+import { ExternalLinkIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = pageMetadata({
   title: "Archive",
@@ -55,9 +56,11 @@ export default function ArchivePage() {
                       href={item.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-accent underline decoration-accent/40 underline-offset-[6px]"
+                      className="inline-flex items-center gap-1 text-accent underline decoration-accent/40 underline-offset-[6px]"
                     >
                       Open
+                      <ExternalLinkIcon className="h-3 w-3" />
+                      <span className="sr-only">(opens in a new tab)</span>
                     </a>
                   ) : (
                     <span className="text-muted">&mdash;</span>
