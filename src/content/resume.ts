@@ -113,7 +113,7 @@ export const resumeContent = {
     {
       title: 'AI Training & Evaluation Specialist',
       company: 'Self-employed, remote · Outlier, Mercor, micro1 and others',
-      period: 'Nov 2025 – Present',
+      period: 'Nov 2025-Present',
       /* Empty on purpose: /about renders this role's bullets in full, and
          the practices live in the stack's "AI evaluation" row. Four tags
          under six bullets would say the same thing twice. */
@@ -156,7 +156,7 @@ export const resumeContent = {
     {
       title: 'Full Stack Developer Trainee',
       company: 'Zuri Team',
-      period: 'May 2022 – Sep 2022',
+      period: 'May 2022-Sep 2022',
       tech: ['HTML', 'CSS', 'JavaScript', 'Python', 'Django'],
       /* The master carries the development history as history. The other two
          carry it as a skills line and spend the space elsewhere. */
@@ -171,7 +171,7 @@ export const resumeContent = {
          employer and the dates are the whole point of it. */
       title: 'Pharmacist (NYSC Corps Member)',
       company: 'Nasarawa State University clinic, Keffi',
-      period: 'Aug 2026 – Present',
+      period: 'Aug 2026-Present',
       tech: [],
       /* The master and general versions run strict reverse chronological
          order, so the current clinical post opens the section there. In the
@@ -190,7 +190,7 @@ export const resumeContent = {
     {
       title: 'Pharmacy Intern',
       company: 'Federal Medical Centre, Keffi',
-      period: 'May 2025 – May 2026',
+      period: 'May 2025-May 2026',
       tech: [],
       place: { default: 2, ai: 2, general: 2 },
       bullets: [
@@ -205,7 +205,7 @@ export const resumeContent = {
          fintech or operations reader; not to the other two. */
       title: 'Locum Pharmacy Assistant',
       company: 'Sky Pharmacy, Wuse, Abuja',
-      period: 'Jul 2024 – Mar 2025',
+      period: 'Jul 2024-Mar 2025',
       tech: [],
       place: { general: 3 },
       bullets: [
@@ -216,7 +216,7 @@ export const resumeContent = {
     {
       title: 'Administrative Assistant',
       company: 'New System Pharmacy, Nsukka',
-      period: 'Jul 2022 – Sep 2022',
+      period: 'Jul 2022-Sep 2022',
       tech: [],
       place: { general: 4 },
       bullets: [
@@ -282,13 +282,13 @@ export const resumeContent = {
     {
       title: 'Cloud Computing (in progress)',
       institution: 'AltSchool Africa',
-      period: 'Jul 2026 – Present',
+      period: 'Jul 2026-Present',
       place: { default: 0, ai: 0, general: 0 } as Placement,
     },
     {
       title: 'Diploma in Frontend Engineering',
       institution: 'AltSchool Africa',
-      period: 'Oct 2024 – Oct 2025',
+      period: 'Oct 2024-Oct 2025',
       note: {
         text: 'Project work in JavaScript, React, Node.js, HTML and CSS, with code review and technical writing throughout.',
         place: { default: 0 },
@@ -298,7 +298,7 @@ export const resumeContent = {
     {
       title: 'B.Pharm, Pharmacy',
       institution: 'University of Nigeria, Nsukka',
-      period: '2017 – 2023',
+      period: '2017-2023',
       place: { default: 2, ai: 2, general: 2 } as Placement,
     },
   ],

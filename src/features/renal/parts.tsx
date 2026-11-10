@@ -208,7 +208,7 @@ function Value({ off, children }: { off: boolean; children: React.ReactNode }) {
 }
 
 const band = ([min, max]: [number | null, number | null]) =>
-  min === null ? `CrCl < ${max}` : max === null ? `CrCl ≥ ${min}` : `CrCl ${min}–${max}`;
+  min === null ? `CrCl < ${max}` : max === null ? `CrCl ≥ ${min}` : `CrCl ${min}-${max}`;
 
 const fmt = (n: number, digits = 1) =>
   Number.isInteger(n) ? String(n) : n.toFixed(digits);
@@ -314,7 +314,7 @@ export function WalkColumn({
                         <span className="block text-muted">{band(order.band)}</span>
                       </Value>
                     ) : (
-                      <span className="text-muted">—</span>
+                      <span className="text-muted">-</span>
                     )}
                   </td>
                   <td className="whitespace-nowrap py-2">

@@ -8,14 +8,16 @@ import ContactEntrance from "@/features/contact/contact-entrance";
 
 export const metadata: Metadata = pageMetadata({
   title: "Contact",
-  fullTitle: "Contact Anthony Ugwuja — remote full-stack and AI evaluation",
+  fullTitle: "Contact Anthony Ugwuja - remote full-stack and AI evaluation",
   description:
     "Open to remote full-stack and AI evaluation work. Based in Nigeria: working hours overlap fully with the UK and Europe, partly with the US East Coast.",
   path: "/contact",
 });
 
-/* One screen, deliberately: everything here fits without scrolling at
-   1280x800 and 390x844, which is checked rather than assumed. The arrival
+/* One screen at 1280x800, checked rather than assumed. On a 390x844 phone
+   the heading, email, location and "What I can help with" fill the first
+   screen and the clock and "Currently" follow below: the four help lines
+   were worth more than keeping the clock in view. The arrival
    animation belongs to Phase 2. */
 export default function ContactPage() {
   const linkedin = portfolioConfig.socials.find((s) => s.name === "LinkedIn");
@@ -55,6 +57,15 @@ export default function ContactPage() {
                   {portfolioConfig.availability}
                 </span>
               </span>
+            </div>
+
+            <div className="border-b border-line py-3 md:py-4">
+              <h2 className="text-2xs text-muted">What I can help with</h2>
+              <ul className="mt-2 flex flex-col gap-1.5 text-sm text-ink">
+                {portfolioConfig.copy.helpWith.map((line) => (
+                  <li key={line.slice(0, 30)}>{line}</li>
+                ))}
+              </ul>
             </div>
 
             <p className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-2xs md:mt-6">

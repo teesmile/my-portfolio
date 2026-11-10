@@ -3,7 +3,7 @@ import path from "node:path";
 import { writing } from "@/config/writing";
 import { renderShareImage, shareImageSize } from "@/lib/share-image";
 
-export const alt = "Writing — Anthony Ugwuja";
+export const alt = "Writing - Anthony Ugwuja";
 export const size = shareImageSize;
 export const contentType = "image/png";
 

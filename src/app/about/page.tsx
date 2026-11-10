@@ -15,7 +15,7 @@ import { ExternalLinkIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = pageMetadata({
   title: "About",
-  fullTitle: "About Anthony Ugwuja — full-stack developer and AI evaluator",
+  fullTitle: "About Anthony Ugwuja - full-stack developer and AI evaluator",
   description:
     "Full-stack developer and AI evaluator who checks model-written code and clinical answers, with a pharmacy degree behind it. Experience, talks and stack.",
   path: "/about",

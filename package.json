@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/check-dashes.mjs && next build",
     "start": "next start",
     "lint": "eslint",
     "capture": "node scripts/capture.mjs",
@@ -12,7 +12,8 @@
     "frames": "node scripts/measure-frames.mjs",
     "resume": "node scripts/resume-pdf.mjs",
     "snapshot:renal": "uv run --no-project --with pytest==8.3.3 python scripts/snapshot-renal.py",
-    "prepare": "git config core.hooksPath .githooks"
+    "prepare": "git config core.hooksPath .githooks",
+    "check:dashes": "node scripts/check-dashes.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
