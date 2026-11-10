@@ -326,6 +326,43 @@
   background-color: color-mix(in oklab, var(--ink) 14%, transparent);
 }
 
+/* The footer wordmark: the brand word, as wide as the content column, its
+   letters cut off by the bottom of the page.
+
+   Width without JavaScript: the frame is a size container, so 100cqi is the
+   column's width, and the font size is that width divided by the word's own
+   width in ems (measured in Syne, with the tracking below). Any screen width,
+   the word spans the column exactly; overflow is clipped so a fallback font
+   that runs wider can never cause a horizontal scroll.
+
+   Quiet in both themes: the letters are filled with a vertical fade from the
+   hairline colour to the footer's own surface, so they start as faint as the
+   site's rules and dissolve into the page where the edge cuts them. It is
+   decoration, aria-hidden, and deliberately below any contrast ratio. */
+.footer-wordmark-frame {
+  container-type: inline-size;
+  overflow: hidden;
+}
+.footer-wordmark {
+  --wordmark-em: 4.371; /* "teesmile" in Syne 700 at -0.04em tracking, measured in the browser */
+  font-family: var(--font-display);
+  font-size: calc(100cqi / var(--wordmark-em));
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  white-space: nowrap;
+  width: max-content;
+  /* The clip: the box stops partway down the letters, at the page edge. */
+  height: 0.62em;
+  overflow: hidden;
+  background: linear-gradient(to bottom, var(--line), var(--surface));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  user-select: none;
+  pointer-events: none;
+}
+
 /* Print: the resume is a document before it is a web page.
    The palette flips to ink on paper — printing the dark theme would be a
    solid black page — and the chrome comes off, because navigation means
