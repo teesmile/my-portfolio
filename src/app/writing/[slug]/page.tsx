@@ -15,6 +15,7 @@ import HeroArt from "@/features/writing/hero-art";
 import OnThisPage from "@/features/writing/on-this-page";
 import Illustration from "@/features/writing/illustrations";
 import Figure from "@/features/writing/figures";
+import Image from "next/image";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -116,6 +117,21 @@ export default async function WritingEntryPage({ params }: Params) {
                     ))}
                   </div>
                   <Figure name={section.figure} />
+                  {/* Evidence: recreated screens, each with its own caption
+                      word for word. Content colour, so it keeps its own. */}
+                  {section.images?.map((image) => (
+                    <figure key={image.src} className="my-8 border-y border-line py-6">
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        width={image.width}
+                        height={image.height}
+                        sizes="(min-width: 1024px) 40rem, 100vw"
+                        className="h-auto w-full"
+                      />
+                      <figcaption className="mt-4 text-2xs text-muted">{image.caption}</figcaption>
+                    </figure>
+                  ))}
                   {section.links?.length ? (
                     <ul className="mt-5 flex flex-col gap-2 text-sm">
                       {section.links.map((link) => (

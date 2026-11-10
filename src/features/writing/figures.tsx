@@ -221,6 +221,41 @@ function SrcsetPick() {
   );
 }
 
+/* The domain move: three hosts that served the same page, and what each one
+   does now. The old production hosts redirect; previews stay out of the
+   index; one address carries the canonical, the sitemap and the identity. */
+function OneAddress() {
+  const host = (y: number, name: string, dim = false) => (
+    <g opacity={dim ? 0.7 : 1}>
+      <rect x="6" y={y} width="140" height="24" fill={ILL.panel} stroke={ILL.edge} />
+      <text x="14" y={y + 15} {...strong} fontFamily="var(--font-mono)">{name}</text>
+    </g>
+  );
+  return (
+    <Frame
+      viewBox="0 0 420 130"
+      title="Two old vercel.app hosts redirect with 308 to anthonyugwuja.dev, preview builds are closed to crawlers, and the one address carries the canonical, the sitemap and the identity"
+      caption="Before, three hosts served the same page and only a hint said which was real. After, the old hosts redirect, previews stay out of the index, and one address says it every way a crawler listens."
+    >
+      {host(10, "teesmile.vercel.app")}
+      {host(44, "teesmilex.vercel.app")}
+      {host(90, "preview builds", true)}
+      <path d="M146 22c60 0 80 22 136 28" stroke={ILL.accent} fill="none" />
+      <path d="M146 56h136" stroke={ILL.accent} fill="none" />
+      <path d="M276 46l6 4-6 4M276 52l6 4-6 4" stroke={ILL.accent} fill="none" />
+      <text x="196" y="22" {...good}>308</text>
+      <text x="196" y="69" {...good}>308</text>
+      <path d="M146 102h60" stroke={ILL.error} fill="none" />
+      <text x="214" y="105" {...bad}>Disallow: /  (out of the index)</text>
+      <rect x="286" y="30" width="128" height="44" fill={ILL.accentSoft} stroke={ILL.accent} />
+      <text x="294" y="46" {...strong} fontFamily="var(--font-mono)">anthonyugwuja.dev</text>
+      <text x="294" y="59" {...label}>canonical, sitemap,</text>
+      <text x="294" y="69" {...label}>structured data</text>
+      <text x="6" y="126" {...label}>one address, said every way a crawler listens</text>
+    </Frame>
+  );
+}
+
 const figures: Record<string, () => React.ReactElement> = {
   "renal-one-row": OneRowTwoReadings,
   "renal-trap-isolation": TrapIsolation,
@@ -233,6 +268,7 @@ const figures: Record<string, () => React.ReactElement> = {
   "oversized-box": OversizedBox,
   "optimizer-bypass": OptimizerBypass,
   "srcset-pick": SrcsetPick,
+  "one-address": OneAddress,
 };
 
 export default function Figure({ name }: { name?: string }) {

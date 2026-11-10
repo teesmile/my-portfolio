@@ -75,10 +75,29 @@ function ChartToVerdict() {
   );
 }
 
+/* The domain move in one line: the old address struck, a permanent redirect,
+   the new address kept, and how long the switch took once Google looked. */
+function OldToNew() {
+  return (
+    <svg viewBox="0 0 220 120" className="w-full" role="img" aria-label="The old vercel.app address, struck through, redirects with a 308 to anthonyugwuja.dev, which Google kept a day later">
+      <rect x="6" y="20" width="96" height="24" fill={ILL.errorSoft} stroke={ILL.error} />
+      <text x="54" y="35" textAnchor="middle" fontSize="7" fill={ILL.text} fontFamily="var(--font-mono)">teesmile.vercel.app</text>
+      <path d="M12 32h84" stroke={ILL.error} />
+      <path d="M54 44v24c0 10 8 14 20 14h40" stroke={ILL.accent} fill="none" />
+      <path d="M108 78l6 4-6 4" stroke={ILL.accent} fill="none" />
+      <text x="60" y="64" fontSize="7" fill={ILL.accent}>308</text>
+      <rect x="118" y="70" width="96" height="24" fill={ILL.accentSoft} stroke={ILL.accent} />
+      <text x="166" y="85" textAnchor="middle" fontSize="7" fill={ILL.text} fontFamily="var(--font-mono)">anthonyugwuja.dev</text>
+      <text x="166" y="108" textAnchor="middle" fontSize="7" fill={ILL.detail}>kept by Google a day later</text>
+    </svg>
+  );
+}
+
 const drawings: Record<string, () => React.ReactElement> = {
   "building-a-renal-dose-check-benchmark": ChartToVerdict,
   "every-section-is-a-route": OneLongPage,
   "what-unoptimized-turns-off": BytesToScale,
+  "moving-to-a-custom-domain": OldToNew,
 };
 
 export default function Illustration({ slug }: { slug: string }) {
