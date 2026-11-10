@@ -335,10 +335,17 @@
    the word spans the column exactly; overflow is clipped so a fallback font
    that runs wider can never cause a horizontal scroll.
 
-   Quiet in both themes: the letters are filled with a vertical fade from the
-   hairline colour to the footer's own surface, so they start as faint as the
-   site's rules and dissolve into the page where the edge cuts them. It is
-   decoration, aria-hidden, and deliberately below any contrast ratio. */
+   The fade runs upward out of the page: the letters start at the footer's own
+   surface colour at their tops, so they emerge from the background, and reach
+   the muted text colour at the bottom, where they are plainly readable in
+   both themes. It is still decoration: aria-hidden and held to no ratio.
+
+   The clip, from Syne 700's metrics measured in the browser: with
+   line-height 1 the baseline sits 0.825em from the top of the box and the
+   tallest letters (t, l) rise 0.703em above it, so their tops are at 0.122em.
+   Cutting the bottom tenth of the letters means stopping 0.07em above the
+   baseline: a 0.755em box. The fade starts at the letter tops, not the top
+   of the box, so the whole of it falls on the letters. */
 .footer-wordmark-frame {
   container-type: inline-size;
   overflow: hidden;
@@ -352,10 +359,10 @@
   line-height: 1;
   white-space: nowrap;
   width: max-content;
-  /* The clip: the box stops partway down the letters, at the page edge. */
-  height: 0.62em;
+  /* The clip: the box stops a tenth of the way up the letters, at the page edge. */
+  height: 0.755em;
   overflow: hidden;
-  background: linear-gradient(to bottom, var(--line), var(--surface));
+  background: linear-gradient(to bottom, var(--surface) 0.122em, var(--muted) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
