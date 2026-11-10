@@ -23,7 +23,10 @@ const text = Source_Serif_4({
   variable: "--font-source-serif",
   subsets: ["latin"],
   display: "swap",
-  style: ["normal", "italic"],
+  /* Upright only. No page sets italic, but asking for it made next/font
+     preload a second ~120 KB file at high priority on every route, ahead
+     of each page's largest image. Browsers synthesise an oblique if italic
+     is ever used before the face is added back. */
   axes: ["opsz"],
 });
 

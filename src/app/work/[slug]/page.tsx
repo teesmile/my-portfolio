@@ -80,7 +80,14 @@ export default async function CaseStudyPage({ params }: Params) {
             src={project.preview}
             alt={project.title}
             fill
+            /* The page's LCP on every case study. `preload` adds the
+               <link rel="preload"> but no fetch priority; this puts
+               fetchPriority="high" on both the preload and the <img> so the
+               image is not queued behind scripts. The bigger cost was
+               bandwidth spent before it: see the text font in the root
+               layout. */
             preload
+            fetchPriority="high"
             sizes="100vw"
             className="object-cover object-top"
           />
