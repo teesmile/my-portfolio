@@ -103,7 +103,7 @@ export default function LocalClock() {
         ) : (
           <span aria-hidden="true" className="h-4 w-4" />
         )}
-        Local time in Abuja (WAT)
+        My local time (WAT, UTC+1)
       </p>
     </div>
   );

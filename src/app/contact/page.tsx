@@ -8,8 +8,9 @@ import ContactEntrance from "@/features/contact/contact-entrance";
 
 export const metadata: Metadata = pageMetadata({
   title: "Contact",
+  fullTitle: "Contact Anthony Ugwuja — remote full-stack and AI evaluation",
   description:
-    "Open to remote AI evaluation and full-stack work. Full-stack developer and AI evaluator, registered pharmacist, based in Abuja.",
+    "Open to remote full-stack and AI evaluation work. Based in Nigeria: working hours overlap fully with the UK and Europe, partly with the US East Coast.",
   path: "/contact",
 });
 
@@ -36,10 +37,12 @@ export default function ContactPage() {
               <span className="text-muted">
                 <PinIcon className="h-4 w-4" />
               </span>
-              {/* Two lines on screen, two sentences in the text. Block styling
-                  only separates them visually: without the full stop the
-                  document reads "taking workRemote, anywhere" to a screen
-                  reader, a crawler and anyone who copies it. */}
+              {/* The one place the site states where I am, as a fact and what
+                  it means for a team's day. Two lines on screen, two
+                  sentences in the text. Block styling only separates them
+                  visually: without the full stop the document runs the two
+                  together for a screen reader, a crawler and anyone who
+                  copies it. */}
               <span>
                 <span className="block text-2xs text-muted">
                   {portfolioConfig.location} &middot;{" "}

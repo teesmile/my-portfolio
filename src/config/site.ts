@@ -24,6 +24,18 @@ export type Project = {
    *  index renders a typographic frame rather than a mock interface. */
   preview?: string;
   highlights: string[];
+  /** Search and share copy for the case study. Kept apart from `description`,
+   *  which is the page's own opening paragraph: a search snippet has about
+   *  155 characters, the page does not. `title` runs through the layout's
+   *  "%s — Anthony Ugwuja" template. */
+  seo: { title: string; description: string };
+  /** When the case study's content last changed, in West Africa Time. The
+   *  sitemap's lastmod. Bump it with a change a reader would notice, not with
+   *  a refactor or a new link. */
+  updated: string;
+  /** "What was hard": each entry a short paragraph, taken from the repo and
+   *  its history, never from memory. */
+  hard?: string[];
   /** Filled once a project has a server. Phase 3's flagship is the first. */
   architecture?: {
     dataModel: string;
@@ -42,6 +54,12 @@ const projects: Project[] = [
     slug: "todo-app",
     preview: "/work/todo-app.webp",
     title: "Todo App",
+    seo: {
+      title: "Offline-first todo app with Supabase sync",
+      description:
+        "A local-first Next.js task list that works offline, installs like an app and syncs across devices through Supabase. Case study with architecture.",
+    },
+    updated: "2026-11-09",
     /* What v1 shipped and verified (todo-app-tsc docs/plan.md, Phases 0–12):
        sync in Phase 10, install and offline in Phase 11. */
     description:
@@ -75,6 +93,12 @@ const projects: Project[] = [
     slug: "roasted",
     preview: "/work/roasted.webp",
     title: "Roasted",
+    seo: {
+      title: "Roasted, a Farcaster mini app",
+      description:
+        "A Farcaster mini app that reads a profile and recent casts, writes a roast, turns the avatar into a meme and shares it as a cast. Built on server actions.",
+    },
+    updated: "2026-11-09",
     /* Checked against teesmile/roasted-app at d84e741 and the live app on
        2026-11-09: a real roast and its avatar meme ran end to end; the
        upload guard is in src/lib/uploadGuard.ts. */
@@ -103,6 +127,17 @@ const projects: Project[] = [
     slug: "ecommerce-product-page",
     preview: "/work/ecommerce-product-page.webp",
     title: "E-Commerce Product Page",
+    seo: {
+      title: "E-commerce product page in Next.js",
+      description:
+        "A product page built from a design file: gallery thumbnails, a cart that counts correctly, and one responsive layout instead of a separate mobile build.",
+    },
+    updated: "2026-11-10",
+    hard: [
+      "My first project in Next.js and TypeScript, coming from React and plain JavaScript. Typing the cart store and the props around it is where most of the time went, and it paid off: the types caught mistakes early and made the cart logic safe to refactor.",
+      "A cart that counts correctly. The store keeps a running item count for the header badge and a running total, so adding a product that is already in the cart sets its quantity instead of adding it twice, and moves the count and total by the difference. Removing a line takes back exactly what it added.",
+      "One index drives the main image, the thumbnails and the lightbox, so the photo that opens full size is the one you were looking at, and stepping through it in either place keeps the other in step.",
+    ],
     description:
       "A product page built from a design file. Gallery thumbnails, a cart that counts correctly, and one layout that works on a phone without a separate mobile build.",
     role: "Frontend implementation",
@@ -122,6 +157,17 @@ const projects: Project[] = [
     slug: "space-tourism",
     preview: "/work/space-tourism.webp",
     title: "Space Tourism Website",
+    seo: {
+      title: "Space tourism site: layout and transitions",
+      description:
+        "A four-section site I used to practise layout systems and page transitions. Same shell, four content types, no page that looks bolted on.",
+    },
+    updated: "2026-11-10",
+    hard: [
+      "Four sections, four background photographs, each in a mobile, a tablet and a desktop crop. Rather than repeat twelve background rules across the pages, one component maps each route to its three crops, and each section's layout only says which route it is.",
+      "The mobile menu had to animate closed as well as open. A component that has been removed can't play an exit animation, so the menu sits inside Framer Motion's AnimatePresence, which keeps it mounted until the closing animation has finished.",
+      "Destination, Crew and Technology each switch their content with tabs driven by one selected index, so the tab, the picture and the text can't fall out of step.",
+    ],
     description:
       "A four-section site I used to practise layout systems and page transitions. Same shell, four content types, no page that looks bolted on.",
     role: "Frontend implementation",
@@ -148,14 +194,16 @@ export const portfolioConfig = {
      used by the root layout for <title>, Open Graph and Twitter alike, so the
      three cannot drift apart the way they did when each was typed out. */
   seo: {
-    title: "Anthony Ugwuja — full-stack developer and AI evaluator",
+    title: "Anthony Ugwuja — remote full-stack developer, AI evaluator",
     description:
-      "Full-stack developer (React, Next.js, TypeScript, Node.js) and registered pharmacist. I build product interfaces and evaluate AI models, catching what they get wrong in code and in clinical and scientific answers.",
+      "Full-stack developer (React, Next.js, TypeScript, Node.js) and AI evaluator, open to remote work with UK, European and US teams. Pharmacist by training.",
   },
   phone: "+234 903 257 0130",
   email: "anthonyugwujac@gmail.com",
-  location: "Abuja, Nigeria",
-  availability: "Remote, anywhere",
+  /* Stated once on the site, on /contact, as a fact rather than a keyword:
+     where, and what that means for a team's working day. */
+  location: "Based in Nigeria",
+  availability: "My working day overlaps fully with the UK and Europe, and partly with the US East Coast.",
   /* The first entry on /work, ahead of every project (the Projects rule).
      Not a Project: the real tasks are under NDA, so there is no live link
      and no screenshot. The sample is an original task built the same way,
@@ -180,13 +228,18 @@ export const portfolioConfig = {
   currently:
     "Reading model-written code most of the week, and building the next thing with a real server behind it.",
   statement:
-    "Pharmacist by training, engineer by choice. I ship across the stack and catch what AI gets wrong.",
+    "I ship across the stack and catch what AI gets wrong. Pharmacist by training, engineer by choice.",
   /* The hero says it in two voices: the headline in Syne, the line under it
-     in monospace, as if the second sentence were typed into an editor. */
-  headline: "Pharmacist by training, engineer by choice.",
-  monoLine: "I ship across the stack and catch what AI gets wrong.",
-  /* The span the lint squiggle is drawn under. Must appear in monoLine. */
-  monoFlag: "what AI gets wrong",
+     in monospace. The headline leads with the work; the pharmacy background
+     is the line under it, what sets the work apart rather than the title. */
+  headline: "I ship across the stack and catch what AI gets wrong.",
+  monoLine: "Pharmacist by training, engineer by choice.",
+  /* The words the headline's one-time correction lands on ("right" struck,
+     "wrong" typed). Must end the headline, before its full stop. */
+  headlineFlag: "what AI gets wrong",
+  /* When each standalone page's content last changed (West Africa Time),
+     for the sitemap. Index pages take the newest date of what they list. */
+  pagesUpdated: { about: "2026-11-09", resume: "2026-11-09", contact: "2026-11-10", renal: "2026-11-09" },
   // The dated spine on /about. Two tracks running in parallel, not one career
   // replacing another — which is the actual story.
   timeline: [
@@ -438,7 +491,7 @@ export const portfolioConfig = {
     },
     { 
       name: "LinkedIn",
-      url: "https://linkedin.com/in/tonysmile",
+      url: "https://www.linkedin.com/in/tonysmile",
       iconKey: "linkedin"
     },
     { 

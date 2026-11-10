@@ -6,9 +6,9 @@ import TopicFilter from "@/features/writing/topic-filter";
 import Reveals from "@/components/layout/reveals";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Writing",
+  title: "Writing: web engineering and AI evaluation",
   description:
-    "Short write-ups by a full-stack developer and AI evaluator on decisions made building things, and what each one cost.",
+    "Write-ups by a full-stack developer and AI evaluator: decisions from real projects, what each one cost, and how to check what AI gets wrong.",
   path: "/writing",
 });
 

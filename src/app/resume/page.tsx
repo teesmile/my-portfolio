@@ -7,8 +7,9 @@ import { ExternalLinkIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = pageMetadata({
   title: "Resume",
+  fullTitle: "Resume — Anthony Ugwuja, full-stack developer, AI evaluator",
   description:
-    "Resume of Anthony Ugwuja: full-stack developer and AI evaluator, registered pharmacist.",
+    "Resume of Anthony Ugwuja: full-stack developer (React, Next.js, TypeScript, Node.js) and AI evaluator, pharmacist by training. PDF versions included.",
   path: "/resume",
 });
 

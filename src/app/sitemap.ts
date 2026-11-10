@@ -25,7 +25,7 @@ const STATIC_ROUTES = [
   "/about",
   "/resume",
   "/contact",
-];
+] as const;
 
 /* The lab routes are instruments, not pages: a type specimen that counts its
    own rendered lines and a nav measurement harness. They keep their canonical
@@ -34,29 +34,49 @@ const STATIC_ROUTES = [
    the only thing it links to is the type specimen: an index whose entire
    contents are excluded has nothing public to offer a search result. */
 
+/* Real dates, not the build's. Every route used to carry the time of the
+   deploy, which told a crawler that all 24 pages changed every time anything
+   did, so the signal meant nothing. Each date now comes from the content it
+   describes: a piece's own updated/published time, a case study's `updated`,
+   the dated map in site.ts for the standalone pages and the renal pages, and
+   for an index the newest date among what it lists. They are written in the
+   data, not read from git at build time, because the deploy build cannot be
+   relied on to have the repository's history. */
+const newest = (...dates: string[]) => dates.reduce((a, b) => (Date.parse(b) > Date.parse(a) ? b : a));
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
+  const { projects, pagesUpdated } = portfolioConfig;
+  const pieceDate = (entry: (typeof published)[number]) => entry.updated ?? entry.published;
+  const writingDate = newest(...published.map(pieceDate));
+  const workDate = newest(pagesUpdated.renal, ...projects.map((project) => project.updated));
+  const lastmod: Record<(typeof STATIC_ROUTES)[number], string> = {
+    "/": newest(workDate, writingDate),
+    "/work": workDate,
+    "/work/renal-dosing-task": pagesUpdated.renal,
+    "/writing": writingDate,
+    "/about": pagesUpdated.about,
+    "/resume": pagesUpdated.resume,
+    "/contact": pagesUpdated.contact,
+  };
 
   return [
     ...STATIC_ROUTES.map((path) => ({
       url: `${SITE_URL}${path}`,
-      lastModified: now,
+      lastModified: lastmod[path],
     })),
-    ...portfolioConfig.projects.map((project) => ({
+    ...projects.map((project) => ({
       url: `${SITE_URL}/work/${project.slug}`,
-      lastModified: now,
+      lastModified: project.updated,
     })),
     ...renalTraps.map((trap) => ({
       url: `${SITE_URL}/work/renal-dosing-task/${trap.slug}`,
-      lastModified: now,
+      lastModified: pagesUpdated.renal,
     })),
     /* Published pieces only: a draft is reachable by its URL for review and
        carries noindex, so listing it here would contradict itself. */
     ...published.map((entry) => ({
       url: `${SITE_URL}/writing/${entry.slug}`,
-      /* A piece's own date, because that is when it last changed in any way
-         a reader would care about. */
-      lastModified: new Date(entry.published),
+      lastModified: pieceDate(entry),
     })),
   ];
 }

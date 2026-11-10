@@ -8,40 +8,57 @@ import { settle } from '@/lib/motion-lease';
 gsap.registerPlugin(useGSAP);
 
 /**
- * Preview C's supporting line: it types out, gets one word wrong, and fixes
- * it, once, then rests.
+ * The home headline, which corrects itself once and then rests:
  *
- *   "…what AI gets right"  →  "right" struck through in red  →  "wrong" in amber
+ *   "…what AI gets right"  →  "right" struck through in red  →  "wrong" typed in amber
  *
- * The rendered markup *is* the resting state (struck "right", amber
- * "wrong"), so reduced motion, no JavaScript and the end of the animation
- * all look the same. The timeline only hides things first and reveals them
- * in order (about 1.4 s), inside gsap.matchMedia so reduced motion never
- * runs it. Screen readers get the sentence once, plainly: the visual copy
- * is aria-hidden.
+ * It is the page's <h1>, so two things matter beyond the animation.
+ *
+ * Its text is the sentence and nothing else. The struck word is CSS
+ * generated content (`content: attr(data-word)`) inside an aria-hidden span,
+ * so it is drawn on screen but is not part of the heading's text for screen
+ * readers or search engines. The earlier version kept a screen-reader copy
+ * of the sentence plus a visual copy with "right" in it; as a headline that
+ * would have read "…gets wrong. …gets right wrong."
+ *
+ * Only the correction moves. The sentence up to "gets" is plain
+ * server-rendered text, so the page's largest text paints at once and never
+ * blinks off to be retyped; the timeline only hides "wrong." and the strike,
+ * then reveals them in order (about a second), inside gsap.matchMedia so
+ * reduced motion never runs it. The rendered markup is the resting state, so
+ * reduced motion, no JavaScript and the end of the animation look the same.
  */
-export default function CorrectedLine({ before, wrong, right, after }: { before: string; wrong: string; right: string; after: string }) {
-  const scope = useRef<HTMLParagraphElement>(null);
+export default function CorrectedHeadline({
+  lead,
+  wrong,
+  right,
+  after,
+  className,
+}: {
+  lead: string;
+  wrong: string;
+  right: string;
+  after: string;
+  className?: string;
+}) {
+  const scope = useRef<HTMLHeadingElement>(null);
 
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
       mm.add('(prefers-reduced-motion: no-preference)', () => {
         const q = gsap.utils.selector(scope);
-        const chars = (sel: string) => q(`${sel} [data-c]`);
+        const typed = [...q('[data-right] [data-c]'), ...q('[data-after]')];
 
-        gsap.set([...chars('[data-before]'), ...chars('[data-wrong]'), ...chars('[data-right]'), ...chars('[data-after]')], { opacity: 0 });
+        gsap.set(typed, { opacity: 0 });
         gsap.set(q('[data-strike]'), { scaleX: 0 });
         gsap.set(q('[data-wrong]'), { color: 'var(--ink)' });
 
         gsap
-          .timeline({ delay: 0.25, onComplete: settle })
-          .to(chars('[data-before]'), { opacity: 1, duration: 0.01, stagger: 0.011, ease: 'none' })
-          .to(chars('[data-wrong]'), { opacity: 1, duration: 0.01, stagger: 0.04, ease: 'none' })
-          .to(q('[data-wrong]'), { color: 'var(--ill-error)', duration: 0.12 }, '+=0.25')
+          .timeline({ delay: 0.6, onComplete: settle })
+          .to(q('[data-wrong]'), { color: 'var(--ill-error)', duration: 0.12 })
           .to(q('[data-strike]'), { scaleX: 1, duration: 0.22, ease: 'power2.out' }, '<')
-          .to(chars('[data-right]'), { opacity: 1, duration: 0.01, stagger: 0.04, ease: 'none' }, '+=0.12')
-          .to(chars('[data-after]'), { opacity: 1, duration: 0.01, ease: 'none' });
+          .to(typed, { opacity: 1, duration: 0.01, stagger: 0.05, ease: 'none' }, '+=0.15');
       });
       /* Reduced motion: nothing animates, so the deck may start now. */
       mm.add('(prefers-reduced-motion: reduce)', () => settle());
@@ -50,25 +67,25 @@ export default function CorrectedLine({ before, wrong, right, after }: { before:
     { scope },
   );
 
-  const split = (text: string) =>
-    [...text].map((ch, i) => (
-      <span key={i} data-c="">
-        {ch}
-      </span>
-    ));
-
   return (
-    <p ref={scope} className="mt-6 font-mono-brand text-mono-sm text-muted lg:text-mono">
-      <span className="sr-only">{`${before}${right}${after}`}</span>
-      <span aria-hidden="true">
-        <span data-before="">{split(before)}</span>
-        <span data-wrong="" className="relative inline-block whitespace-nowrap text-ill-error">
-          {split(wrong)}
-          <span data-strike="" className="absolute inset-x-0 top-1/2 h-0.5 origin-left bg-ill-error" />
-        </span>{' '}
-        <span data-right="" className="whitespace-nowrap text-ill-accent">{split(right)}</span>
-        <span data-after="">{split(after)}</span>
+    <h1 ref={scope} className={className}>
+      {lead}
+      <span
+        data-wrong=""
+        data-word={wrong}
+        aria-hidden="true"
+        className="relative mr-[0.26em] inline-block whitespace-nowrap text-ill-error before:content-[attr(data-word)]"
+      >
+        <span data-strike="" className="absolute inset-x-0 top-[55%] h-[0.07em] origin-left bg-ill-error" />
       </span>
-    </p>
+      <span data-right="" className="whitespace-nowrap text-ill-accent">
+        {[...right].map((ch, i) => (
+          <span key={i} data-c="">
+            {ch}
+          </span>
+        ))}
+      </span>
+      <span data-after="">{after}</span>
+    </h1>
   );
 }

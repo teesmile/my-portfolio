@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/metadata";
+import JsonLd from "@/components/ui/json-ld";
+import { SITE_URL } from "@/config/site-url";
+import { WEBSITE_ID, breadcrumbJsonLd, personJsonLd } from "@/lib/structured-data";
 import Image from "next/image";
 import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
@@ -12,8 +15,9 @@ import { ExternalLinkIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = pageMetadata({
   title: "About",
+  fullTitle: "About Anthony Ugwuja — full-stack developer and AI evaluator",
   description:
-    "Registered pharmacist and full-stack developer who evaluates AI models, from model-written code to clinical and scientific answers.",
+    "Full-stack developer and AI evaluator who checks model-written code and clinical answers, with a pharmacy degree behind it. Experience, talks and stack.",
   path: "/about",
 });
 
@@ -22,6 +26,14 @@ export default function AboutPage() {
 
   return (
     <section className="px-4 sm:px-6 py-20 md:py-24">
+      {/* A profile page about one person: the full Person as its main entity,
+          the form search engines read for profile pages. */}
+      <JsonLd
+        nodes={[
+          { "@type": "ProfilePage", url: `${SITE_URL}/about`, mainEntity: personJsonLd, isPartOf: { "@id": WEBSITE_ID } },
+          breadcrumbJsonLd([{ name: "About", path: "/about" }]),
+        ]}
+      />
       <Reveals />
       <TechGlitch />
       <div className="mx-auto max-w-(--container-view)">

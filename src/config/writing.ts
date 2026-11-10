@@ -25,7 +25,24 @@ export type WritingEntry = {
    * separately, so the two cannot disagree.
    */
   published: string;
+  /**
+   * When the piece last changed in a way a reader would notice, in the same
+   * West Africa Time format. Absent until then. Becomes dateModified and the
+   * sitemap's lastmod.
+   */
+  updated?: string;
   standfirst: string;
+  /**
+   * Search and share copy. The page keeps its own headline and standfirst;
+   * these spend a search result's ~60 and ~155 characters on what the piece
+   * is about. `title` is the whole <title>, without the name template.
+   */
+  seo: { title: string; description: string };
+  /**
+   * The project the piece is about. A case study at that address lists the
+   * piece under "Related writing"; the piece links back at its foot.
+   */
+  project?: { name: string; href: string };
   sections: Section[];
   /**
    * A draft is built and reachable at its URL, so it can be read in place
@@ -45,6 +62,12 @@ export const writing: WritingEntry[] = [
     published: "2026-11-08T01:15:15+01:00",
     standfirst:
       "I built a small benchmark where an AI agent checks drug doses against kidney function. The maths is handed over in the instruction. The hard part is reading the chart, and then proving the grading is fair.",
+    seo: {
+      title: "Ten ways to misread a ward chart: a clinical AI benchmark",
+      description:
+        "How I built a benchmark where an AI agent checks drug doses against kidney function, the chart traps that catch it out, and how I proved the grading fair.",
+    },
+    project: { name: "Renal dose check", href: "/work/renal-dosing-task" },
     sections: [
       {
         id: "the-maths-is-the-easy-part",
@@ -133,6 +156,12 @@ export const writing: WritingEntry[] = [
     published: "2026-11-06T22:22:32+01:00",
     standfirst:
       "I replaced a single page of anchor links with six routes, and three bugs disappeared without being fixed.",
+    seo: {
+      title: "Every section its own route in the Next.js App Router",
+      description:
+        "Why I replaced a one-page portfolio of anchor links with six Next.js routes, the three bugs that disappeared without being fixed, and what it cost.",
+    },
+    project: { name: "This site's source", href: "https://github.com/teesmile/my-portfolio" },
     sections: [
       {
         id: "the-shape-i-started-with",
@@ -178,6 +207,12 @@ export const writing: WritingEntry[] = [
     published: "2026-11-06T22:22:32+01:00",
     standfirst:
       "One image was larger than the rest of the site combined. The fix was four lines, but the interesting part is why it was that large.",
+    seo: {
+      title: "What next/image unoptimized turns off: a 2.4 MB portrait",
+      description:
+        "One image outweighed the rest of the site. What Next.js image optimisation does, what unoptimized switches off, and the four-line fix.",
+    },
+    project: { name: "This site's source", href: "https://github.com/teesmile/my-portfolio" },
     sections: [
       {
         id: "the-numbers",

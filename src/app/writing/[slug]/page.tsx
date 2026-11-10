@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { AUTHOR, dateOf, writing, readingTime } from "@/config/writing";
+import Link from "next/link";
+import type { Route } from "next";
+import { AUTHOR, dateOf, published, writing, readingTime } from "@/config/writing";
+import JsonLd from "@/components/ui/json-ld";
+import { ExternalLinkIcon } from "@/components/ui/icons";
+import { WEBSITE_ID, breadcrumbJsonLd, personRef } from "@/lib/structured-data";
 import { SITE_URL } from "@/config/site-url";
 import { pageMetadata } from "@/lib/metadata";
 import StickyHero from "@/components/layout/sticky-hero";
@@ -27,12 +32,13 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
   return pageMetadata({
     title: entry.title,
-    description: entry.standfirst,
+    fullTitle: entry.seo.title,
+    description: entry.seo.description,
     path: `/writing/${entry.slug}`,
     type: "article",
     image: `/writing/${entry.slug}/opengraph-image`,
     noindex: Boolean(entry.draft),
-    article: { publishedTime: entry.published, author: AUTHOR },
+    article: { publishedTime: entry.published, modifiedTime: entry.updated, author: AUTHOR },
   });
 }
 
@@ -44,24 +50,33 @@ export default async function WritingEntryPage({ params }: Params) {
     notFound();
   }
 
-  /* Structured data for the piece: the same author and timestamp as the
-     meta tags, so a crawler reading either finds one answer. */
+  /* Structured data for the piece: the same timestamps as the meta tags, so
+     a crawler reading either finds one answer, and the author by reference
+     to the one Person described on the home page. */
   const articleJsonLd = {
-    "@context": "https://schema.org",
     "@type": "Article",
     headline: entry.title,
     description: entry.standfirst,
     datePublished: entry.published,
-    author: { "@type": "Person", name: AUTHOR.name, url: AUTHOR.url },
+    dateModified: entry.updated ?? entry.published,
+    author: personRef,
+    publisher: personRef,
+    isPartOf: { "@id": WEBSITE_ID },
     image: `${SITE_URL}/writing/${entry.slug}/opengraph-image`,
     mainEntityOfPage: `${SITE_URL}/writing/${entry.slug}`,
   };
+  const others = published.filter((item) => item.slug !== entry.slug);
 
   return (
     <article className="block">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      <JsonLd
+        nodes={[
+          articleJsonLd,
+          breadcrumbJsonLd([
+            { name: "Writing", path: "/writing" },
+            { name: entry.title, path: `/writing/${entry.slug}` },
+          ]),
+        ]}
       />
       <Reveals />
 
@@ -120,6 +135,43 @@ export default async function WritingEntryPage({ params }: Params) {
                   ) : null}
                 </section>
               ))}
+
+              {/* Where the piece leads next: the project it is about, then the
+                  rest of the writing. Plain links, the same weight as the
+                  section links above. */}
+              <nav aria-label="Related" data-reveal className="border-t border-line pt-6 text-sm">
+                {entry.project ? (
+                  <p>
+                    <span className="text-2xs text-muted">The project</span>
+                    <br />
+                    {entry.project.href.startsWith("/") ? (
+                      <Link href={entry.project.href as Route} className="text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent">
+                        {entry.project.name}
+                      </Link>
+                    ) : (
+                      <a href={entry.project.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent">
+                        {entry.project.name}
+                        <ExternalLinkIcon className="h-3.5 w-3.5" />
+                        <span className="sr-only"> (opens in a new tab)</span>
+                      </a>
+                    )}
+                  </p>
+                ) : null}
+                {others.length ? (
+                  <>
+                    <p className="mt-5 text-2xs text-muted">More writing</p>
+                    <ul className="mt-2 flex flex-col gap-2">
+                      {others.map((item) => (
+                        <li key={item.slug}>
+                          <Link href={`/writing/${item.slug}` as Route} className="text-ink underline decoration-line underline-offset-[6px] transition-colors hover:text-accent">
+                            {item.title}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+              </nav>
             </div>
 
             <aside className="lg:col-span-3 lg:col-start-10">

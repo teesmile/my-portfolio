@@ -2,15 +2,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
 import DefectDeck from "./defect-deck";
-import CorrectedLine from "./corrected-line";
+import CorrectedHeadline from "./corrected-line";
 
 /**
- * The home hero: the headline, a supporting line that corrects itself once
- * ("…what AI gets right" → "right" struck in red → "wrong" in amber), the
- * portrait cutout under an amber rim light, and the deck.
+ * The home hero: the headline, which corrects itself once ("…what AI gets
+ * right" → "right" struck in red → "wrong" in amber), the pharmacy line under
+ * it in monospace, the portrait cutout under an amber rim light, and the deck.
  *
- * The headline is plain server-rendered text with no entrance, so it is the
- * page's first paint. The page's one orchestrated moment is the correction
+ * The headline leads with the work and the pharmacy background sits under
+ * it: that is what sets the work apart, not the title. Most of the headline
+ * is plain server-rendered text with no entrance, so it is the page's first
+ * paint. The page's one orchestrated moment is the correction
  * (corrected-line.tsx), and the deck's clock waits for it to settle.
  *
  * Warmth comes from a static amber glow behind the headline and portrait,
@@ -22,11 +24,11 @@ import CorrectedLine from "./corrected-line";
  * reach. Desktop: it takes the right of the headline row.
  */
 export default function Hero() {
-  const { headline, monoLine, monoFlag, copy } = portfolioConfig;
-  const at = monoLine.indexOf(monoFlag);
-  const before = monoLine.slice(0, at);
-  const after = monoLine.slice(at + monoFlag.length);
-  const flagWords = monoFlag.split(" ");
+  const { headline, headlineFlag, monoLine, copy } = portfolioConfig;
+  const at = headline.indexOf(headlineFlag);
+  const before = headline.slice(0, at);
+  const after = headline.slice(at + headlineFlag.length);
+  const flagWords = headlineFlag.split(" ");
   const lead = `${before}${flagWords.slice(0, -1).join(" ")} `;
   const fixedWord = flagWords[flagWords.length - 1];
 
@@ -54,8 +56,14 @@ export default function Hero() {
             desktop  [headline | portrait] / [links + paragraph | deck] */}
       <div className="relative mx-auto grid w-full max-w-(--container-view) grid-cols-[1fr_7rem] gap-x-4 lg:grid-cols-12 lg:grid-rows-[auto_auto_1fr] lg:gap-x-16">
         <div className="col-span-2 lg:col-span-8 lg:row-start-1 lg:self-center">
-          <h1 className="text-headline-sm text-ink lg:text-headline">{headline}</h1>
-          <CorrectedLine before={lead} wrong="right" right={fixedWord} after={after} />
+          <CorrectedHeadline
+            lead={lead}
+            wrong="right"
+            right={fixedWord}
+            after={after}
+            className="text-headline-sm text-ink lg:text-headline"
+          />
+          <p className="mt-6 font-mono-brand text-mono-sm text-muted lg:text-mono">{monoLine}</p>
         </div>
 
         <div className="col-span-2 mt-12 flex items-baseline gap-8 lg:col-span-4 lg:row-start-2 lg:mt-14">

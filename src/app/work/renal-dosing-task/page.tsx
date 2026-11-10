@@ -7,14 +7,24 @@ import Reveals from "@/components/layout/reveals";
 import { renal, renalTraps } from "@/content/renal-dosing";
 import { FictionalNote, TrapGrid } from "@/features/renal/parts";
 import { Evidence, PipelineFigure } from "@/features/renal/evidence";
+import Link from "next/link";
+import type { Route } from "next";
+import JsonLd from "@/components/ui/json-ld";
+import { breadcrumbJsonLd } from "@/lib/structured-data";
+import { published } from "@/config/writing";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Renal dose check: a sample agent benchmark",
+  title: "Clinical AI benchmark: renal dose check",
   description:
-    "An original AI-agent benchmark: fifteen synthetic patients in a ward chart with mixed units, eight traps and two valid look-alikes, and the evidence that its grading is sound. Fictional drugs; not clinical guidance.",
+    "An original benchmark testing whether AI agents read a messy ward chart correctly: 15 synthetic patients, 8 traps, and proof the grading is sound.",
   path: "/work/renal-dosing-task",
   type: "article",
+  image: "/work/renal-dosing-task/opengraph-image",
 });
+
+/* The write-up about building this task, found by its `project` link rather
+   than by slug, so renaming the piece cannot leave this pointing nowhere. */
+const writeUp = published.find((entry) => entry.project?.href === "/work/renal-dosing-task");
 
 /**
  * The renal dose-check showcase.
@@ -30,6 +40,14 @@ export default function RenalDosingPage() {
 
   return (
     <article className="block">
+      <JsonLd
+        nodes={[
+          breadcrumbJsonLd([
+            { name: "Work", path: "/work" },
+            { name: "Renal dose check", path: "/work/renal-dosing-task" },
+          ]),
+        ]}
+      />
       <Reveals />
 
       {/* Opens like every other Work entry: the visual pinned, the content
@@ -96,6 +114,17 @@ export default function RenalDosingPage() {
               >
                 Read the task on GitHub
               </a>
+              {writeUp ? (
+                <p className="mt-4 text-sm">
+                  <span className="block text-2xs text-muted">How it was built</span>
+                  <Link
+                    href={`/writing/${writeUp.slug}` as Route}
+                    className="text-ink underline decoration-line underline-offset-[6px] transition-colors hover:text-accent"
+                  >
+                    {writeUp.title}
+                  </Link>
+                </p>
+              ) : null}
             </aside>
           </div>
 
