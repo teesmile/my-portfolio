@@ -25,7 +25,8 @@ export default function robots(): MetadataRoute.Robots {
 
   return {
     rules: [{ userAgent: "*", allow: "/" }],
+    /* No `Host:` line: it was a Yandex-only directive that Google ignores.
+       The one address is stated by the canonical tags and the redirects. */
     sitemap: `${SITE_URL}/sitemap.xml`,
-    host: SITE_URL,
   };
 }

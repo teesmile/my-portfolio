@@ -4,8 +4,8 @@ import Hero from "@/features/landing/hero";
 import SelectedWork from "@/features/landing/selected-work";
 import ToolsRow from "@/features/landing/tools-row";
 import Reveals from "@/components/layout/reveals";
-import { portfolioConfig } from "@/config/site";
-import { SITE_URL } from "@/config/site-url";
+import JsonLd from "@/components/ui/json-ld";
+import { personJsonLd, websiteJsonLd } from "@/lib/structured-data";
 
 /* Only the canonical. The root layout already carries this page's title,
    description and Open Graph block, and restating the title here would run it
@@ -25,33 +25,14 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
-/**
- * Structured data for the person the site is about.
- *
- * `sameAs` is the part that earns its place: it tells a search engine that
- * this domain and those three profiles are one identity, which is the same
- * question — "which address is really him?" — that the canonical tag answers
- * for the pages. The profile links come from the site config rather than
- * being retyped, so an account that changes in the footer changes here too.
- */
-const personJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: portfolioConfig.name,
-  url: SITE_URL,
-  jobTitle: "Full-stack developer and AI evaluator",
-  sameAs: portfolioConfig.socials.map((social) => social.url),
-};
-
+/* The person the site is about, in full, and the site itself. Every other
+   page refers to this Person by its @id (src/lib/structured-data.ts), so
+   `sameAs` — this domain and those three profiles are one identity — is
+   stated once for the whole site. */
 export default function HomePage() {
   return (
     <>
-      {/* JSON-LD is data, not markup: it is read from the response HTML, so it
-          has to be in the server-rendered output rather than injected later. */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
-      />
+      <JsonLd nodes={[personJsonLd, websiteJsonLd]} />
       <Hero />
       <Reveals initial={0} />
       <SelectedWork />

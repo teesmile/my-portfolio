@@ -39,10 +39,15 @@ const nextConfig: NextConfig = {
          projects only, and the early training it held is on the About
          timeline. Old links and search results land on /work, not a 404. */
       { source: "/work/archive", destination: "/work", permanent: true },
+      /* Everything on an old host moves to the same path here, except a
+         Google site-verification file (google + 16 hex digits + .html). That
+         one is served where it is asked for, so the old address can be
+         verified in Search Console and Change of Address run from it;
+         verification is re-checked, so the file has to keep answering. */
       ...LEGACY_HOSTS.map((host) => ({
-        source: "/:path*",
+        source: "/:path((?!google[0-9a-f]{16}\\.html$).*)",
         has: [{ type: "host" as const, value: host.replace(/\./g, "\\.") }],
-        destination: `${SITE_URL}/:path*`,
+        destination: `${SITE_URL}/:path`,
         permanent: true,
       })),
     ];

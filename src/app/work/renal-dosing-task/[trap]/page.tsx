@@ -7,6 +7,8 @@ import Reveals from "@/components/layout/reveals";
 import PinnedBack from "@/components/layout/pinned-back";
 import { describeTest, findTrap, renal, renalTraps } from "@/content/renal-dosing";
 import { ChartRows, FictionalNote, TestName, WalkColumn, familyLabel } from "@/features/renal/parts";
+import JsonLd from "@/components/ui/json-ld";
+import { breadcrumbJsonLd } from "@/lib/structured-data";
 
 type Params = { params: Promise<{ trap: string }> };
 
@@ -18,15 +20,42 @@ export function generateStaticParams() {
   return renalTraps.map((trap) => ({ trap: trap.slug }));
 }
 
+/* Search copy. The page's opening sentence (`why`, from the task's own data)
+   leads the description, so the part a search result shows is the part that
+   differs from page to page; four are shortened here to fit, without
+   touching the snapshot. Titles skip the name template to keep under ~60. */
+const SEARCH_LEAD: Record<string, string> = {
+  "discontinued-order": "The flag lands on a drug nobody is taking: a false alarm that invites a fix to a dose that doesn't exist.",
+  "latest-creatinine": "A creatinine from a kidney injury that has healed makes the patient look sicker, so fine orders get flagged.",
+  "frail-low-creatinine": "Guess the unit from a frail 90-year-old's low creatinine and she looks like she's in kidney failure.",
+  "genuine-150-kg": "Treating every big weight as pounds halves the patients for whom actual-weight dosing matters most.",
+};
+const SEARCH_NAME: Record<string, string> = {
+  "frail-low-creatinine": "Low creatinine that really is µmol/L",
+};
+
+function searchCopy(trap: NonNullable<ReturnType<typeof findTrap>>) {
+  const title = `${SEARCH_NAME[trap.slug] ?? trap.name} — clinical AI benchmark`;
+  const description = `${SEARCH_LEAD[trap.slug] ?? trap.why} A trap from a clinical AI-agent benchmark.`;
+  /* Fails the build rather than ship a snippet search results would cut. */
+  if (title.length > 60 || description.length > 160) {
+    throw new Error(`${trap.slug}: search title ${title.length}/60 or description ${description.length}/160 too long`);
+  }
+  return { title, description };
+}
+
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const trap = findTrap((await params).trap);
   if (!trap) return {};
+  const { title, description } = searchCopy(trap);
 
   return pageMetadata({
-    title: `${trap.name} — renal dose check`,
-    description: `${trap.why} One trap in a sample AI-agent benchmark, with the patient's rows, both readings and the test that catches it. Fictional drugs; not clinical guidance.`,
+    title: trap.name,
+    fullTitle: title,
+    description,
     path: `/work/renal-dosing-task/${trap.slug}`,
     type: "article",
+    image: `/work/renal-dosing-task/${trap.slug}/opengraph-image`,
   });
 }
 
@@ -51,6 +80,15 @@ export default async function TrapPage({ params }: Params) {
 
   return (
     <article className="px-4 sm:px-6 py-20 md:py-24">
+      <JsonLd
+        nodes={[
+          breadcrumbJsonLd([
+            { name: "Work", path: "/work" },
+            { name: "Renal dose check", path: "/work/renal-dosing-task" },
+            { name: trap.name, path: `/work/renal-dosing-task/${trap.slug}` },
+          ]),
+        ]}
+      />
       <Reveals />
       <div className="mx-auto max-w-(--container-view)">
         <PinnedBack href="/work/renal-dosing-task" label="Renal dose check" />

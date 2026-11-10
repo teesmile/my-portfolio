@@ -9,6 +9,11 @@ import Image from "next/image";
 import Reveals from "@/components/layout/reveals";
 import { ExternalLinkIcon } from "@/components/ui/icons";
 import TechGlitch from "@/components/ui/tech-glitch";
+import Link from "next/link";
+import type { Route } from "next";
+import JsonLd from "@/components/ui/json-ld";
+import { breadcrumbJsonLd } from "@/lib/structured-data";
+import { published } from "@/config/writing";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -25,8 +30,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   }
 
   return pageMetadata({
-    title: project.title,
-    description: project.description,
+    title: project.seo.title,
+    description: project.seo.description,
     path: `/work/${project.slug}`,
     type: "article",
     image: `/work/${project.slug}/opengraph-image`,
@@ -41,8 +46,26 @@ export default async function CaseStudyPage({ params }: Params) {
     notFound();
   }
 
+  /* Pieces of writing about this project, and its neighbours on /work, so
+     a case study is never a dead end. */
+  const related = published.filter((entry) => entry.project?.href === `/work/${project.slug}`);
+  const { projects } = portfolioConfig;
+  const index = projects.indexOf(project);
+  const neighbours = [
+    { label: "Previous", item: projects[index - 1] },
+    { label: "Next", item: projects[index + 1] },
+  ].filter((n): n is { label: string; item: (typeof projects)[number] } => n.item !== undefined);
+
   return (
     <article className="block">
+      <JsonLd
+        nodes={[
+          breadcrumbJsonLd([
+            { name: "Work", path: "/work" },
+            { name: project.title, path: `/work/${project.slug}` },
+          ]),
+        ]}
+      />
       <Reveals />
       <TechGlitch />
       <StickyHero
@@ -91,6 +114,21 @@ export default async function CaseStudyPage({ params }: Params) {
                 ))}
               </ul>
 
+              {project.hard?.length ? (
+                <>
+                  <h2 data-reveal className="mt-14 text-lg text-ink">
+                    What was hard
+                  </h2>
+                  <div className="mt-5 flex max-w-(--container-reading) flex-col gap-4 text-sm text-ink">
+                    {project.hard.map((paragraph) => (
+                      <p key={paragraph.slice(0, 40)} data-reveal>
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+                </>
+              ) : null}
+
               <h2 data-reveal className="mt-14 text-lg text-ink">
                 Architecture
               </h2>
@@ -118,6 +156,39 @@ export default async function CaseStudyPage({ params }: Params) {
                   stays here because the next build has all three.
                 </p>
               )}
+
+              <nav aria-label="Related" data-reveal className="mt-16 max-w-(--container-reading) border-t border-line pt-6 text-sm">
+                {related.length ? (
+                  <>
+                    <p className="text-2xs text-muted">Related writing</p>
+                    <ul className="mt-2 mb-6 flex flex-col gap-2">
+                      {related.map((entry) => (
+                        <li key={entry.slug}>
+                          <Link href={`/writing/${entry.slug}` as Route} className="text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent">
+                            {entry.title}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
+                <p className="text-2xs text-muted">More work</p>
+                <ul className="mt-2 flex flex-col gap-2">
+                  {neighbours.map(({ label, item }) => (
+                    <li key={item.slug}>
+                      <span className="text-2xs text-muted">{label}: </span>
+                      <Link href={`/work/${item.slug}` as Route} className="text-ink underline decoration-line underline-offset-[6px] transition-colors hover:text-accent">
+                        {item.title}
+                      </Link>
+                    </li>
+                  ))}
+                  <li>
+                    <Link href="/work/renal-dosing-task" className="text-ink underline decoration-line underline-offset-[6px] transition-colors hover:text-accent">
+                      The AI evaluation sample: renal dose check
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
             </div>
 
             <aside data-reveal className="lg:col-span-4 lg:col-start-9">

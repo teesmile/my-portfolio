@@ -26,7 +26,8 @@ export default function SelectedWork() {
   const { evaluation, projects } = portfolioConfig;
   const todo = projects.find((project) => project.slug === "todo-app")!;
   /* Newest first; on a tie the config order stands (Array sort is stable). */
-  const latest = [...published].sort((a, b) => Date.parse(b.published) - Date.parse(a.published))[0];
+  const newest = [...published].sort((a, b) => Date.parse(b.published) - Date.parse(a.published));
+  const latest = newest[0];
 
   const cards: Card[] = [
     {
@@ -104,6 +105,23 @@ export default function SelectedWork() {
             </li>
           ))}
         </ul>
+        {/* The two newest pieces by name. The Writing card is one link, and a
+            link cannot hold others, so they sit under the cards instead. */}
+        <p data-reveal className="mt-12 text-sm text-muted">
+          Latest writing:{" "}
+          {newest.slice(0, 2).map((entry, i) => (
+            <span key={entry.slug}>
+              {i > 0 ? " and " : null}
+              <Link
+                href={`/writing/${entry.slug}` as Route}
+                className="text-ink underline decoration-line underline-offset-[6px] transition-colors hover:text-accent"
+              >
+                {entry.title}
+              </Link>
+            </span>
+          ))}
+          .
+        </p>
       </div>
     </section>
   );

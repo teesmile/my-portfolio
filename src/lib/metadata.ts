@@ -28,6 +28,7 @@ import { portfolioConfig } from "@/config/site";
  */
 export function pageMetadata({
   title,
+  fullTitle,
   description,
   path,
   type = "website",
@@ -36,6 +37,13 @@ export function pageMetadata({
   article,
 }: {
   title: string;
+  /**
+   * The whole <title>, bypassing the layout's "%s — Anthony Ugwuja"
+   * template: for a title that already leads with the name, or one that
+   * should spend its 60 characters on the subject instead. Also the share
+   * title.
+   */
+  fullTitle?: string;
   description: string;
   path: string;
   /** "article" for a case study or a piece of writing; a section index is not one. */
@@ -55,13 +63,13 @@ export function pageMetadata({
    * <meta name="author">, <link rel="author">, article:author and
    * article:published_time. Without it LinkedIn reports "No author found".
    */
-  article?: { publishedTime: string; author: { name: string; url: string } };
+  article?: { publishedTime: string; modifiedTime?: string; author: { name: string; url: string } };
 }): Metadata {
-  const shareTitle = `${title} — ${portfolioConfig.name}`;
+  const shareTitle = fullTitle ?? `${title} — ${portfolioConfig.name}`;
   const images = [image];
 
   return {
-    title,
+    title: fullTitle ? { absolute: fullTitle } : title,
     description,
     alternates: { canonical: path },
     ...(article ? { authors: [article.author] } : {}),
@@ -72,7 +80,11 @@ export function pageMetadata({
       type,
       images,
       ...(article && type === "article"
-        ? { publishedTime: article.publishedTime, authors: [article.author.url] }
+        ? {
+            publishedTime: article.publishedTime,
+            ...(article.modifiedTime ? { modifiedTime: article.modifiedTime } : {}),
+            authors: [article.author.url],
+          }
         : {}),
     },
     twitter: { card: "summary_large_image", title: shareTitle, description, images },

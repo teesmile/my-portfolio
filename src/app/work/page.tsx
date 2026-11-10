@@ -7,9 +7,9 @@ import TechGlitch from "@/components/ui/tech-glitch";
 import Reveals from "@/components/layout/reveals";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Work",
+  title: "Full-stack projects and AI evaluation",
   description:
-    "Full-stack builds in React, Next.js and TypeScript with the decisions behind them, and AI evaluation work in chemistry, biology and clinical pharmacy.",
+    "Case studies from a full-stack developer: an offline-first app with sync, a Farcaster mini app, and an AI-agent benchmark built on clinical data.",
   path: "/work",
 });
 
