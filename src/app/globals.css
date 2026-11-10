@@ -326,6 +326,50 @@
   background-color: color-mix(in oklab, var(--ink) 14%, transparent);
 }
 
+/* The footer wordmark: the brand word, as wide as the content column, its
+   letters cut off by the bottom of the page.
+
+   Width without JavaScript: the frame is a size container, so 100cqi is the
+   column's width, and the font size is that width divided by the word's own
+   width in ems (measured in Syne, with the tracking below). Any screen width,
+   the word spans the column exactly; overflow is clipped so a fallback font
+   that runs wider can never cause a horizontal scroll.
+
+   The fade runs upward out of the page: the letters start at the footer's own
+   surface colour at their tops, so they emerge from the background, and reach
+   the muted text colour at the bottom, where they are plainly readable in
+   both themes. It is still decoration: aria-hidden and held to no ratio.
+
+   The clip, from Syne 700's metrics measured in the browser: with
+   line-height 1 the baseline sits 0.825em from the top of the box and the
+   tallest letters (t, l) rise 0.703em above it, so their tops are at 0.122em.
+   Cutting the bottom tenth of the letters means stopping 0.07em above the
+   baseline: a 0.755em box. The fade starts at the letter tops, not the top
+   of the box, so the whole of it falls on the letters. */
+.footer-wordmark-frame {
+  container-type: inline-size;
+  overflow: hidden;
+}
+.footer-wordmark {
+  --wordmark-em: 4.371; /* "teesmile" in Syne 700 at -0.04em tracking, measured in the browser */
+  font-family: var(--font-display);
+  font-size: calc(100cqi / var(--wordmark-em));
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  white-space: nowrap;
+  width: max-content;
+  /* The clip: the box stops a tenth of the way up the letters, at the page edge. */
+  height: 0.755em;
+  overflow: hidden;
+  background: linear-gradient(to bottom, var(--surface) 0.122em, var(--muted) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  user-select: none;
+  pointer-events: none;
+}
+
 /* Print: the resume is a document before it is a web page.
    The palette flips to ink on paper — printing the dark theme would be a
    solid black page — and the chrome comes off, because navigation means

@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     /* Its own layer on the page surface: nothing in a page's content, however
        it is transformed, can paint over the footer or take its clicks. */
-    <footer className="relative z-10 border-t border-line bg-surface px-4 sm:px-6 py-6 md:py-10">
+    <footer className="relative z-10 border-t border-line bg-surface px-4 pt-6 sm:px-6 md:pt-10">
       <div className="mx-auto flex max-w-(--container-view) flex-col items-start gap-4 text-left text-2xs text-muted sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <p>
           &copy; {new Date().getFullYear()} {portfolioConfig.name}
@@ -23,6 +23,14 @@ export default function Footer() {
             </li>
           ))}
         </ul>
+      </div>
+
+      {/* The brand word, oversized, as the last thing on every page. Purely
+          decorative: aria-hidden, nothing focusable, and too faint to carry
+          meaning, so it is held to no contrast ratio. Sizing and the fade are
+          in globals.css (.footer-wordmark). */}
+      <div aria-hidden="true" className="footer-wordmark-frame mx-auto mt-10 max-w-(--container-view) md:mt-16">
+        <p className="footer-wordmark">{portfolioConfig.brandName.toLowerCase()}</p>
       </div>
     </footer>
   );
