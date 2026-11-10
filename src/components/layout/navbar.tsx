@@ -116,7 +116,7 @@ export default function Navbar() {
       <div className="mx-auto flex h-16 max-w-(--container-view) items-center justify-between px-4 sm:px-6">
         <Link
           href="/"
-          aria-label={`${portfolioConfig.name} — go to the home page`}
+          aria-label={`${portfolioConfig.name} - go to the home page`}
           aria-current={pathname === '/' ? 'page' : undefined}
           className="relative z-50 font-display text-lg text-ink underline decoration-2 decoration-transparent underline-offset-[6px] transition-colors hover:decoration-accent"
         >

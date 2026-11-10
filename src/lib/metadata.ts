@@ -65,7 +65,7 @@ export function pageMetadata({
    */
   article?: { publishedTime: string; modifiedTime?: string; author: { name: string; url: string } };
 }): Metadata {
-  const shareTitle = fullTitle ?? `${title} — ${portfolioConfig.name}`;
+  const shareTitle = fullTitle ?? `${title} - ${portfolioConfig.name}`;
   const images = [image];
 
   return {

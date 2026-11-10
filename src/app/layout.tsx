@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://anthonyugwuja.dev"),
   title: {
     default: seo.title,
-    template: "%s — Anthony Ugwuja",
+    template: "%s - Anthony Ugwuja",
   },
   description: seo.description,
   openGraph: {

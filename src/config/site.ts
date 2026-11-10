@@ -194,7 +194,7 @@ export const portfolioConfig = {
      used by the root layout for <title>, Open Graph and Twitter alike, so the
      three cannot drift apart the way they did when each was typed out. */
   seo: {
-    title: "Anthony Ugwuja — remote full-stack developer, AI evaluator",
+    title: "Anthony Ugwuja - remote full-stack developer, AI evaluator",
     description:
       "Full-stack developer (React, Next.js, TypeScript, Node.js) and AI evaluator, open to remote work with UK, European and US teams. Pharmacist by training.",
   },
@@ -210,7 +210,7 @@ export const portfolioConfig = {
      and its showcase at /work/renal-dosing-task is what the entry links to. */
   evaluation: {
     title: "AI evaluation",
-    period: "Nov 2025 – Present",
+    period: "Nov 2025-Present",
     role: "Self-employed, remote",
     body: "I evaluate and stress-test AI models. I author expert-level tasks built to stump frontier models in chemistry, biology and clinical pharmacy, including terminal-based benchmarks where an agent must reconcile messy synthetic patient records and carry out pharmacokinetic calculations. I also annotate image, video and audio data, verify facts, and rate and compare model responses against detailed guidelines. Every task I author ships with evidence that its grading is sound. Client and task details stay under NDA; the sample below is an original task built the same way.",
     sample: {
@@ -243,15 +243,15 @@ export const portfolioConfig = {
   // The dated spine on /about. Two tracks running in parallel, not one career
   // replacing another — which is the actual story.
   timeline: [
-    { period: "2017 – 2023", label: "B.Pharm, University of Nigeria, Nsukka", track: "pharmacy" },
+    { period: "2017-2023", label: "B.Pharm, University of Nigeria, Nsukka", track: "pharmacy" },
     { period: "2020", label: "First code, written during pharmacy school", track: "code" },
-    { period: "May 2022 – Sep 2022", label: "Full stack developer trainee, Zuri Team and I4G", track: "code" },
+    { period: "May 2022-Sep 2022", label: "Full stack developer trainee, Zuri Team and I4G", track: "code" },
     { period: "Feb 2024", label: "Provisional pharmacist licence", track: "pharmacy" },
-    { period: "Oct 2024 – Oct 2025", label: "Diploma in Frontend Engineering, AltSchool Africa", track: "code" },
-    { period: "May 2025 – May 2026", label: "Pharmacy intern, Federal Medical Centre, Keffi", track: "pharmacy" },
-    { period: "Nov 2025 – Present", label: "AI training and evaluation, self-employed", track: "code" },
-    { period: "Jul 2026 – Present", label: "Cloud Computing, AltSchool Africa", track: "code" },
-    { period: "Aug 2026 – Present", label: "Pharmacist, NYSC, Nasarawa State University clinic", track: "pharmacy" },
+    { period: "Oct 2024-Oct 2025", label: "Diploma in Frontend Engineering, AltSchool Africa", track: "code" },
+    { period: "May 2025-May 2026", label: "Pharmacy intern, Federal Medical Centre, Keffi", track: "pharmacy" },
+    { period: "Nov 2025-Present", label: "AI training and evaluation, self-employed", track: "code" },
+    { period: "Jul 2026-Present", label: "Cloud Computing, AltSchool Africa", track: "code" },
+    { period: "Aug 2026-Present", label: "Pharmacist, NYSC, Nasarawa State University clinic", track: "pharmacy" },
     { period: "Oct 2026", label: "Full pharmacist licence", track: "pharmacy" },
   ] as { period: string | null; label: string; track: "pharmacy" | "code" }[],
   // Talks on /about, in the timeline's grid. The deck is the talk as given:
@@ -271,7 +271,7 @@ export const portfolioConfig = {
   defects: [
     {
       language: "tsx" as const,
-      context: "React — a price-sorted product list",
+      context: "React - a price-sorted product list",
       lines: [
         "function ProductList({ items }: { items: Product[] }) {",
         "  const sorted = useMemo(",
@@ -289,7 +289,7 @@ export const portfolioConfig = {
     },
     {
       language: "tsx" as const,
-      context: "Auth — reading a session token",
+      context: "Auth - reading a session token",
       lines: [
         "import { jwtDecode } from 'jwt-decode';",
         "",
@@ -300,12 +300,12 @@ export const portfolioConfig = {
       ],
       markedLine: 4,
       verdict:
-        "jwtDecode only base64-decodes the payload — it never checks the signature. Anyone can hand-write a token claiming role admin and this will believe it.",
+        "jwtDecode only base64-decodes the payload - it never checks the signature. Anyone can hand-write a token claiming role admin and this will believe it.",
       fix: ["  const { payload } = await jwtVerify(token, publicKey);"],
     },
     {
       language: "python" as const,
-      context: "Django — an order list page",
+      context: "Django - an order list page",
       lines: [
         "def order_list(request):",
         "    orders = Order.objects.all()",
@@ -321,14 +321,14 @@ export const portfolioConfig = {
     },
     {
       language: "python" as const,
-      context: "Python — collecting results",
+      context: "Python - collecting results",
       lines: [
         "def add_result(value, results=[]):",
         "    results.append(value)",
         "    return results",
         "",
         "add_result('a')  # ['a']",
-        "add_result('b')  # ['a', 'b'] — the list survived",
+        "add_result('b')  # ['a', 'b'] - the list survived",
       ],
       markedLine: 1,
       verdict:
@@ -337,7 +337,7 @@ export const portfolioConfig = {
     },
     {
       language: "python" as const,
-      context: "SQL — a product search",
+      context: "SQL - a product search",
       lines: [
         "def search(request):",
         "    term = request.GET['q']",
@@ -359,7 +359,7 @@ export const portfolioConfig = {
     },
     {
       language: "tsx" as const,
-      context: "MongoDB — a login lookup",
+      context: "MongoDB - a login lookup",
       lines: [
         "const user = await users.findOne({",
         "  email: req.body.email,",
@@ -368,7 +368,7 @@ export const portfolioConfig = {
       ],
       markedLine: 3,
       verdict:
-        "A JSON body can send { \"$ne\": null } where a string was expected, and the query matches the first user with any password at all. The operator is the injection — no quotes needed.",
+        "A JSON body can send { \"$ne\": null } where a string was expected, and the query matches the first user with any password at all. The operator is the injection - no quotes needed.",
       fix: [
         "const user = await users.findOne({ email: String(req.body.email) });",
         "const ok = user && (await verifyHash(user.hash, String(req.body.password)));",
@@ -376,7 +376,7 @@ export const portfolioConfig = {
     },
     {
       language: "tsx" as const,
-      context: "Async — a search-as-you-type field",
+      context: "Async - a search-as-you-type field",
       lines: [
         "useEffect(() => {",
         "  fetch(`/api/search?q=${query}`)",
@@ -397,7 +397,7 @@ export const portfolioConfig = {
     },
     {
       language: "tsx" as const,
-      context: "Money — totalling a cart",
+      context: "Money - totalling a cart",
       lines: [
         "const total = items.reduce((sum, item) => sum + item.price, 0);",
         "",
@@ -414,7 +414,7 @@ export const portfolioConfig = {
     },
     {
       language: "tsx" as const,
-      context: "React — a live price subscription",
+      context: "React - a live price subscription",
       lines: [
         "useEffect(() => {",
         "  socket.on('price', setPrice);",
@@ -464,7 +464,7 @@ export const portfolioConfig = {
     aboutHeading: "I read other people's code for a living. Mine included.",
     aboutParagraphs: [
       "I trained as a pharmacist at the University of Nigeria, Nsukka. I wrote my first code in 2020, partway through the degree, and kept going after it: HTML and CSS first, then JavaScript, then React.",
-      "Now I build interfaces in React and TypeScript. In the same week I get paid to read code a model wrote and say exactly what is wrong with it — the bug, why it bites, and the version that works.",
+      "Now I build interfaces in React and TypeScript. In the same week I get paid to read code a model wrote and say exactly what is wrong with it - the bug, why it bites, and the version that works.",
       "The second job changed how I do the first. Read enough confident, broken answers and you stop trusting code that merely looks right. Including your own.",
       "I am working across the whole stack now. The todo app on the Work page has a database and Google sign-in behind it, and syncs across devices.",
     ],
@@ -472,6 +472,15 @@ export const portfolioConfig = {
     workHeading: "Things I\u2019ve built, and what each one taught me.",
     writingHeading: "Decisions, and what they cost.",
     contactHeading: "Open to remote AI evaluation and full-stack work.",
+    /* What I can help with, on /contact. Plain claims about the work, no
+       promised outcomes: the SEO line says what gets built, not where a site
+       will rank. */
+    helpWith: [
+      "Full-stack web apps: React, Next.js and TypeScript on the front, Node.js and PostgreSQL behind it.",
+      "AI evaluation: grading model output and writing tasks that catch confident but wrong answers, including clinical ones.",
+      "Sites that load fast and get found: technical SEO, domain moves, structured data and performance, built in from day one or fixed on an existing site.",
+      "Healthcare apps where the clinical details matter: built by a developer who's also a licensed pharmacist.",
+    ],
     contactNote: "Email reaches me fastest.",
     labHeading: "Interaction experiments, one at a time.",
     labIntro:

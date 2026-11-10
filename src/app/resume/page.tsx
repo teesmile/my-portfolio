@@ -7,7 +7,7 @@ import { ExternalLinkIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = pageMetadata({
   title: "Resume",
-  fullTitle: "Resume — Anthony Ugwuja, full-stack developer, AI evaluator",
+  fullTitle: "Resume - Anthony Ugwuja, full-stack developer, AI evaluator",
   description:
     "Resume of Anthony Ugwuja: full-stack developer (React, Next.js, TypeScript, Node.js) and AI evaluator, pharmacist by training. PDF versions included.",
   path: "/resume",
@@ -202,7 +202,7 @@ export default async function ResumePage({
                 <p className="text-2xs leading-6">
                   <span className="font-display text-sm text-ink">{item.title}</span>
                   <span className="text-muted">
-                    {" "}&mdash; {item.institution} &middot;{" "}
+                    {" "}- {item.institution} &middot;{" "}
                     <span className="whitespace-nowrap">{item.period}</span>
                   </span>
                 </p>

@@ -1,6 +1,6 @@
 import { renderShareImage, shareImageSize } from "@/lib/share-image";
 
-export const alt = "Renal dose check: a clinical AI-agent benchmark — Anthony Ugwuja";
+export const alt = "Renal dose check: a clinical AI-agent benchmark - Anthony Ugwuja";
 export const size = shareImageSize;
 export const contentType = "image/png";
 

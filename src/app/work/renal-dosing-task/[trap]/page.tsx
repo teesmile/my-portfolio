@@ -35,7 +35,7 @@ const SEARCH_NAME: Record<string, string> = {
 };
 
 function searchCopy(trap: NonNullable<ReturnType<typeof findTrap>>) {
-  const title = `${SEARCH_NAME[trap.slug] ?? trap.name} — clinical AI benchmark`;
+  const title = `${SEARCH_NAME[trap.slug] ?? trap.name} - clinical AI benchmark`;
   const description = `${SEARCH_LEAD[trap.slug] ?? trap.why} A trap from a clinical AI-agent benchmark.`;
   /* Fails the build rather than ship a snippet search results would cut. */
   if (title.length > 60 || description.length > 160) {

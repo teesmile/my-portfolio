@@ -81,7 +81,7 @@ export default function RenalDosingPage() {
                   An agent benchmark hands an AI model a job in a real environment, here a Linux terminal with a few files in it, and grades what it produces with automated tests. The model can run commands, write code and check its own work. What it can&apos;t do is talk its way past the tests: they read the output file and nothing else.
                 </p>
                 <p>
-                  This one gives the agent a small ward chart: {renal.patients.length} synthetic adults, their creatinine results and their medication orders, recorded in mixed units. For each patient it has to work out kidney function as creatinine clearance (CrCl, by the Cockcroft–Gault formula), then flag every active order whose daily dose is over the limit for that kidney function.
+                  This one gives the agent a small ward chart: {renal.patients.length} synthetic adults, their creatinine results and their medication orders, recorded in mixed units. For each patient it has to work out kidney function as creatinine clearance (CrCl, by the Cockcroft-Gault formula), then flag every active order whose daily dose is over the limit for that kidney function.
                 </p>
                 <p>
                   The instruction states the formula, the constants and the dosing rules. So the task doesn&apos;t test medical knowledge. It tests whether the agent reads the chart the way a careful pharmacist would: which unit a number is in, whether an order is still running, how often a dose is given, and which result is the latest.

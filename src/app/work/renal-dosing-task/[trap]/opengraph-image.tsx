@@ -1,7 +1,7 @@
 import { findTrap, renalTraps } from "@/content/renal-dosing";
 import { renderShareImage, shareImageSize } from "@/lib/share-image";
 
-export const alt = "A trap from the renal dose check, a clinical AI-agent benchmark — Anthony Ugwuja";
+export const alt = "A trap from the renal dose check, a clinical AI-agent benchmark - Anthony Ugwuja";
 export const size = shareImageSize;
 export const contentType = "image/png";
 

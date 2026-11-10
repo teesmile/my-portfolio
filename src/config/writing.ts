@@ -73,7 +73,7 @@ export const writing: WritingEntry[] = [
         id: "the-maths-is-the-easy-part",
         heading: "The maths is the easy part",
         paragraphs: [
-          "The task gives an agent a terminal and a small ward chart: fifteen synthetic adults, their creatinine results, their medication orders, and a rules file with a dose limit for each level of kidney function. For each patient it has to work out creatinine clearance, an estimate of how well the kidneys clear drugs from the blood, using the Cockcroft–Gault formula, then flag every active order whose daily dose is over the limit. It writes one line per patient, and 32 tests grade the file.",
+          "The task gives an agent a terminal and a small ward chart: fifteen synthetic adults, their creatinine results, their medication orders, and a rules file with a dose limit for each level of kidney function. For each patient it has to work out creatinine clearance, an estimate of how well the kidneys clear drugs from the blood, using the Cockcroft-Gault formula, then flag every active order whose daily dose is over the limit. It writes one line per patient, and 32 tests grade the file.",
           "I'm a pharmacist, and I spent a year as an intern on hospital wards, where the slips this task tests are the ones that matter.",
           "I gave the formula away. The instruction states it, along with both unit conversions and the exact rules. So the task doesn't ask whether a model knows pharmacy. It asks whether it reads the chart properly, which is a different skill, and it's the one this task is about.",
           "The drugs are invented, and so are the limits. Aldrovexin, Bremazotan, Cylvarone, Dorvatinex and Exalmizide don't exist, and none of this is dosing guidance.",
@@ -195,7 +195,7 @@ export const writing: WritingEntry[] = [
         heading: "The cost",
         paragraphs: [
           "The transition is now load-bearing. On one page, a bad scroll animation is a small annoyance; between routes, a hard cut is the most visible flaw the site can have. I have moved work into the motion phase rather than removed it.",
-          "One guard made the change safe. Typed routes turn a link to a route that does not exist into a compile error, so the structure cannot rot quietly as I move things around. The first time I enabled it, it rejected my own nav links — they had been plain strings that nothing had ever checked.",
+          "One guard made the change safe. Typed routes turn a link to a route that does not exist into a compile error, so the structure cannot rot quietly as I move things around. The first time I enabled it, it rejected my own nav links - they had been plain strings that nothing had ever checked.",
         ],
       },
     ],
@@ -227,7 +227,7 @@ export const writing: WritingEntry[] = [
         figure: "optimizer-bypass",
         heading: "What the prop actually does",
         paragraphs: [
-          "The image was rendered with unoptimized set, and quality={100} sitting on the line above it. That pairing taught me something. unoptimized does not mean lower effort — it means the optimizer is skipped entirely, so no resizing, no format conversion, no generated srcset. Which also means quality is never read.",
+          "The image was rendered with unoptimized set, and quality={100} sitting on the line above it. That pairing taught me something. unoptimized does not mean lower effort - it means the optimizer is skipped entirely, so no resizing, no format conversion, no generated srcset. Which also means quality is never read.",
           "The two props look like they are arguing about compression. In fact one of them had already ended the conversation.",
         ],
       },
@@ -235,7 +235,7 @@ export const writing: WritingEntry[] = [
         id: "three-reasons-it-was-big",
         heading: "Three reasons it was big",
         paragraphs: [
-          "Only one of them was compression. It was four times wider than it needed to be. It was 16 bits per channel where 8 is indistinguishable at that size. And it carried an alpha channel that was uniformly opaque from corner to corner — roughly a quarter of the file storing the same number over and over.",
+          "Only one of them was compression. It was four times wider than it needed to be. It was 16 bits per channel where 8 is indistinguishable at that size. And it carried an alpha channel that was uniformly opaque from corner to corner - roughly a quarter of the file storing the same number over and over.",
           "Converted to WebP at 640 pixels, which is twice the display size for high-density screens, it came out at 16,712 bytes. Served through the image optimizer it arrives as 11.6 KB. That is a 99.5% reduction for an image nobody will notice has changed.",
         ],
       },
