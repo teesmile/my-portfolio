@@ -81,6 +81,10 @@ const LIGHTS: Record<string, Light[]> = {
     { color: ILL.glowError, cx: 0.2, cy: 0.35, r: 0.42 },
     { color: ILL.glow, cx: 0.78, cy: 0.35, r: 0.42 },
   ],
+  domain: [
+    { color: ILL.glowError, cx: 0.3, cy: 0.3, r: 0.38 },
+    { color: ILL.glow, cx: 0.6, cy: 0.5, r: 0.45 },
+  ],
 };
 
 /** A desktop application window: shadow, title bar, three lights. */
@@ -336,8 +340,42 @@ export function PortraitBytesScene({ id, className, preserveAspectRatio, viewBox
   );
 }
 
+/* ---- the domain piece: a search for the name, old result out, new in --- */
+
+export function DomainMoveScene({ id, className, preserveAspectRatio, viewBox = "0 0 1200 630" }: SceneProps) {
+  const result = (y: number, host: string, title: string, state: "old" | "new" | "plain") => (
+    <g>
+      {state === "new" ? <rect x={196} y={y - 26} width={700} height={84} rx="6" fill={ILL.accentSoft} stroke={ILL.accent} /> : null}
+      {state === "old" ? <rect x={196} y={y - 26} width={700} height={84} rx="6" fill={ILL.errorSoft} stroke={ILL.error} /> : null}
+      <text x={220} y={y} fontFamily={mono} fontSize="13" fill={state === "new" ? ILL.accent : ILL.detail}>{host}</text>
+      <text x={220} y={y + 30} fontFamily={text} fontSize="22" fill={ILL.text} opacity={state === "old" ? 0.6 : 1}>{title}</text>
+      {state === "old" ? <line x1={216} y1={y + 22} x2={640} y2={y + 22} stroke={ILL.error} strokeWidth="2.5" /> : null}
+    </g>
+  );
+
+  return (
+    <svg viewBox={viewBox} className={className} preserveAspectRatio={preserveAspectRatio} role="img" aria-label="A search for anthony ugwuja: the old teesmile.vercel.app result struck out, and anthonyugwuja.dev highlighted in its place.">
+      <Defs id={id} lights={LIGHTS.domain} />
+      <Backdrop id={id} lights={LIGHTS.domain} />
+      <Window id={id} x={150} y={30} w={790} h={520}>
+        <rect x={196} y={95} width={700} height={44} rx="22" fill="var(--surface)" stroke={ILL.edge} />
+        <circle cx={226} cy={116} r="8" fill="none" stroke={ILL.detail} strokeWidth="2" />
+        <path d="M232 122l7 7" stroke={ILL.detail} strokeWidth="2" />
+        <text x={250} y={123} fontFamily={text} fontSize="18" fill={ILL.text}>anthony ugwuja</text>
+        {result(190, "teesmile.vercel.app", "Anthony Ugwuja | Frontend Engineer", "old")}
+        {result(290, "anthonyugwuja.dev", "Anthony Ugwuja - full-stack developer and AI evaluator", "new")}
+        <rect x={220} y={390} width="420" height="12" rx="3" fill={ILL.shape} />
+        <rect x={220} y={412} width="560" height="9" rx="3" fill={ILL.shape} opacity="0.6" />
+      </Window>
+      <text x={960} y={208} fontFamily={mono} fontSize="14" fill={ILL.error}>before</text>
+      <text x={960} y={308} fontFamily={mono} fontSize="14" fill={ILL.accent}>a day later</text>
+    </svg>
+  );
+}
+
 export const scenes: Record<string, (props: SceneProps) => React.ReactElement> = {
   "building-a-renal-dose-check-benchmark": WardChartScene,
   "every-section-is-a-route": BrowserRoutesScene,
   "what-unoptimized-turns-off": PortraitBytesScene,
+  "moving-to-a-custom-domain": DomainMoveScene,
 };

@@ -6,6 +6,12 @@ export type Section = {
   figure?: string;
   /** Links set after the section's paragraphs. Paragraphs stay plain strings. */
   links?: { text: string; href: string }[];
+  /**
+   * Evidence images, after the paragraphs: recreated screens or captures,
+   * served through next/image as WebP under 300 KB. `caption` is the
+   * figure's own caption, copied word for word.
+   */
+  images?: { src: string; width: number; height: number; alt: string; caption: string }[];
 };
 
 /* A fixed vocabulary rather than free tags: five topics the site will
@@ -53,6 +59,103 @@ export type WritingEntry = {
 };
 
 export const writing: WritingEntry[] = [
+  {
+    /* Every date and value is from the repository's history, the recreated
+       Search Console screens in public/writing/moving-to-a-custom-domain, and
+       URL Inspection after the 10 November indexing request. */
+    slug: "moving-to-a-custom-domain",
+    topic: "Engineering",
+    title: "Moving my site to a custom domain: how Google switched in a day",
+    published: "2026-11-10T17:58:18+01:00",
+    standfirst:
+      "I gave my portfolio its own domain and Google kept showing the old vercel.app address instead. The fixes were small. What made Google switch was asking it to look again.",
+    seo: {
+      title: "Moving to a custom domain: how Google switched in a day",
+      description:
+        "My new domain lost to the old vercel.app address in Google. What \"Google chose different canonical\" meant, the fixes, and how it switched in a day.",
+    },
+    project: { name: "This site's source", href: "https://github.com/teesmile/my-portfolio" },
+    sections: [
+      {
+        id: "the-email",
+        heading: "The email",
+        paragraphs: [
+          "My portfolio started where Vercel puts every project, at teesmile.vercel.app. When I gave it its own domain, anthonyugwuja.dev, I assumed the new address would simply take over in search. It didn't.",
+          "Search Console sent me an email with a reason I had never seen before: Duplicate, Google chose different canonical than user. Searching my own name showed why it mattered. The old vercel.app address was there, under a title from a version of the site I had already replaced, and my own domain wasn't anywhere.",
+        ],
+        images: [
+          { src: "/writing/moving-to-a-custom-domain/01-before-google-email.webp", width: 1400, height: 627, alt: "The Search Console email, headed New reason preventing your pages from being indexed, with the reason Duplicate, Google chose different canonical than user highlighted.", caption: "Recreated from the Search Console email, November 2026." },
+          { src: "/writing/moving-to-a-custom-domain/03-before-search.webp", width: 1400, height: 1156, alt: "Search results for anthony ugwuja before the move: three other pages, then the old teesmile.vercel.app listing titled Anthony Ugwuja | Frontend Engineer, highlighted. The custom domain is not in the results.", caption: "Recreated from my searches before the domain move, early November 2026. Phone numbers and photos left out." },
+        ],
+      },
+      {
+        id: "what-google-was-telling-me",
+        heading: "What Google was telling me",
+        paragraphs: [
+          "A canonical is the address a page says is the real one when the same content lives at more than one. Every page on my site already declared anthonyugwuja.dev as its canonical. URL Inspection showed that Google had read that and chosen differently: user-declared canonical, anthonyugwuja.dev; Google-selected canonical, teesmile.vercel.app.",
+          "The canonical tag is a hint, not an instruction. When Google disagrees with it, Google's choice is the one that gets shown, and the page you declared is filed as a duplicate of it.",
+        ],
+        images: [
+          { src: "/writing/moving-to-a-custom-domain/02-before-url-inspection.webp", width: 1400, height: 958, alt: "URL Inspection for https://anthonyugwuja.dev/: URL is not on Google. Last crawl Nov 6, 2026. The user-declared canonical is anthonyugwuja.dev and the Google-selected canonical is teesmile.vercel.app, highlighted.", caption: "Recreated from Google Search Console, as shown on 9 November 2026." },
+        ],
+      },
+      {
+        id: "why-the-old-address-won",
+        heading: "Why the old address won",
+        paragraphs: [
+          "Three hosts were serving identical HTML: teesmile.vercel.app, teesmilex.vercel.app (the site deploys to two Vercel projects) and anthonyugwuja.dev. Every preview deployment served a full copy of the site too, on its own vercel.app address. Nothing told a crawler which copy was the original.",
+          "Google had already indexed teesmile.vercel.app. Given three identical pages and a hint pointing elsewhere, it kept the one it had.",
+        ],
+      },
+      {
+        id: "one-address-said-four-ways",
+        figure: "one-address",
+        heading: "One address, said four ways",
+        paragraphs: [
+          "The fix was to stop asking and start stating, in every way a crawler listens. All four went live on 7 November.",
+          "Permanent redirects. Every path on teesmile.vercel.app and teesmilex.vercel.app now answers with a 308 to the same path on anthonyugwuja.dev. They match the exact host names, so preview deployments keep serving their own branch for review.",
+          "One address in the code. The canonical on every page, the sitemap, robots.txt and the structured data all read the domain from a single constant, so no page can name another host by accident.",
+          "Previews closed to crawlers. A preview build's robots.txt says Disallow: /, so a draft can never compete with the page it is a draft of.",
+          "One identity. Structured data on the home page links the domain to my GitHub, LinkedIn and X profiles, so they read as one person.",
+          "The redirect is the part a crawler can't argue with. The canonical is the part that tells it which address to keep.",
+        ],
+      },
+      {
+        id: "asking-google-to-look-again",
+        heading: "Then I asked Google to look again",
+        paragraphs: [
+          "On 9 November, two days after the fixes went live, URL Inspection still showed the old verdict. The reason was in the same screen: the last crawl was 6 November. Google hadn't been back since the fix, so it hadn't seen any of it.",
+          "So I submitted the sitemap in Search Console on 9 November. Google read it the same day and found all 24 pages, each on the new address. It crawled the home page again at 4:49 that afternoon, and by the next day URL Inspection said URL is on Google, with the Google-selected canonical now the inspected URL itself.",
+          "On the morning of 10 November I also requested indexing for the home page. The inspection below still shows the 9 November crawl; after the request, URL Inspection showed a new last crawl at 7:05 AM that same morning.",
+        ],
+        images: [
+          { src: "/writing/moving-to-a-custom-domain/06-after-sitemap.webp", width: 1400, height: 487, alt: "Search Console's sitemap report: https://anthonyugwuja.dev/sitemap.xml, submitted and last read Nov 9, 2026, status Success, 24 discovered pages.", caption: "Recreated from Google Search Console, as shown on 10 November 2026." },
+          { src: "/writing/moving-to-a-custom-domain/05-after-url-inspection.webp", width: 1400, height: 958, alt: "URL Inspection for https://anthonyugwuja.dev/ after the fix: URL is on Google, page is indexed, last crawl Nov 9, 2026 at 4:49 PM, and the Google-selected canonical is the inspected URL.", caption: "Recreated from Google Search Console, as shown on 10 November 2026." },
+        ],
+      },
+      {
+        id: "the-search-a-day-later",
+        heading: "The search, a day later",
+        paragraphs: [
+          "Searching my name on 10 November, my own domain was second and the old vercel.app listing was gone. The snippet under it still uses wording from before I rewrote the site's descriptions that week; Google refreshes those when it next crawls the page.",
+        ],
+        images: [
+          { src: "/writing/moving-to-a-custom-domain/04-after-search.webp", width: 1400, height: 1156, alt: "Search results for anthony ugwuja after the move: anthonyugwuja.dev is second, titled Anthony Ugwuja - full-stack developer and AI evaluator, highlighted, and the vercel.app listing is gone.", caption: "Recreated from Google search results, 10 November 2026. Phone numbers and photos left out." },
+          { src: "/writing/moving-to-a-custom-domain/00-before-after-search.webp", width: 1400, height: 755, alt: "The two searches side by side. Before, the fourth result is the old vercel.app address. After, the second result is anthonyugwuja.dev.", caption: "Recreated from my searches before the domain move (early November) and on 10 November 2026. Phone numbers and photos left out." },
+        ],
+      },
+      {
+        id: "what-id-do-on-day-one",
+        heading: "What I'd do on day one next time",
+        paragraphs: [
+          "Put the domain on before sharing a single link, and redirect the default vercel.app host to it from the start, so there is never a second copy for Google to prefer.",
+          "Read the address from one constant everywhere it appears, and close preview builds to crawlers before the first preview exists.",
+          "The day the domain goes live, submit the sitemap, inspect the home page in Search Console and request indexing for it. The fixes were in place for two days before Google noticed them. Asking it to look took a minute.",
+          "Search Console also has a Change of Address tool for moves between sites you can verify. The old address is set up so it can still be verified for that.",
+        ],
+      },
+    ],
+  },
   {
     /* Every fact about the task is from the renal-dosing-task repository
        (README, patient design table, evidence results). */

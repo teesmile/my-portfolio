@@ -23,6 +23,8 @@ const phoneCrops: Record<string, string> = {
   "every-section-is-a-route": "130 100 760 470",
   /* The file's stats, the portrait, the arrow to the phone. */
   "what-unoptimized-turns-off": "60 40 760 470",
+  /* The two results: the struck vercel.app row and the domain that replaced it. */
+  "moving-to-a-custom-domain": "170 70 760 470",
 };
 
 export default function HeroArt({ slug }: { slug: string }) {
