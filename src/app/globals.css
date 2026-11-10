@@ -362,7 +362,14 @@
   /* The clip: the box stops a tenth of the way up the letters, at the page edge. */
   height: 0.755em;
   overflow: hidden;
-  background: linear-gradient(to bottom, var(--surface) 0.122em, var(--muted) 100%);
+  /* Peaks halfway between the first version's --line (too faint) and
+     --muted (a little too strong), mixed in OKLab so halfway is halfway in
+     perceived lightness, in both themes. */
+  background: linear-gradient(
+    to bottom,
+    var(--surface) 0.122em,
+    color-mix(in oklab, var(--line), var(--muted)) 100%
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
