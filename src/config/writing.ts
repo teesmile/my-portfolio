@@ -60,13 +60,13 @@ export type WritingEntry = {
 
 export const writing: WritingEntry[] = [
   {
-    /* Every date and value is from the repository's history and the
-       recreated Search Console screens in public/writing/moving-to-a-custom-domain. */
+    /* Every date and value is from the repository's history, the recreated
+       Search Console screens in public/writing/moving-to-a-custom-domain, and
+       URL Inspection after the 10 November indexing request. */
     slug: "moving-to-a-custom-domain",
     topic: "Engineering",
     title: "Moving my site to a custom domain: how Google switched in a day",
-    published: "2026-11-10T16:26:41+01:00",
-    draft: true,
+    published: "2026-11-10T17:58:18+01:00",
     standfirst:
       "I gave my portfolio its own domain and Google kept showing the old vercel.app address instead. The fixes were small. What made Google switch was asking it to look again.",
     seo: {
@@ -126,6 +126,7 @@ export const writing: WritingEntry[] = [
         paragraphs: [
           "On 9 November, two days after the fixes went live, URL Inspection still showed the old verdict. The reason was in the same screen: the last crawl was 6 November. Google hadn't been back since the fix, so it hadn't seen any of it.",
           "So I submitted the sitemap in Search Console on 9 November. Google read it the same day and found all 24 pages, each on the new address. It crawled the home page again at 4:49 that afternoon, and by the next day URL Inspection said URL is on Google, with the Google-selected canonical now the inspected URL itself.",
+          "On the morning of 10 November I also requested indexing for the home page. The inspection below still shows the 9 November crawl; after the request, URL Inspection showed a new last crawl at 7:05 AM that same morning.",
         ],
         images: [
           { src: "/writing/moving-to-a-custom-domain/06-after-sitemap.webp", width: 1400, height: 487, alt: "Search Console's sitemap report: https://anthonyugwuja.dev/sitemap.xml, submitted and last read Nov 9, 2026, status Success, 24 discovered pages.", caption: "Recreated from Google Search Console, as shown on 10 November 2026." },
@@ -149,7 +150,7 @@ export const writing: WritingEntry[] = [
         paragraphs: [
           "Put the domain on before sharing a single link, and redirect the default vercel.app host to it from the start, so there is never a second copy for Google to prefer.",
           "Read the address from one constant everywhere it appears, and close preview builds to crawlers before the first preview exists.",
-          "The day the domain goes live, submit the sitemap and inspect the home page in Search Console. The fixes were in place for two days before Google noticed them. Asking it to look took a minute.",
+          "The day the domain goes live, submit the sitemap, inspect the home page in Search Console and request indexing for it. The fixes were in place for two days before Google noticed them. Asking it to look took a minute.",
           "Search Console also has a Change of Address tool for moves between sites you can verify. The old address is set up so it can still be verified for that.",
         ],
       },
