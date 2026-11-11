@@ -69,7 +69,7 @@ function MetaLine({ text, className = "" }: { text: string; className?: string }
   );
 }
 
-function Section({ section }: { section: DocSection }) {
+function Section({ section, compact }: { section: DocSection; compact: boolean }) {
   switch (section.kind) {
     case "paragraphs":
       return (
@@ -121,16 +121,22 @@ function Section({ section }: { section: DocSection }) {
                     maps to title, employer and location, and dates. A
                     combined entry repeats the employer and dates pair. */}
                 <h3 className="font-display text-base text-ink">{role.title}</h3>
-                {role.sites.map((site, index) => (
-                  <Fragment key={`${site.company}-${site.period}`}>
-                    <p className={`${index === 0 ? "mt-0.5" : "mt-1"} text-2xs text-muted`}>
-                      {site.company}, {site.location}
+                {role.sites.map((site, index) =>
+                  compact ? (
+                    <p key={`${site.company}-${site.period}`} className="mt-0.5 text-2xs text-muted">
+                      {site.company}, {site.location}, <span className="whitespace-nowrap">{site.period}</span>
                     </p>
-                    <p className="text-2xs text-muted">
-                      <span className="whitespace-nowrap">{site.period}</span>
-                    </p>
-                  </Fragment>
-                ))}
+                  ) : (
+                    <Fragment key={`${site.company}-${site.period}`}>
+                      <p className={`${index === 0 ? "mt-0.5" : "mt-1"} text-2xs text-muted`}>
+                        {site.company}, {site.location}
+                      </p>
+                      <p className="text-2xs text-muted">
+                        <span className="whitespace-nowrap">{site.period}</span>
+                      </p>
+                    </Fragment>
+                  ),
+                )}
                 {role.note ? <p className="mt-0.5 text-2xs text-muted">{role.note}</p> : null}
                 <ul className={`mt-2 flex flex-col gap-1.5 text-2xs leading-6 text-ink ${JUSTIFY}`}>
                   {role.bullets.map((bullet) => (
@@ -188,9 +194,18 @@ function Section({ section }: { section: DocSection }) {
                 {/* Title, then one fact per line (institution, dates), as
                     in Experience, so a parser maps each to its field. */}
                 <h3 className="font-display text-sm text-ink">{entry.title}</h3>
-                {entry.lines.map((line) => (
-                  <MetaLine key={line} text={line} />
-                ))}
+                {compact ? (
+                  <p className="text-2xs leading-6 text-muted">
+                    {entry.lines.map((line, index) => (
+                      <Fragment key={line}>
+                        {index > 0 ? ", " : null}
+                        <span className={line.length <= 30 ? "whitespace-nowrap" : undefined}>{line}</span>
+                      </Fragment>
+                    ))}
+                  </p>
+                ) : (
+                  entry.lines.map((line) => <MetaLine key={line} text={line} />)
+                )}
               </article>
             ))}
           </div>
@@ -209,9 +224,9 @@ function Section({ section }: { section: DocSection }) {
           <SectionHeading label={section.heading} />
           <div className="mt-3 flex flex-col gap-3">
             {section.groups.map((group) => (
-              <article key={group.label}>
-                <h3 className="font-display text-sm text-ink">{group.label}</h3>
-                <ul className="mt-1 flex flex-col gap-1.5 text-2xs leading-6 text-ink">
+              <article key={group.label || group.items[0]}>
+                {group.label ? <h3 className="font-display text-sm text-ink">{group.label}</h3> : null}
+                <ul className={`${group.label ? "mt-1" : ""} flex flex-col gap-1.5 text-2xs leading-6 text-ink`}>
                   {group.items.map((item) => (
                     <li key={item} className="border-l border-line pl-3">
                       <Rich text={item} />
@@ -273,7 +288,7 @@ export default function ResumeView({ doc }: { doc: ResumeDocument }) {
 
         <div className="mt-8">
           {doc.sections.map((section) => (
-            <Section key={section.heading} section={section} />
+            <Section key={section.heading} section={section} compact={Boolean(doc.compactMeta)} />
           ))}
         </div>
 

@@ -9,7 +9,7 @@ import { resumeContent, resumeFor, type ContactItem, type Variant } from './resu
  * prints it through the same renderer. One renderer is what keeps every
  * copy looking and extracting the same way; only the content differs.
  *
- * Text may mark an italic span with asterisks (`*Brenania brieyi*`), for
+ * Text may mark an italic span with asterisks (`*Escherichia coli*`), for
  * species names in citations. Nothing else is markup.
  */
 export type DocRole = {
@@ -35,6 +35,7 @@ export type DocSection =
   | { kind: 'roles'; heading: string; roles: DocRole[] }
   | { kind: 'projects'; heading: string; projects: DocProject[] }
   | { kind: 'entries'; heading: string; entries: DocEntry[]; after?: DocLine[] }
+  /* A group's label may be empty: one unlabelled list. */
   | { kind: 'citations'; heading: string; groups: { label: string; items: string[] }[] };
 
 export type ResumeDocument = {
@@ -45,6 +46,10 @@ export type ResumeDocument = {
   contact?: ContactItem[];
   /** The site's download link. Private documents have none. */
   pdfHref?: string;
+  /** A longer document can set its employer or institution and its dates
+   *  on one line ("Sky Pharmacy, Wuse, Abuja, Nigeria, Jul 2024 - Mar 2025")
+   *  instead of two. Off for the public versions. */
+  compactMeta?: boolean;
   sections: DocSection[];
 };
 
