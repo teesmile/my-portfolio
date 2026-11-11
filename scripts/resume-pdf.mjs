@@ -39,6 +39,9 @@ const variant = variantArg > -1 ? process.argv[variantArg + 1] : "default";
 /* --private writes a copy carrying the phone number into a gitignored
    folder. The public document and the site never show it. */
 const isPrivate = process.argv.includes("--private");
+/* --out writes somewhere else, for comparing a change without touching
+   the real documents. */
+const outArg = process.argv.indexOf("--out");
 const PORT = await freePort();
 const DEBUG_PORT = await freePort();
 const VARIANTS = { default: "Anthony-Ugwuja-Resume.pdf", ai: "Anthony-Ugwuja-Resume-AI.pdf", general: "Anthony-Ugwuja-Resume-General.pdf" };
@@ -47,9 +50,11 @@ if (!VARIANTS[variant]) {
   process.exit(1);
 }
 const fileName = VARIANTS[variant];
-const OUT = isPrivate
-  ? path.join(process.cwd(), "private", fileName.replace(".pdf", "-private.pdf"))
-  : path.join(process.cwd(), "public", fileName);
+const OUT = outArg > -1
+  ? path.resolve(process.argv[outArg + 1])
+  : isPrivate
+    ? path.join(process.cwd(), "private", fileName.replace(".pdf", "-private.pdf"))
+    : path.join(process.cwd(), "public", fileName);
 
 /* The PDF is printed from the built app, so anything newer than the build
    would print as it used to look. Checking resume.ts alone was not enough:
@@ -192,19 +197,145 @@ async function pageLines(buffer) {
   return counts;
 }
 
+/* Justified text, evened out one paragraph at a time.
+
+   A justified line stretches its word spaces to reach the right edge, and
+   with about ninety characters to a line some lines always land badly: one
+   long word drops to the next line and the rest of the line opens up to
+   twice its normal spacing. No single setting for the whole page fixes it
+   (tried: word spacing, letter spacing and the column width, each moves the
+   bad lines rather than removing them), because each paragraph breaks
+   differently.
+
+   So each justified block gets its own setting, chosen here, in print
+   layout, before the PDF is made: letter spacing from a hundredth of an
+   em tighter to half that looser (a tenth of a point at 11pt; looser than
+   that and a word visibly spreads) and word spacing up to a fortieth of an
+   em tighter. Wider ranges were tried and pulled words so
+   close they ran together, so lines that are too tight score against a
+   setting as well as lines that are too open. The words never change, and neither does any paragraph's
+   line count, so the page breaks stay where the content put them. Whichever
+   setting leaves the block's lines least over-stretched wins; the
+   untouched block wins ties. Done in the page, on the live layout, because that is
+   where Chrome decides the line breaks. */
+const evenJustified = `(() => {
+  const LETTER = ["0em", "-0.01em", "-0.005em", "0.005em"];
+  const WORD = ["0em", "-0.0125em", "-0.025em"];
+  const measure = (el) => {
+    const words = [];
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      for (const match of node.data.matchAll(/\\S+/g)) {
+        const range = document.createRange();
+        range.setStart(node, match.index);
+        range.setEnd(node, match.index + match[0].length);
+        const rect = range.getBoundingClientRect();
+        if (rect.width) words.push(rect);
+      }
+    }
+    const lines = new Map();
+    for (const rect of words) {
+      const key = Math.round(rect.top);
+      if (!lines.has(key)) lines.set(key, []);
+      lines.get(key).push(rect);
+    }
+    const ordered = [...lines.keys()].sort((a, b) => a - b).map((key) => lines.get(key).sort((a, b) => a.left - b.left));
+    /* A normal space in this block's own font, before any adjustment. Up
+       to half as wide again is ordinary justification; beyond that a line
+       reads as gappy. Below 85% of it, words start to run together, which
+       is as bad, and counts four times as much. Both grow with the square
+       of the excess, so two slightly open lines beat one badly open one. */
+    const ctx = document.createElement("canvas").getContext("2d");
+    ctx.font = getComputedStyle(el).font;
+    const space = ctx.measureText(" ").width;
+    let worst = 0;
+    let score = 0;
+    ordered.forEach((line, index) => {
+      let lineWorst = 0;
+      let lineTightest = Infinity;
+      for (let i = 1; i < line.length; i += 1) {
+        const gap = line[i].left - line[i - 1].right;
+        lineWorst = Math.max(lineWorst, gap);
+        lineTightest = Math.min(lineTightest, gap);
+      }
+      /* The last line is set left, at natural spacing: it cannot be too
+         open, only too tight. */
+      if (index < ordered.length - 1) {
+        worst = Math.max(worst, lineWorst);
+        score += Math.max(0, lineWorst - space * 1.5) ** 2;
+      }
+      if (lineTightest < Infinity) score += 4 * Math.max(0, space * 0.85 - lineTightest) ** 2;
+    });
+    return { lines: ordered.length, worst, score };
+  };
+  let total = 0;
+  for (const el of document.querySelectorAll(".text-justify-body > li, p.text-justify-body")) {
+    el.style.letterSpacing = "";
+    el.style.wordSpacing = "";
+    const base = measure(el);
+    let best = { ...base, letter: "", word: "" };
+    for (const letter of LETTER) {
+      for (const word of WORD) {
+        el.style.letterSpacing = letter;
+        el.style.wordSpacing = word;
+        const m = measure(el);
+        const better = m.score < best.score - 0.01 || (m.score <= best.score && m.worst < best.worst - 0.25);
+        if (m.lines <= base.lines && better) best = { ...m, letter, word };
+      }
+    }
+    el.style.letterSpacing = best.letter;
+    el.style.wordSpacing = best.word;
+    total += best.score;
+  }
+  return total;
+})()`;
+
+/* The text column's width on paper, in CSS pixels: from a little narrower
+   than the screen's reading column to the full printable width. Every width
+   is evened out as above and scored; the PDF is printed at the best-scoring
+   width that keeps the page rules (two pages, no stub second page). One
+   width for the whole document, so every justified block shares one right
+   edge. */
+const MEASURES = [570, 578, 586, 594, 602, 610, 618, 626, 634, 642, 650];
+
 async function print(tight) {
   await evaluate(tight
     ? "(document.documentElement.dataset.fit = 'tight', true)"
     : "(delete document.documentElement.dataset.fit, true)");
-  const { data } = await send("Page.printToPDF", {
-    printBackground: false,
-    paperWidth: 8.27,
-    paperHeight: 11.69,
-    ...(tight ? TIGHT_MARGINS : MARGINS),
-    displayHeaderFooter: false,
-  });
-  const buffer = Buffer.from(data, "base64");
-  return { buffer, lines: await pageLines(buffer), tight };
+  const margins = tight ? TIGHT_MARGINS : MARGINS;
+
+  /* Measured at the printable width, or the breaks it evens out are the
+     window's, not the paper's: A4 less the side margins, in CSS pixels. */
+  const paper = Math.round((8.27 - margins.marginLeft - margins.marginRight) * 96);
+  const layoutAt = async (measure) => {
+    await send("Emulation.setDeviceMetricsOverride", { width: paper, height: 1100, deviceScaleFactor: 1, mobile: false });
+    await evaluate(`(document.documentElement.style.setProperty("--cv-measure", "${measure}px"), true)`);
+    const score = await evaluate(evenJustified);
+    await send("Emulation.clearDeviceMetricsOverride");
+    return score;
+  };
+
+  const scored = [];
+  for (const measure of MEASURES.filter((m) => m <= paper)) scored.push({ measure, score: await layoutAt(measure) });
+  scored.sort((a, b) => a.score - b.score);
+
+  let fallback = null;
+  for (const { measure, score } of scored) {
+    await layoutAt(measure);
+    const { data } = await send("Page.printToPDF", {
+      printBackground: false,
+      paperWidth: 8.27,
+      paperHeight: 11.69,
+      ...margins,
+      displayHeaderFooter: false,
+    });
+    const buffer = Buffer.from(data, "base64");
+    const result = { buffer, lines: await pageLines(buffer), tight, measure, score };
+    fallback ??= result;
+    const pagesOk = result.lines.length === 1 || (result.lines.length === 2 && result.lines[1] >= MIN_SECOND_PAGE_LINES);
+    if (pagesOk) return result;
+  }
+  return fallback;
 }
 
 let printed = await print(false);
@@ -348,7 +479,7 @@ if (pages === 2 && lastPage < MIN_SECOND_PAGE_LINES) {
   failures.push(`page two holds only ${lastPage} lines, even after tightening — cut a line or two, or add a section's worth`);
 }
 
-console.log(`${path.relative(process.cwd(), OUT)} — ${Math.round(bytes.length / 1024)} KB, ${pages} page${pages === 1 ? "" : "s"} (${printed.lines.join(" + ")} lines${printed.tight ? ", tight" : ""}), variant: ${variant}${isPrivate ? ", private" : ""}${fitNote ? ` — ${fitNote}` : ""}`);
+console.log(`${path.relative(process.cwd(), OUT)} — ${Math.round(bytes.length / 1024)} KB, ${pages} page${pages === 1 ? "" : "s"} (${printed.lines.join(" + ")} lines${printed.tight ? ", tight" : ""}, measure ${printed.measure}px), variant: ${variant}${isPrivate ? ", private" : ""}${fitNote ? ` — ${fitNote}` : ""}`);
 
 if (failures.length) {
   console.error(`\nATS check failed:\n  ${failures.join("\n  ")}`);

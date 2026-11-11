@@ -268,7 +268,7 @@ export const portfolioConfig = {
   evaluation: {
     title: "AI evaluation",
     period: "Nov 2025-Present",
-    role: "Self-employed, remote",
+    role: "Freelance, remote",
     body: "I evaluate and stress-test AI models. I author expert-level tasks built to stump frontier models in chemistry, biology and clinical pharmacy, including terminal-based benchmarks where an agent must reconcile messy synthetic patient records and carry out pharmacokinetic calculations. I also annotate image, video and audio data, verify facts, and rate and compare model responses against detailed guidelines. Every task I author ships with evidence that its grading is sound. Client and task details stay under NDA; the sample below is an original task built the same way.",
     sample: {
       title: "Renal dose check",
@@ -304,7 +304,7 @@ export const portfolioConfig = {
     { period: "Feb 2024", label: "Provisional pharmacist licence", track: "pharmacy" },
     { period: "Oct 2024-Oct 2025", label: "Diploma in Frontend Engineering, AltSchool Africa", track: "code" },
     { period: "May 2025-May 2026", label: "Pharmacy intern, Federal Medical Centre, Keffi", track: "pharmacy" },
-    { period: "Nov 2025-Present", label: "AI training and evaluation, self-employed", track: "code" },
+    { period: "Nov 2025-Present", label: "AI evaluation and data annotation, freelance", track: "code" },
     { period: "Jul 2026-Present", label: "Cloud Computing, AltSchool Africa", track: "code" },
     { period: "Aug 2026-Present", label: "Pharmacist, NYSC, Nasarawa State University clinic", track: "pharmacy" },
     { period: "Oct 2026", label: "Full pharmacist licence", track: "pharmacy" },

@@ -36,9 +36,15 @@ export type Line = { text: string; place: Placement };
 
 export type ContactItem = { text: string; href: string; private?: boolean };
 
+/* A role prints as three lines, in the order a parser looks for them: the
+   title alone, then "employer, location", then the dates as
+   "Mon YYYY - Mon YYYY" or "Mon YYYY - Present". Commas and plain hyphens
+   only: a middle dot or a long dash is where extractors split fields
+   wrongly or drop characters. */
 export type Role = {
   title: string;
   company: string;
+  location: string;
   period: string;
   /** Rendered on /about, not on the resume. */
   tech: string[];
@@ -46,6 +52,9 @@ export type Role = {
   note?: Line;
   bullets: Line[];
   place: Placement;
+  /** Order on /about's timeline, apart from any CV: what fits on a CV page
+   *  should never decide what the site shows. Absent means not on /about. */
+  about?: number;
 };
 
 export type SkillGroup = { label: string; items: string[]; place: Placement };
@@ -61,19 +70,28 @@ export const resumeContent = {
   },
   /* Section labels live here as well, so the document has no text that the
      ATS check cannot trace back to this file. */
+  /* Named the way a parser and a recruiter both expect, in this order:
+     summary, skills, experience, projects, then education and credentials
+     together under one heading. */
   sections: {
-    experience: 'Experience',
-    projects: 'Selected projects',
-    education: 'Education',
-    credentials: 'Credentials',
+    summary: 'Professional summary',
+    skills: 'Technical skills',
+    experience: 'Professional experience',
+    projects: 'Projects',
+    education: 'Education and credentials',
     languages: 'Languages',
-    skills: 'Skills',
   },
+  /* One role per title line, the role that version is applying for. The
+     summary under it opens on the same role and gives the rest as
+     background. */
   titles: {
-    default: 'Full-stack developer and AI evaluator · Pharmacist',
-    ai: 'AI evaluation specialist · Pharmacist',
-    general: 'AI evaluation and data quality specialist · Pharmacist',
+    default: 'Full-stack developer (React, Next.js, TypeScript, Node.js)',
+    ai: 'AI evaluation and data annotation specialist (pharmacy and science)',
+    general: 'AI data annotation and quality specialist',
   },
+  /* Projects before experience on the developer version, where the work
+     itself is what the reader hires for; the other two put the roles first. */
+  projectsFirst: { default: true, ai: false, general: false } as Record<Variant, boolean>,
 
   /* Written out as text so a parser reads them, and linked so a human can
      click them. Both, not either. */
@@ -81,7 +99,9 @@ export const resumeContent = {
      `pnpm resume --private` puts it back for applications. */
   contact: [
     { text: 'anthonyugwujac@gmail.com', href: 'mailto:anthonyugwujac@gmail.com' },
-    { text: '+234 903 257 0130', href: 'tel:+2349032570130', private: true },
+    /* WhatsApp is the channel that number answers. Shown as text so it
+       still reads on paper, linked so a click opens a chat. */
+    { text: 'WhatsApp: +234 903 257 0130', href: 'https://wa.me/2349032570130', private: true },
     { text: 'Abuja, Nigeria', href: '' },
     { text: 'anthonyugwuja.dev', href: 'https://anthonyugwuja.dev' },
     { text: 'linkedin.com/in/tonysmile', href: 'https://linkedin.com/in/tonysmile' },
@@ -91,76 +111,86 @@ export const resumeContent = {
   /* No first person, keyword-led, written for a reader scanning twenty of
      these. The site says the same thing in my voice; a resume is not the
      place for it. Each version opens on what its reader is hiring for. */
+  /* Under a "Summary" heading, so a parser files it as the summary rather
+     than guessing from position. One paragraph per version. */
   summary: {
-    /* One paragraph, not two. Two opening lines at this width wrapped to
-       four, and the second was a second claim about the same person — the
-       merge says both things once and buys back the lines that kept
-       Education off page one. */
     default: [
-      'Full-stack developer (React, Next.js, TypeScript, Node.js) and pharmacist who builds accessible product interfaces and evaluates AI model output, catching confident but wrong clinical answers.',
+      'Full-stack developer with a pharmacy background, building web applications end to end with React, Next.js, TypeScript, Node.js and Python. Experienced in taking products from idea to launch, including offline-first apps, data pipelines and a site with more than 26,000 pages that stays fast on slow connections. Also works as an AI evaluation and data annotation specialist, with more than 1,000 tasks completed across annotation, grading and expert task writing. Brings the care of clinical work to software: clear documentation, thorough testing and attention to what can go wrong.',
     ],
     ai: [
-      'Pharmacist who evaluates AI models and catches confident but incorrect answers in clinical and scientific content.',
-      'Authors and reviews expert-level evaluation tasks across text, image, video and terminal-based formats, grading for accuracy, instruction following, reasoning quality and safety.',
+      'AI evaluation and data annotation specialist with a pharmacy degree and a software development background. Since 2025, has completed more than 1,000 image and video annotation, comparison and rating tasks with quality ratings mostly between 4.5 and 4.8 out of 5, and has written expert-level science tasks with about 90% approved. Also builds terminal-based benchmark tasks for AI coding agents, working in Python, TypeScript and Linux. Works carefully and consistently, and writes clear feedback.',
     ],
     general: [
-      'AI training and evaluation specialist working on data quality: grading model output against detailed guidelines and flagging subtle factual and reasoning errors.',
-      'Pharmacist with front-line customer service, sales growth and regulated record-keeping experience.',
+      'AI data annotation and quality specialist with a pharmacy degree. Since 2025, has completed more than 1,000 image and video annotation, comparison and rating tasks with quality ratings mostly between 4.5 and 4.8 out of 5, and has written expert-level science tasks with about 90% approved. Completed a one-year pharmacy internship at Federal Medical Centre Keffi and now works as a pharmacist at the Nasarawa State University clinic, dispensing medicines and counselling patients face to face. Also has working knowledge of Python, TypeScript and Linux.',
     ],
   } as Record<Variant, string[]>,
 
   experience: [
     {
-      title: 'AI Training & Evaluation Specialist',
-      company: 'Self-employed, remote · Outlier, Mercor, micro1 and others',
-      period: 'Nov 2025-Present',
+      title: 'AI Evaluation and Data Annotation Specialist',
+      /* Printed as "Freelance, remote". No platform or client is named
+         anywhere on the site or the CVs; the note below says why. */
+      company: 'Freelance',
+      location: 'remote',
+      period: 'Nov 2025 - Present',
       /* Empty on purpose: /about renders this role's bullets in full, and
          the practices live in the stack's "AI evaluation" row. Four tags
-         under six bullets would say the same thing twice. */
+         under the bullets would say the same thing twice. */
       tech: [],
       /* First in the AI version only: both this and the NYSC post are
          current, so dates can't order them and relevance does. */
       place: { default: 1, ai: 0, general: 1 },
+      about: 1,
       /* Why no client names anywhere in this entry. One line, in every
          version, because its absence is more conspicuous than its presence. */
       note: { text: 'Client and project details under NDA.', place: { default: 0, ai: 0, general: 0 } },
+      /* The three counted results lead, word for word as given. The older
+         lines they made redundant are folded in, not repeated: "annotate
+         image, video and audio data" and "quality bars, rated at the top of
+         the reviewer scale" are the first result; "author expert-level
+         tasks in chemistry, biology and clinical pharmacy ... and
+         terminal-based formats" is the second
+         and third; side-by-side rating joins the grading line. */
       bullets: [
         {
-          text: 'Author expert-level tasks designed to stump frontier models in chemistry, biology and clinical pharmacy, across text, image, video and terminal-based formats.',
+          text: 'Completed more than 1,000 image and video annotation, comparison and rating tasks on a single project, with quality ratings mostly between 4.5 and 4.8 out of 5.',
           place: { default: 0, ai: 0, general: 0 },
         },
         {
-          text: 'Grade outputs for accuracy, instruction following, reasoning quality and safety against detailed guidelines.',
+          text: 'Wrote more than 25 expert-level science tasks built to expose model errors, with about 90% approved.',
           place: { default: 1, ai: 1, general: 1 },
         },
         {
-          text: 'Rate and compare model responses side by side, and verify factual claims against sources.',
-          place: { default: 2, ai: 2, general: 2 },
+          text: 'Built and submitted more than 10 terminal-based benchmark tasks that test AI coding agents.',
+          place: { default: 2, ai: 2, general: 3 },
+        },
+        {
+          /* Off the developer version: its Skills line already says
+             "rubric-based grading", "side-by-side model comparison" and
+             "fact verification", and the three lines are what keep this
+             role whole on page one there. */
+          text: 'Grade and compare model responses for accuracy, instruction following, reasoning quality and safety against detailed guidelines, and verify factual claims against sources.',
+          place: { ai: 3, general: 2 },
         },
         {
           /* The differentiator for health and science evaluation, and dead
              weight on a fintech desk. */
-          text: 'Apply pharmacy and chemistry knowledge to catch confident but incorrect answers in clinical and scientific content.',
+          text: 'Write tasks in biology and clinical pharmacy too, and apply pharmacy knowledge to catch confident but incorrect answers in clinical and scientific content.',
           place: { default: 4, ai: 4 },
-        },
-        {
-          text: 'Annotate image, video and audio data.',
-          place: { default: 3, ai: 3, general: 3 },
-        },
-        {
-          text: 'Consistently meet quality bars across concurrent projects, with tasks rated at the top of the reviewer scale.',
-          place: { default: 5, ai: 5, general: 4 },
         },
       ],
     },
     {
       title: 'Full Stack Developer Trainee',
       company: 'Zuri Team',
-      period: 'May 2022-Sep 2022',
+      location: 'Remote',
+      period: 'May 2022 - Sep 2022',
       tech: ['HTML', 'CSS', 'JavaScript', 'Python', 'Django'],
-      /* The master carries the development history as history. The other two
-         carry it as a skills line and spend the space elsewhere. */
-      place: { default: 3 },
+      /* Off every version since the lead project went on (11 Nov 2026): the
+         oldest and weakest development entry, and the Diploma in Frontend
+         Engineering covers the same training. /about keeps it (`about`). */
+      place: {},
+      about: 3,
       bullets: [
         { text: 'Built frontend interfaces in HTML, CSS and JavaScript.', place: { default: 0 } },
         { text: 'Learned backend development in Python and Django through project work.', place: { default: 1 } },
@@ -170,16 +200,18 @@ export const resumeContent = {
       /* Current clinical post. One line in every version: the title, the
          employer and the dates are the whole point of it. */
       title: 'Pharmacist (NYSC Corps Member)',
-      company: 'Nasarawa State University clinic, Keffi',
-      period: 'Aug 2026-Present',
+      company: 'Nasarawa State University clinic',
+      location: 'Keffi, Nigeria',
+      period: 'Aug 2026 - Present',
       tech: [],
       /* The master and general versions run strict reverse chronological
          order, so the current clinical post opens the section there. In the
          AI version it sits second: it and the evaluation role are both
-         "– Present", so putting the evaluation role first never shows a
+         "- Present", so putting the evaluation role first never shows a
          jump back in time, and two concurrent roles are ordered by
          relevance to the reader instead. */
       place: { default: 0, ai: 1, general: 0 },
+      about: 0,
       bullets: [
         {
           text: 'Dispense medications and counsel students and staff on safe use.',
@@ -189,10 +221,12 @@ export const resumeContent = {
     },
     {
       title: 'Pharmacy Intern',
-      company: 'Federal Medical Centre, Keffi',
-      period: 'May 2025-May 2026',
+      company: 'Federal Medical Centre',
+      location: 'Keffi, Nigeria',
+      period: 'May 2025 - May 2026',
       tech: [],
       place: { default: 2, ai: 2, general: 2 },
+      about: 2,
       bullets: [
         {
           text: 'Rotations across A&E, GOPD, inpatient, theatre, O&G and the ART (HIV) clinic; joined the TB unit on my own initiative.',
@@ -204,8 +238,9 @@ export const resumeContent = {
       /* Customer service and covering a regulated role. Worth the space to a
          fintech or operations reader; not to the other two. */
       title: 'Locum Pharmacy Assistant',
-      company: 'Sky Pharmacy, Wuse, Abuja',
-      period: 'Jul 2024-Mar 2025',
+      company: 'Sky Pharmacy',
+      location: 'Wuse, Abuja, Nigeria',
+      period: 'Jul 2024 - Mar 2025',
       tech: [],
       place: { general: 3 },
       bullets: [
@@ -215,13 +250,16 @@ export const resumeContent = {
     },
     {
       title: 'Administrative Assistant',
-      company: 'New System Pharmacy, Nsukka',
-      period: 'Jul 2022-Sep 2022',
+      company: 'New System Pharmacy',
+      location: 'Nsukka, Nigeria',
+      period: 'Jul 2022 - Sep 2022',
       tech: [],
       place: { general: 4 },
       bullets: [
         { text: 'Grew sales revenue 15% in two months against a 5% target.', place: { general: 0 } },
-        { text: 'Handled wholesale distribution.', place: { general: 1 } },
+        /* Off since the lead project went on: the weakest of the three, and
+           the line that keeps the operations version at two pages. */
+        { text: 'Handled wholesale distribution.', place: {} },
         { text: 'Kept dispensing records accurate.', place: { general: 2 } },
       ],
     },
@@ -237,43 +275,64 @@ export const resumeContent = {
      of the four, and it is still on /work. Roasted then replaced the
      E-Commerce page on the master: it has a server side, three external
      services and real users, where the product page is a frontend build. */
+  /* Who's on my ballot? leads the developer and operations versions; the
+     AI version leads with the evaluation sample, which is what that reader
+     hires for (the owner's calls, 11 Nov 2026). Its figures are checked
+     against the repo (teesmile/whos-on-my-ballot at e92c9c0): 26,142 pages
+     in the built sitemap, 177,299 polling units from INEC's locator, and
+     LCP 2.0-2.4 s in Lighthouse's simulated slow-3G profile. Roasted stays
+     on the developer version, fourth, as a one-line entry.
+
+     Each project links to its case study on the site and to the live
+     site, as buttons; a project shows only the links it has. */
   projects: [
+    {
+      name: "Who's on my ballot? (launching November 2026), whosonmyballot.ng",
+      line: "A free voter information site for Nigeria's 2027 elections. Built a data pipeline that turns INEC's official candidate lists into more than 26,000 static pages, and a polling-unit lookup covering 177,299 units that runs in the browser. Tested to show its main content in about 2 seconds on a simulated slow 3G connection.",
+      caseStudy: 'https://anthonyugwuja.dev/work/whos-on-my-ballot',
+      url: 'https://whosonmyballot.ng',
+      /* Second on the AI version, behind the benchmark: that reader is
+         hiring for evaluation work. */
+      place: { default: 0, ai: 1, general: 0 } as Placement,
+    },
     {
       name: 'Renal dose check (AI agent benchmark)',
       line: 'A benchmark task that tests whether AI agents can check drug doses from a messy patient chart; simulated agents prove each mistake is caught.',
-      showcase: 'https://anthonyugwuja.dev/work/renal-dosing-task',
-      repo: 'https://github.com/teesmile/renal-dosing-task',
-      place: { default: 0, ai: 0 } as Placement,
+      caseStudy: 'https://anthonyugwuja.dev/work/renal-dosing-task',
+      place: { default: 1, ai: 0 } as Placement,
     },
     {
       name: 'Todo App',
-      line: 'Local-first task list that installs and works offline; optional Google sign-in syncs tasks across devices.',
+      line: 'Local-first task list that works offline and syncs across devices via Google sign-in.',
+      caseStudy: 'https://anthonyugwuja.dev/work/todo-app',
       url: 'https://todo.anthonyugwuja.dev',
-      repo: 'https://github.com/teesmile/todo-app-tsc',
-      place: { default: 1 } as Placement,
+      place: { default: 2 } as Placement,
     },
     {
       name: 'Roasted',
-      line: 'Farcaster mini app that writes a roast from a user\'s profile and recent casts, turns their avatar into a meme, and shares the card as a cast.',
+      /* Back on the developer version as a short entry (owner's call, 11
+         Nov 2026), held to one line so the CV stays at two pages. /work
+         carries the full description. */
+      line: 'Farcaster mini app that writes a roast from a user\'s profile and recent casts.',
+      caseStudy: 'https://anthonyugwuja.dev/work/roasted',
       url: 'https://castroast.vercel.app',
-      repo: 'https://github.com/teesmile/roasted-app',
-      place: { default: 2 } as Placement,
+      place: { default: 3 } as Placement,
     },
     {
       name: 'E-Commerce Product Page',
       line: 'Product page with a gallery, cart state and one responsive layout built from a design file.',
+      caseStudy: 'https://anthonyugwuja.dev/work/ecommerce-product-page',
       url: 'https://shop.anthonyugwuja.dev',
-      repo: 'https://github.com/teesmile/e-commerce-product-page',
       place: {} as Placement,
     },
     {
       name: 'Space Tourism Website',
       line: 'Four content types sharing one navigation shell, spacing system and page transitions.',
+      caseStudy: 'https://anthonyugwuja.dev/work/space-tourism',
       url: 'https://space.anthonyugwuja.dev',
-      repo: 'https://github.com/teesmile/space-tourism',
       place: {} as Placement,
     },
-  ] as { name: string; line: string; url?: string; showcase?: string; repo: string; place: Placement }[],
+  ] as { name: string; line: string; caseStudy?: string; url?: string; place: Placement }[],
 
   /* Reverse chronological, like the experience section. Mixing the two
      orders in one document is the kind of small inconsistency a careful
@@ -282,23 +341,28 @@ export const resumeContent = {
     {
       title: 'Cloud Computing (in progress)',
       institution: 'AltSchool Africa',
-      period: 'Jul 2026-Present',
-      place: { default: 0, ai: 0, general: 0 } as Placement,
+      period: 'Jul 2026 - Present',
+      /* Off the operations version: a course with no credential yet says
+         little to that reader, and its three lines keep it at two pages. */
+      place: { default: 0, ai: 0 } as Placement,
     },
     {
       title: 'Diploma in Frontend Engineering',
       institution: 'AltSchool Africa',
-      period: 'Oct 2024-Oct 2025',
+      period: 'Oct 2024 - Oct 2025',
       note: {
         text: 'Project work in JavaScript, React, Node.js, HTML and CSS, with code review and technical writing throughout.',
-        place: { default: 0 },
+        /* Off since the lead project went on: it restates the Skills
+           section, and its two lines keep the developer version at two
+           pages. */
+        place: {},
       } as Line,
       place: { default: 1, ai: 1, general: 1 } as Placement,
     },
     {
       title: 'B.Pharm, Pharmacy',
       institution: 'University of Nigeria, Nsukka',
-      period: '2017-2023',
+      period: '2017 - 2023',
       place: { default: 2, ai: 2, general: 2 } as Placement,
     },
   ],
@@ -330,7 +394,7 @@ export const resumeContent = {
     },
     {
       label: 'AI evaluation',
-      items: ['LLM evaluation', 'multimodal annotation', 'data annotation', 'image, video and audio annotation', 'fact verification', 'rubric-based grading', 'side-by-side model comparison'],
+      items: ['LLM evaluation', 'data annotation', 'multimodal (image, video and audio) annotation', 'fact verification', 'rubric-based grading', 'side-by-side model comparison'],
       place: { default: 2, ai: 0, general: 0 },
     },
     {
@@ -383,6 +447,7 @@ export function resumeFor(variant: Variant = 'default', includePrivate = false) 
     ...resumeContent,
     contact,
     title: resumeContent.titles[variant],
+    projectsFirst: resumeContent.projectsFirst[variant],
     pdfHref: resumeContent.pdf[variant],
     summary: resumeContent.summary[variant],
     experience,
@@ -396,5 +461,19 @@ export function resumeFor(variant: Variant = 'default', includePrivate = false) 
   };
 }
 
-/** The experience the site itself shows: the master's selection. */
-export const siteExperience = resumeFor('default').experience;
+/* A bullet's order on /about: its developer-version rank where it has one,
+   else its rank in the AI or operations version. */
+const rank = (place: Placement) => place.default ?? place.ai ?? place.general ?? 99;
+
+/** The experience /about shows, in its own order (`about`), with every
+ *  bullet the role carries in any version. */
+export const siteExperience = resumeContent.experience
+  .filter((role) => role.about !== undefined)
+  .sort((a, b) => (a.about ?? 0) - (b.about ?? 0))
+  .map((role) => ({
+    ...role,
+    note: role.note?.text ?? '',
+    bullets: [...role.bullets]
+      .sort((a, b) => rank(a.place) - rank(b.place))
+      .map((bullet) => bullet.text),
+  }));

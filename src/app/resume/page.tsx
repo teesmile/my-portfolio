@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { resumeFor, type Variant } from "@/content/resume";
-import { ExternalLinkIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = pageMetadata({
   title: "Resume",
@@ -13,21 +12,42 @@ export const metadata: Metadata = pageMetadata({
   path: "/resume",
 });
 
-/* The one place a rule carries the accent. The working rules state the exception:
-   the resume is read as a document rather than navigated. */
+/* Section headings carry the CV's one accent: the heading itself is set in
+   it. Nothing else on the page takes it except the link buttons. */
 function SectionHeading({ label }: { label: string }) {
   return (
     <div data-section-heading className="mt-10 first:mt-0">
-      <div className="mb-2 h-0.5 w-10 bg-accent-strong" aria-hidden="true" />
-      <h2 className="text-2xs tracking-wide text-muted">{label}</h2>
+      <h2 className="text-sm text-cv-accent">{label}</h2>
     </div>
   );
 }
 
+/* Body text runs the full measure: justified, last line left, never
+   hyphenated (a break hyphen extracts as a fused or split word). */
+const JUSTIFY = "text-justify-body";
+
+/* A link as a small outlined button: the accent's colour, no underline. A
+   real <a>, so it stays a clickable link annotation in the PDF. */
+function LinkButton({ href, label, external }: { href: string; label: string; external?: boolean }) {
+  return (
+    <a
+      data-cv-button
+      href={href}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      className="mr-1 inline-block border border-cv-accent px-2 py-0.5 text-2xs leading-5 text-cv-accent no-underline transition-colors hover:bg-cv-accent hover:text-surface"
+    >
+      {label}
+      {external ? <span className="sr-only print:hidden"> (opens in a new tab)</span> : null}
+    </a>
+  );
+}
+
 /**
- * One column, in a fixed order: summary, skills, experience, projects,
- * education, credentials, languages. A version that carries no projects
- * drops that section rather than printing an empty heading.
+ * One column: summary, skills, experience and projects (projects first on
+ * the developer version), then education and credentials under one
+ * heading, then languages. A version
+ * that carries no projects drops that section rather than printing an empty
+ * heading.
  *
  * Single column is not a style choice. A two-column document interleaves in
  * the text stream when it is extracted, which is how "todo-app…vercel.app/"
@@ -53,11 +73,80 @@ export default async function ResumePage({
   const privateAllowed = process.env.RESUME_ALLOW_PRIVATE === "1";
   const resume = resumeFor(variant, privateAllowed && params.private === "1");
 
+  const experienceSection = (
+    <>
+      <SectionHeading label={resume.sections.experience} />
+      <div className="mt-3 flex flex-col gap-6">
+        {resume.experience.map((role) => (
+          <article key={`${role.title}-${role.period}`}>
+            {/* Three lines, one fact each, joined only by commas: what a
+                parser maps to title, employer and location, and dates. */}
+            <h3 className="font-display text-base text-ink">{role.title}</h3>
+            <p className="mt-0.5 text-2xs text-muted">
+              {role.company}, {role.location}
+            </p>
+            <p className="text-2xs text-muted">
+              <span className="whitespace-nowrap">{role.period}</span>
+            </p>
+            {role.note ? (
+              <p className="mt-0.5 text-2xs text-muted">{role.note}</p>
+            ) : null}
+            <ul className={`mt-2 flex flex-col gap-1.5 text-2xs leading-6 text-ink ${JUSTIFY}`}>
+              {role.bullets.map((bullet) => (
+                <li key={bullet} className="border-l border-line pl-3">
+                  {bullet}
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </>
+  );
+
+  const projectsSection = resume.projects.length ? (
+    <>
+      <SectionHeading label={resume.sections.projects} />
+      <div className="mt-3 flex flex-col gap-4">
+        {resume.projects.map((project) => (
+          <article key={project.name}>
+            <h3 className="font-display text-sm text-ink">{project.name}</h3>
+            <p className={`mt-0.5 text-2xs leading-6 text-ink ${JUSTIFY}`}>{project.line}</p>
+            {/* Both links on one line, each unbreakable in itself: a URL
+                that wraps mid-token extracts as two words, but the line
+                may break at the separator between them. Three projects
+                at two link lines each is three lines of paper. */}
+            {/* The case study on the site, then the live site: whichever
+                exist, as buttons. In the PDF both stay real links. */}
+            {/* Inline, with a real space between them rather than a flex
+                gap: a gap adds no text, and the PDF's text layer would read
+                "Case studyLive site". */}
+            <p className="mt-1.5">
+              {[
+                project.caseStudy ? <LinkButton key="case" href={project.caseStudy} label="Case study" /> : null,
+                project.url ? <LinkButton key="live" href={project.url} label="Live site" external /> : null,
+              ]
+                .filter(Boolean)
+                .map((button, index) => (
+                  <Fragment key={index}>
+                    {index > 0 ? " " : null}
+                    {button}
+                  </Fragment>
+                ))}
+            </p>
+          </article>
+        ))}
+      </div>
+    </>
+  ) : null;
+
   return (
-    <section className="px-4 sm:px-6 py-20 md:py-24">
+    <section data-cv-sheet className="px-4 sm:px-6 py-20 md:py-24">
       <div className="mx-auto max-w-(--container-reading)">
-        <header className="border-b border-line pb-6">
-          <h1 className="text-xl text-ink md:text-2xl">{resume.name}</h1>
+        {/* Centred: name, title line and contact lines. Centring changes no
+            text, so the extraction reads the same three lines in order. */}
+        <header className="border-b border-line pb-6 text-center">
+          <h1 data-cv-name className="text-2xl text-ink">{resume.name}</h1>
           <p className="mt-2 text-sm text-muted">{resume.title}</p>
 
           {/* Written out as text with visible separators so a parser reads it,
@@ -90,22 +179,28 @@ export default async function ResumePage({
         </header>
 
         <div className="mt-8">
-          {resume.summary.map((line) => (
-            <p key={line} className="mb-2 text-sm text-ink">
-              {line}
-            </p>
-          ))}
+          <SectionHeading label={resume.sections.summary} />
+          <div className="mt-3">
+            {resume.summary.map((line) => (
+              <p key={line} className={`mb-2 text-sm text-ink last:mb-0 ${JUSTIFY}`}>
+                {line}
+              </p>
+            ))}
+          </div>
 
           <SectionHeading label={resume.sections.skills} />
           <div className="mt-3 flex flex-col gap-2">
             {resume.skills.map((group) => (
               <p key={group.label} className="text-2xs leading-6">
-                <span className="text-ink">{group.label}: </span>
-                <span className="text-muted">
+                <span className="font-display text-ink">{group.label}: </span>
+                <span className="text-ink">
                   {group.items.map((item, index) => (
                     <span key={item}>
                       {index > 0 ? ", " : ""}
-                      <span className="whitespace-nowrap">{item}</span>
+                      {/* Short items hold together ("Tailwind CSS"); a long
+                          one may wrap, or it drops whole to the next line
+                          and leaves a short line behind it. */}
+                      <span className={item.split(" ").length < 3 ? "whitespace-nowrap" : undefined}>{item}</span>
                     </span>
                   ))}
                 </span>
@@ -113,78 +208,10 @@ export default async function ResumePage({
             ))}
           </div>
 
-          <SectionHeading label={resume.sections.experience} />
-          <div className="mt-3 flex flex-col gap-6">
-            {resume.experience.map((role) => (
-              <article key={`${role.title}-${role.period}`}>
-                <h3 className="font-display text-base text-ink">{role.title}</h3>
-                <p className="mt-0.5 text-2xs text-muted">
-                  {role.company} &middot; <span className="whitespace-nowrap">{role.period}</span>
-                </p>
-                {role.note ? (
-                  <p className="mt-0.5 text-2xs text-muted">{role.note}</p>
-                ) : null}
-                <ul className="mt-2 flex flex-col gap-1.5 text-2xs leading-6 text-muted">
-                  {role.bullets.map((bullet) => (
-                    <li key={bullet} className="border-l border-line pl-3">
-                      {bullet}
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
-
-          {resume.projects.length ? (
-            <>
-              <SectionHeading label={resume.sections.projects} />
-              <div className="mt-3 flex flex-col gap-4">
-            {resume.projects.map((project) => (
-              <article key={project.name}>
-                <h3 className="font-display text-sm text-ink">{project.name}</h3>
-                <p className="mt-0.5 text-2xs leading-6 text-muted">{project.line}</p>
-                {/* Both links on one line, each unbreakable in itself: a URL
-                    that wraps mid-token extracts as two words, but the line
-                    may break at the separator between them. Three projects
-                    at two link lines each is three lines of paper. */}
-                <p className="mt-0.5 text-2xs text-muted">
-                  {/* Scheme off, trailing slash off: the address a person
-                      would type, and one character less to wrap. The href
-                      keeps the URL exactly as the project config has it. */}
-                  {/* A benchmark task has no live deploy, only its source;
-                      the line shows what exists rather than a blank label. */}
-                  {/* Live for an app, Showcase for a benchmark's write-up
-                      page; then the source. Whichever exist, in that order. */}
-                  {project.url ? (
-                    <>
-                      {/* A new tab on screen, so the portfolio stays open. The
-                          icon and the tab note are screen-only: the PDF's
-                          text is unchanged for the ATS check. */}
-                      <a className="whitespace-nowrap" href={project.url} target="_blank" rel="noopener noreferrer">
-                        Live: {project.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
-                        <ExternalLinkIcon className="ml-1 inline h-3 w-3 align-[-0.1em] print:hidden" />
-                        <span className="sr-only print:hidden">(opens in a new tab)</span>
-                      </a>
-                      {" | "}
-                    </>
-                  ) : null}
-                  {project.showcase ? (
-                    <>
-                      <a className="whitespace-nowrap" href={project.showcase}>
-                        Showcase: {project.showcase.replace(/^https?:\/\//, "").replace(/\/$/, "")}
-                      </a>
-                      {" | "}
-                    </>
-                  ) : null}
-                  <a className="whitespace-nowrap" href={project.repo}>
-                    Code: {project.repo.replace(/^https?:\/\//, "")}
-                  </a>
-                </p>
-              </article>
-            ))}
-              </div>
-            </>
-          ) : null}
+          {/* Projects lead on a version whose reader hires for the work
+              itself (the developer CV); elsewhere the roles come first. */}
+          {resume.projectsFirst ? projectsSection : experienceSection}
+          {resume.projectsFirst ? experienceSection : projectsSection}
 
           <SectionHeading label={resume.sections.education} />
           <div className="mt-3 flex flex-col gap-3">
@@ -196,45 +223,34 @@ export default async function ResumePage({
                     U+00A0, which would also end up in the extracted text an
                     ATS parses. pnpm resume checks every range survives on
                     one extracted line. */}
-                {/* Qualification, institution and dates are one fact each and
-                    read as one line. Experience entries earn the stacked
-                    treatment because they carry bullets underneath. */}
-                <p className="text-2xs leading-6">
-                  <span className="font-display text-sm text-ink">{item.title}</span>
-                  <span className="text-muted">
-                    {" "}- {item.institution} &middot;{" "}
-                    <span className="whitespace-nowrap">{item.period}</span>
-                  </span>
+                {/* Qualification, institution, dates: one fact per line, as
+                    in Experience, so a parser maps each to its field. */}
+                <h3 className="font-display text-sm text-ink">{item.title}</h3>
+                <p className="text-2xs leading-6 text-muted">{item.institution}</p>
+                <p className="text-2xs leading-6 text-muted">
+                  <span className="whitespace-nowrap">{item.period}</span>
                 </p>
                 {item.note ? (
                   <p className="text-2xs leading-6 text-muted">{item.note}</p>
                 ) : null}
               </article>
             ))}
-          </div>
-
-          {/* Credentials and languages are four facts between them; they get
-              one line each, label included, so the document ends on the page
-              it started on. */}
-          <div className="mt-6">
-            <div className="mb-2 h-0.5 w-10 bg-accent-strong" aria-hidden="true" />
-          </div>
-          <p className="text-2xs leading-6 text-muted">
-            <span className="text-muted">{resume.sections.credentials}: </span>
-            {resume.credentials.map((credential, index) => (
-              <Fragment key={credential.label}>
-                {/* A literal separator, not a margin. `mx-2` puts visible
-                    space on paper that is not in the text, so the page reads
-                    "Nigeria|AI" and the PDF reads "Nigeria | AI" and the two
-                    stop matching. */}
-                {index > 0 ? " | " : null}
-                <span className="text-ink">{credential.label}</span>, {credential.issuer}
-                {credential.date ? <> &middot; <span className="whitespace-nowrap">{credential.date}</span></> : null}
-              </Fragment>
+            {/* Credentials follow the qualifications in the same section,
+                in the same three-line shape. */}
+            {resume.credentials.map((credential) => (
+              <article key={credential.label}>
+                <h3 className="font-display text-sm text-ink">{credential.label}</h3>
+                <p className="text-2xs leading-6 text-muted">{credential.issuer}</p>
+                {credential.date ? (
+                  <p className="text-2xs leading-6 text-muted">
+                    <span className="whitespace-nowrap">{credential.date}</span>
+                  </p>
+                ) : null}
+              </article>
             ))}
-          </p>
+          </div>
           {resume.languages ? (
-            <p className="text-2xs leading-6 text-muted">
+            <p className="mt-4 text-2xs leading-6 text-muted">
               <span className="text-muted">{resume.sections.languages}: </span>
               <span className="text-ink">{resume.languages}</span>
             </p>
