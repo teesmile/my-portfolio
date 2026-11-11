@@ -33,8 +33,12 @@ jobs:
 
       - run: pnpm build
 
+      # The browser only, from Playwright's download host. Not --with-deps:
+      # that runs apt first, and the runner's package mirrors are not
+      # reliably reachable, while the libraries Chromium needs already ship
+      # on the hosted Ubuntu image (it carries Google Chrome).
       - name: Install Chromium for Playwright
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm exec playwright install chromium
 
       - run: pnpm test:e2e
 
