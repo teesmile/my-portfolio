@@ -2,7 +2,7 @@ import {
   siAngular, siCloudflare, siCss, siDjango, siFramer, siGit, siGithub, siHtml5,
   siJavascript, siLinux, siNextdotjs, siNodedotjs, siPnpm, siPython, siReact,
   siPostgresql, siSupabase, siTailwindcss, siTypescript, siVercel, siVite,
-  siFarcaster, siGooglegemini, siReplicate,
+  siFarcaster, siGooglegemini, siReplicate, siGithubactions,
 } from "simple-icons";
 import { cn } from "@/lib/utils";
 import { neynar, type BrandIcon } from "./brand-icons";
@@ -14,7 +14,7 @@ type Icon = BrandIcon;
 const icons: Record<string, Icon> = {
   "React": siReact, "TypeScript": siTypescript, "JavaScript": siJavascript,
   "Tailwind CSS": siTailwindcss, "Vite": siVite, "Git": siGit,
-  "GitHub": siGithub, "Vercel": siVercel, "pnpm": siPnpm, "Linux": siLinux,
+  "GitHub": siGithub, "GitHub Actions": siGithubactions, "Vercel": siVercel, "pnpm": siPnpm, "Linux": siLinux,
   "Linux/Ubuntu": siLinux, "Node.js": siNodedotjs, "HTML": siHtml5,
   "CSS": siCss, "Next.js": siNextdotjs,
   "Framer Motion": siFramer, "Angular": siAngular, "DNS": siCloudflare,

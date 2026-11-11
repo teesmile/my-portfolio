@@ -26,6 +26,15 @@ import { portfolioConfig } from "@/config/site";
  * - The name. The `%s — Anthony Ugwuja` template applies to `<title>` only,
  *   so a shared /about card was titled just "About".
  */
+/* The Writing feed, advertised from every page so a reader's feed app finds
+   it wherever they start. Each page carries it with its canonical rather than
+   inheriting it from the root layout, because Next replaces `alternates`
+   wholesale: a page that sets its canonical would drop a feed link set on
+   the layout. */
+export const feedAlternate = {
+  "application/rss+xml": [{ url: "/writing/feed.xml", title: `${portfolioConfig.name} - Writing` }],
+};
+
 export function pageMetadata({
   title,
   fullTitle,
@@ -71,7 +80,7 @@ export function pageMetadata({
   return {
     title: fullTitle ? { absolute: fullTitle } : title,
     description,
-    alternates: { canonical: path },
+    alternates: { canonical: path, types: feedAlternate },
     ...(article ? { authors: [article.author] } : {}),
     openGraph: {
       title: shareTitle,

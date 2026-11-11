@@ -17,8 +17,8 @@ export const metadata: Metadata = pageMetadata({
 
 /* One screen at 1280x800, checked rather than assumed. On a 390x844 phone
    the heading, email, location and "What I can help with" fill the first
-   screen and the clock and "Currently" follow below: the four help lines
-   were worth more than keeping the clock in view. The arrival
+   screen and the clock follows below: the four help lines were worth more
+   than keeping the clock in view. The arrival
    animation belongs to Phase 2. */
 export default function ContactPage() {
   const linkedin = portfolioConfig.socials.find((s) => s.name === "LinkedIn");
@@ -105,10 +105,6 @@ export default function ContactPage() {
 
           <div data-contact-right className="lg:col-span-5 lg:col-start-8">
             <LocalClock />
-            <p className="mt-6 max-w-[34ch] border-t border-line pt-4 text-sm text-muted md:mt-8 md:pt-5">
-              <span className="text-2xs text-muted">Currently </span>
-              <span className="block text-ink">{portfolioConfig.currently}</span>
-            </p>
           </div>
         </div>
       </div>

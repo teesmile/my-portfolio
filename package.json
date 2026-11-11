@@ -11,6 +11,7 @@
     "share": "node scripts/share-images.mjs",
     "frames": "node scripts/measure-frames.mjs",
     "resume": "node scripts/resume-pdf.mjs",
+    "test:e2e": "playwright test",
     "snapshot:renal": "uv run --no-project --with pytest==8.3.3 python scripts/snapshot-renal.py",
     "prepare": "git config core.hooksPath .githooks",
     "check:dashes": "node scripts/check-dashes.mjs"
@@ -28,6 +29,7 @@
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

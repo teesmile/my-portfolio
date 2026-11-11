@@ -32,7 +32,9 @@ function merge(layers: Layer[]) {
       previous &&
       (previous.kind ?? "tool") === (layer.kind ?? "tool")
     ) {
-      previous.layer = `${previous.layer} and ${layer.layer.toLowerCase()}`;
+      /* A list, not a chain: "Data and delivery" + "Services" reads
+         "Data, delivery and services". */
+      previous.layer = `${previous.layer.replace(/ and (?!.* and )/, ", ")} and ${layer.layer.toLowerCase()}`;
       previous.items = [...previous.items, ...layer.items];
       continue;
     }
