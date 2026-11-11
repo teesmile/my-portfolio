@@ -198,7 +198,10 @@ export const portfolioConfig = {
     description:
       "Full-stack developer (React, Next.js, TypeScript, Node.js) and AI evaluator, open to remote work with UK, European and US teams. Pharmacist by training.",
   },
-  phone: "+234 903 257 0130",
+  /* WhatsApp, as the international digits wa.me expects: no "+", spaces or
+     leading zero. /contact builds one link per service from it, each with
+     its own first message. */
+  whatsapp: "2349032570130",
   email: "anthonyugwujac@gmail.com",
   /* Stated once on the site, on /contact, as a fact rather than a keyword:
      where, and what that means for a team's working day. */
@@ -475,11 +478,30 @@ export const portfolioConfig = {
     /* What I can help with, on /contact. Plain claims about the work, no
        promised outcomes: the SEO line says what gets built, not where a site
        will rank. */
+    /* Each service carries the first message its WhatsApp link opens with,
+       and `topic` finishes the link's accessible name ("WhatsApp about ..."),
+       so four identical visible labels stay distinct for a screen reader. */
     helpWith: [
-      "Full-stack web apps: React, Next.js and TypeScript on the front, Node.js and PostgreSQL behind it.",
-      "AI evaluation: grading model output and writing tasks that catch confident but wrong answers, including clinical ones.",
-      "Sites that load fast and get found: technical SEO, domain moves, structured data and performance, built in from day one or fixed on an existing site.",
-      "Healthcare apps where the clinical details matter: built by a developer who's also a licensed pharmacist.",
+      {
+        line: "Full-stack web apps: React, Next.js and TypeScript on the front, Node.js and PostgreSQL behind it.",
+        topic: "a full-stack build",
+        message: "Hi Anthony, I found you through your portfolio. I'd like to talk about a full-stack build.",
+      },
+      {
+        line: "AI evaluation: grading model output and writing tasks that catch confident but wrong answers, including clinical ones.",
+        topic: "AI evaluation work",
+        message: "Hi Anthony, I found you through your portfolio. I'd like to talk about AI evaluation work.",
+      },
+      {
+        line: "Sites that load fast and get found: technical SEO, domain moves, structured data and performance, built in from day one or fixed on an existing site.",
+        topic: "technical SEO or a domain move",
+        message: "Hi Anthony, I found you through your portfolio. I'd like to talk about technical SEO or a domain move.",
+      },
+      {
+        line: "Healthcare apps where the clinical details matter: built by a developer who's also a licensed pharmacist.",
+        topic: "a healthcare app",
+        message: "Hi Anthony, I found you through your portfolio. I'd like to talk about a healthcare app.",
+      },
     ],
     contactNote: "Email reaches me fastest.",
     labHeading: "Interaction experiments, one at a time.",

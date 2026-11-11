@@ -59,11 +59,26 @@ export default function ContactPage() {
               </span>
             </div>
 
+            {/* Each service opens WhatsApp with its own first message, so a
+                visitor never starts from a blank chat. wa.me hands off to the
+                app on a phone and to WhatsApp Web on a desktop. The visible
+                label is the same on every row; the hidden topic tells a
+                screen reader which conversation each one starts. */}
             <div className="border-b border-line py-3 md:py-4">
               <h2 className="text-2xs text-muted">What I can help with</h2>
-              <ul className="mt-2 flex flex-col gap-1.5 text-sm text-ink">
-                {portfolioConfig.copy.helpWith.map((line) => (
-                  <li key={line.slice(0, 30)}>{line}</li>
+              <ul className="mt-2 flex flex-col gap-2.5 text-sm text-ink">
+                {portfolioConfig.copy.helpWith.map((service) => (
+                  <li key={service.topic} className="flex items-start justify-between gap-4">
+                    <span className="min-w-0">{service.line}</span>
+                    <a
+                      href={`https://wa.me/${portfolioConfig.whatsapp}?text=${encodeURIComponent(service.message)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0 border border-line px-2.5 py-1 text-2xs text-muted transition-colors hover:border-ink hover:text-ink"
+                    >
+                      WhatsApp<span className="sr-only"> about {service.topic}</span>
+                    </a>
+                  </li>
                 ))}
               </ul>
             </div>
