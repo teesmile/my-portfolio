@@ -75,7 +75,10 @@ export function pageMetadata({
   article?: { publishedTime: string; modifiedTime?: string; author: { name: string; url: string } };
 }): Metadata {
   const shareTitle = fullTitle ?? `${title} - ${portfolioConfig.name}`;
-  const images = [image];
+  /* With its size and alt text: Facebook and LinkedIn can lay the card out
+     before fetching the image, and a reader who cannot see it still gets
+     the title. */
+  const images = [{ url: image, width: 1200, height: 630, alt: shareTitle }];
 
   return {
     title: fullTitle ? { absolute: fullTitle } : title,
@@ -96,7 +99,7 @@ export function pageMetadata({
           }
         : {}),
     },
-    twitter: { card: "summary_large_image", title: shareTitle, description, images },
+    twitter: { card: "summary_large_image", site: portfolioConfig.xHandle, creator: portfolioConfig.xHandle, title: shareTitle, description, images },
     ...(noindex ? { robots: { index: false, follow: true } } : {}),
   };
 }

@@ -239,10 +239,8 @@ const projects: Project[] = [
 export const portfolioConfig = {
   name: "Anthony Ugwuja",
   brandName: "Teesmile",
-  /* The site's own title line, used on the share cards. It used to be the
-     resume's master title by reference; the CVs now say "Pharmacist" while
-     the site keeps "Registered pharmacist", so the site states its own. */
-  title: "Full-stack developer and AI evaluator · Registered pharmacist",
+  /* The site's own title line, used on the share cards. */
+  title: "Full-stack developer and AI evaluator, Pharmacist",
   /* Search and social copy. One title and one description for the home page,
      used by the root layout for <title>, Open Graph and Twitter alike, so the
      three cannot drift apart the way they did when each was typed out. */
@@ -255,6 +253,9 @@ export const portfolioConfig = {
      leading zero. /contact links it beside the email, opening a chat with
      `whatsappMessage` already typed. */
   whatsapp: "2349032570130",
+  /* The X account the share cards are attributed to (twitter:site and
+     twitter:creator). The profile link itself is in `socials`. */
+  xHandle: "@Tonysmile_1",
   whatsappMessage: "Hi Anthony, I found you through your portfolio.",
   email: "anthonyugwujac@gmail.com",
   /* Stated once on the site, on /contact, as a fact rather than a keyword:
