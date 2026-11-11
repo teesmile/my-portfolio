@@ -30,9 +30,15 @@ const text = Source_Serif_4({
   axes: ["opsz"],
 });
 
-/* Runs before first paint so a light-mode reader never sees the dark default
-   flash past. Dark needs no class, so this only ever adds one. */
-const themeScript = `try{var t=localStorage.getItem("theme");if(t==="light"||(!t&&window.matchMedia("(prefers-color-scheme: light)").matches)){document.documentElement.classList.add("light")}}catch(e){}`;
+/* Runs before first paint, so no visitor sees the wrong theme flash past.
+   The order of authority: a choice made with the switch on this device
+   (stored), then the device's own setting, then light. Dark is the case
+   that has to be detected, so a device that reports no preference, or a
+   browser too old to say, gets light. Until the visitor uses the switch,
+   the page also follows the device when it changes (an evening dark mode,
+   say) without a reload. Storage that throws (blocked, private mode) reads
+   as "no choice made". */
+const themeScript = `(function(){var d=document.documentElement,m=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)");function stored(){try{return localStorage.getItem("theme")}catch(e){return null}}function apply(){var t=stored();d.classList.toggle("light",t?t==="light":!(m&&m.matches))}apply();if(m&&m.addEventListener)m.addEventListener("change",function(){if(!stored())apply()})})();`;
 
 /* viewport-fit: cover is what makes env(safe-area-inset-*) report anything
    other than zero on a notched phone. */
@@ -70,7 +76,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${display.variable} ${text.variable} ${mono.variable}`}>
+    /* The theme script adds "light" to <html> before React hydrates, so the
+       class React finds differs from the one it rendered, by design. */
+    <html lang="en" className={`${display.variable} ${text.variable} ${mono.variable}`} suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <SmoothScroll>
