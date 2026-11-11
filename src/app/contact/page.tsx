@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/metadata";
 import { portfolioConfig } from "@/config/site";
 import { PinIcon } from "@/components/ui/icons";
-import { siWhatsapp } from "simple-icons";
 import CopyEmail from "@/features/contact/copy-email";
 import LocalClock from "@/features/contact/local-clock";
 import ContactEntrance from "@/features/contact/contact-entrance";
@@ -37,18 +36,20 @@ export default function ContactPage() {
             <CopyEmail email={portfolioConfig.email}>
               {/* The second way in, beside the first. wa.me opens the app on
                   a phone and WhatsApp Web on a desktop, with the greeting
-                  already typed. The mark is the simple-icons one the tools
-                  rows use, drawn in the button's own colour: buttons are
-                  chrome, and chrome stays neutral. */}
+                  already typed. The mark is WhatsApp's own glyph file,
+                  unaltered (public/brand/whatsapp): white on the dark theme,
+                  black on the light one, so the button stays as neutral as
+                  the rest of the chrome. The theme class picks which shows. */}
               <a
                 href={`https://wa.me/${portfolioConfig.whatsapp}?text=${encodeURIComponent(portfolioConfig.whatsappMessage)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 border border-line px-2.5 py-1 text-2xs text-muted transition-colors hover:border-ink hover:text-ink"
               >
-                <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3.5 w-3.5 fill-current">
-                  <path d={siWhatsapp.path} />
-                </svg>
+                {/* eslint-disable-next-line @next/next/no-img-element -- a 1 KB brand SVG shown as-is; next/image adds nothing here */}
+                <img src="/brand/whatsapp/Digital_Glyph_White_RGB_2026.svg" alt="" width={14} height={14} className="block h-3.5 w-3.5 light:hidden" />
+                {/* eslint-disable-next-line @next/next/no-img-element -- as above */}
+                <img src="/brand/whatsapp/Digital_Glyph_Black_RGB_2026.svg" alt="" width={14} height={14} className="hidden h-3.5 w-3.5 light:block" />
                 <span className="sr-only">Message me on </span>WhatsApp
               </a>
             </CopyEmail>
