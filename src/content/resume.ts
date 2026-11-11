@@ -291,7 +291,7 @@ export const resumeContent = {
       line: "Built a free voter information site for Nigeria's 2027 elections, with a data pipeline that turns INEC's official candidate lists into more than 26,000 static pages and a polling-unit lookup covering 177,299 units that runs in the browser, tested to show its main content in about 2 seconds on a simulated slow 3G connection.",
       /* Two lines on the operations version: the same facts, less of them. */
       lineFor: {
-        general: "Built a free voter information site for Nigeria's 2027 elections, turning INEC's official candidate lists into more than 26,000 static pages with a polling-unit lookup covering 177,299 units.",
+        general: "Built a free voter information site for Nigeria's 2027 elections, with more than 26,000 pages from INEC's candidate lists and a lookup covering 177,299 polling units.",
       },
       caseStudy: 'https://anthonyugwuja.dev/work/whos-on-my-ballot',
       url: 'https://whosonmyballot.ng',
