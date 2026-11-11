@@ -39,6 +39,12 @@ const variant = variantArg > -1 ? process.argv[variantArg + 1] : "default";
 /* --private writes a copy carrying the phone number into a gitignored
    folder. The public document and the site never show it. */
 const isPrivate = process.argv.includes("--private");
+/* --look rule prints the second look (ink headings over an accent rule);
+   the page's default is accent headings. --out writes somewhere else, for
+   comparing looks without touching the real documents. */
+const lookArg = process.argv.indexOf("--look");
+const look = lookArg > -1 ? process.argv[lookArg + 1] : "";
+const outArg = process.argv.indexOf("--out");
 const PORT = await freePort();
 const DEBUG_PORT = await freePort();
 const VARIANTS = { default: "Anthony-Ugwuja-Resume.pdf", ai: "Anthony-Ugwuja-Resume-AI.pdf", general: "Anthony-Ugwuja-Resume-General.pdf" };
@@ -47,9 +53,11 @@ if (!VARIANTS[variant]) {
   process.exit(1);
 }
 const fileName = VARIANTS[variant];
-const OUT = isPrivate
-  ? path.join(process.cwd(), "private", fileName.replace(".pdf", "-private.pdf"))
-  : path.join(process.cwd(), "public", fileName);
+const OUT = outArg > -1
+  ? path.resolve(process.argv[outArg + 1])
+  : isPrivate
+    ? path.join(process.cwd(), "private", fileName.replace(".pdf", "-private.pdf"))
+    : path.join(process.cwd(), "public", fileName);
 
 /* The PDF is printed from the built app, so anything newer than the build
    would print as it used to look. Checking resume.ts alone was not enough:
@@ -107,7 +115,7 @@ async function ready(check, label) {
   throw new Error(`${label} never became ready`);
 }
 
-const query = [variant === "default" ? "" : `variant=${variant}`, isPrivate ? "private=1" : ""]
+const query = [variant === "default" ? "" : `variant=${variant}`, isPrivate ? "private=1" : "", look === "rule" ? "look=rule" : ""]
   .filter(Boolean)
   .join("&");
 const url = `http://localhost:${PORT}/resume${query ? `?${query}` : ""}`;

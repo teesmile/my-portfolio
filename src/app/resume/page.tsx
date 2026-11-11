@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/metadata";
 import Link from "next/link";
 import { resumeFor, type Variant } from "@/content/resume";
-import { ExternalLinkIcon } from "@/components/ui/icons";
 
 export const metadata: Metadata = pageMetadata({
   title: "Resume",
@@ -13,14 +12,33 @@ export const metadata: Metadata = pageMetadata({
   path: "/resume",
 });
 
-/* The one place a rule carries the accent. The working rules state the exception:
-   the resume is read as a document rather than navigated. */
+/* Section headings carry the CV's one accent, in one of two looks (see
+   `data-look` below): the heading itself in the accent, or the heading in
+   ink with a thin accent rule beneath it. The rule is the stated exception
+   in the working rules: the resume is read as a document, not navigated. */
 function SectionHeading({ label }: { label: string }) {
   return (
     <div data-section-heading className="mt-10 first:mt-0">
-      <div className="mb-2 h-0.5 w-10 bg-accent-strong" aria-hidden="true" />
-      <h2 className="text-2xs tracking-wide text-muted">{label}</h2>
+      <h2 className="text-sm text-cv-accent cv-look-rule:text-ink">{label}</h2>
+      {/* A border, not a background: PDF printing drops backgrounds. */}
+      <div className="mt-1.5 hidden w-full border-t border-cv-accent cv-look-rule:block" aria-hidden="true" />
     </div>
+  );
+}
+
+/* A link as a small outlined button: the accent's colour, no underline. A
+   real <a>, so it stays a clickable link annotation in the PDF. */
+function LinkButton({ href, label, external }: { href: string; label: string; external?: boolean }) {
+  return (
+    <a
+      data-cv-button
+      href={href}
+      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      className="mr-1 inline-block border border-cv-accent px-2 py-0.5 text-2xs leading-5 text-cv-accent no-underline transition-colors hover:bg-cv-accent hover:text-surface"
+    >
+      {label}
+      {external ? <span className="sr-only print:hidden"> (opens in a new tab)</span> : null}
+    </a>
   );
 }
 
@@ -37,7 +55,7 @@ function SectionHeading({ label }: { label: string }) {
 export default async function ResumePage({
   searchParams,
 }: {
-  searchParams: Promise<{ variant?: string; private?: string }>;
+  searchParams: Promise<{ variant?: string; private?: string; look?: string }>;
 }) {
   const params = await searchParams;
   const variant: Variant =
@@ -52,12 +70,15 @@ export default async function ResumePage({
      that is deliberately kept off the site. */
   const privateAllowed = process.env.RESUME_ALLOW_PRIVATE === "1";
   const resume = resumeFor(variant, privateAllowed && params.private === "1");
+  /* Two looks while one is being chosen: accent headings (the default) or
+     ink headings over an accent rule (?look=rule). */
+  const look = params.look === "rule" ? "rule" : "headings";
 
   return (
-    <section className="px-4 sm:px-6 py-20 md:py-24">
+    <section data-look={look} className="px-4 sm:px-6 py-20 md:py-24">
       <div className="mx-auto max-w-(--container-reading)">
         <header className="border-b border-line pb-6">
-          <h1 className="text-xl text-ink md:text-2xl">{resume.name}</h1>
+          <h1 data-cv-name className="text-2xl text-ink">{resume.name}</h1>
           <p className="mt-2 text-sm text-muted">{resume.title}</p>
 
           {/* Written out as text with visible separators so a parser reads it,
@@ -103,8 +124,8 @@ export default async function ResumePage({
           <div className="mt-3 flex flex-col gap-2">
             {resume.skills.map((group) => (
               <p key={group.label} className="text-2xs leading-6">
-                <span className="text-ink">{group.label}: </span>
-                <span className="text-muted">
+                <span className="font-display text-ink">{group.label}: </span>
+                <span className="text-ink">
                   {group.items.map((item, index) => (
                     <span key={item}>
                       {index > 0 ? ", " : ""}
@@ -132,7 +153,7 @@ export default async function ResumePage({
                 {role.note ? (
                   <p className="mt-0.5 text-2xs text-muted">{role.note}</p>
                 ) : null}
-                <ul className="mt-2 flex flex-col gap-1.5 text-2xs leading-6 text-muted">
+                <ul className="mt-2 flex flex-col gap-1.5 text-2xs leading-6 text-ink">
                   {role.bullets.map((bullet) => (
                     <li key={bullet} className="border-l border-line pl-3">
                       {bullet}
@@ -150,43 +171,28 @@ export default async function ResumePage({
             {resume.projects.map((project) => (
               <article key={project.name}>
                 <h3 className="font-display text-sm text-ink">{project.name}</h3>
-                <p className="mt-0.5 text-2xs leading-6 text-muted">{project.line}</p>
+                <p className="mt-0.5 text-2xs leading-6 text-ink">{project.line}</p>
                 {/* Both links on one line, each unbreakable in itself: a URL
                     that wraps mid-token extracts as two words, but the line
                     may break at the separator between them. Three projects
                     at two link lines each is three lines of paper. */}
-                <p className="mt-0.5 text-2xs text-muted">
-                  {/* Scheme off, trailing slash off: the address a person
-                      would type, and one character less to wrap. The href
-                      keeps the URL exactly as the project config has it. */}
-                  {/* A benchmark task has no live deploy, only its source;
-                      the line shows what exists rather than a blank label. */}
-                  {/* Live for an app, Showcase for a benchmark's write-up
-                      page; then the source. Whichever exist, in that order. */}
-                  {project.url ? (
-                    <>
-                      {/* A new tab on screen, so the portfolio stays open. The
-                          icon and the tab note are screen-only: the PDF's
-                          text is unchanged for the ATS check. */}
-                      <a className="whitespace-nowrap" href={project.url} target="_blank" rel="noopener noreferrer">
-                        Live: {project.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}
-                        <ExternalLinkIcon className="ml-1 inline h-3 w-3 align-[-0.1em] print:hidden" />
-                        <span className="sr-only print:hidden">(opens in a new tab)</span>
-                      </a>
-                      {" | "}
-                    </>
-                  ) : null}
-                  {project.showcase ? (
-                    <>
-                      <a className="whitespace-nowrap" href={project.showcase}>
-                        Showcase: {project.showcase.replace(/^https?:\/\//, "").replace(/\/$/, "")}
-                      </a>
-                      {" | "}
-                    </>
-                  ) : null}
-                  <a className="whitespace-nowrap" href={project.repo}>
-                    Code: {project.repo.replace(/^https?:\/\//, "")}
-                  </a>
+                {/* The case study on the site, then the live site: whichever
+                    exist, as buttons. In the PDF both stay real links. */}
+                {/* Inline, with a real space between them rather than a flex
+                    gap: a gap adds no text, and the PDF's text layer would read
+                    "Case studyLive site". */}
+                <p className="mt-1.5">
+                  {[
+                    project.caseStudy ? <LinkButton key="case" href={project.caseStudy} label="Case study" /> : null,
+                    project.url ? <LinkButton key="live" href={project.url} label="Live site" external /> : null,
+                  ]
+                    .filter(Boolean)
+                    .map((button, index) => (
+                      <Fragment key={index}>
+                        {index > 0 ? " " : null}
+                        {button}
+                      </Fragment>
+                    ))}
                 </p>
               </article>
             ))}
@@ -204,15 +210,12 @@ export default async function ResumePage({
                     U+00A0, which would also end up in the extracted text an
                     ATS parses. pnpm resume checks every range survives on
                     one extracted line. */}
-                {/* Qualification, institution and dates are one fact each and
-                    read as one line. Experience entries earn the stacked
-                    treatment because they carry bullets underneath. */}
-                <p className="text-2xs leading-6">
-                  <span className="font-display text-sm text-ink">{item.title}</span>
-                  <span className="text-muted">
-                    {" "}- {item.institution} &middot;{" "}
-                    <span className="whitespace-nowrap">{item.period}</span>
-                  </span>
+                {/* Qualification, institution, dates: one fact per line, as
+                    in Experience, so a parser maps each to its field. */}
+                <h3 className="font-display text-sm text-ink">{item.title}</h3>
+                <p className="text-2xs leading-6 text-muted">{item.institution}</p>
+                <p className="text-2xs leading-6 text-muted">
+                  <span className="whitespace-nowrap">{item.period}</span>
                 </p>
                 {item.note ? (
                   <p className="text-2xs leading-6 text-muted">{item.note}</p>
@@ -221,28 +224,22 @@ export default async function ResumePage({
             ))}
           </div>
 
-          {/* Credentials and languages are four facts between them; they get
-              one line each, label included, so the document ends on the page
-              it started on. */}
-          <div className="mt-6">
-            <div className="mb-2 h-0.5 w-10 bg-accent-strong" aria-hidden="true" />
-          </div>
-          <p className="text-2xs leading-6 text-muted">
-            <span className="text-muted">{resume.sections.credentials}: </span>
-            {resume.credentials.map((credential, index) => (
-              <Fragment key={credential.label}>
-                {/* A literal separator, not a margin. `mx-2` puts visible
-                    space on paper that is not in the text, so the page reads
-                    "Nigeria|AI" and the PDF reads "Nigeria | AI" and the two
-                    stop matching. */}
-                {index > 0 ? " | " : null}
-                <span className="text-ink">{credential.label}</span>, {credential.issuer}
-                {credential.date ? <> &middot; <span className="whitespace-nowrap">{credential.date}</span></> : null}
-              </Fragment>
+          <SectionHeading label={resume.sections.credentials} />
+          <div className="mt-3 flex flex-col gap-3">
+            {resume.credentials.map((credential) => (
+              <article key={credential.label}>
+                <h3 className="font-display text-sm text-ink">{credential.label}</h3>
+                <p className="text-2xs leading-6 text-muted">{credential.issuer}</p>
+                {credential.date ? (
+                  <p className="text-2xs leading-6 text-muted">
+                    <span className="whitespace-nowrap">{credential.date}</span>
+                  </p>
+                ) : null}
+              </article>
             ))}
-          </p>
+          </div>
           {resume.languages ? (
-            <p className="text-2xs leading-6 text-muted">
+            <p className="mt-4 text-2xs leading-6 text-muted">
               <span className="text-muted">{resume.sections.languages}: </span>
               <span className="text-ink">{resume.languages}</span>
             </p>

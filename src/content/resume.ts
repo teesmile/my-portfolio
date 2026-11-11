@@ -52,6 +52,9 @@ export type Role = {
   note?: Line;
   bullets: Line[];
   place: Placement;
+  /** Order on /about's timeline, apart from any CV: what fits on a CV page
+   *  should never decide what the site shows. Absent means not on /about. */
+  about?: number;
 };
 
 export type SkillGroup = { label: string; items: string[]; place: Placement };
@@ -77,9 +80,9 @@ export const resumeContent = {
     skills: 'Skills',
   },
   titles: {
-    default: 'Full-stack developer and AI evaluator · Pharmacist',
-    ai: 'AI evaluation specialist · Pharmacist',
-    general: 'AI evaluation and data quality specialist · Pharmacist',
+    default: 'Full-stack developer and AI evaluator, Pharmacist',
+    ai: 'AI evaluation specialist, Pharmacist',
+    general: 'AI evaluation and data quality specialist, Pharmacist',
   },
 
   /* Written out as text so a parser reads them, and linked so a human can
@@ -127,6 +130,7 @@ export const resumeContent = {
       /* First in the AI version only: both this and the NYSC post are
          current, so dates can't order them and relevance does. */
       place: { default: 1, ai: 0, general: 1 },
+      about: 1,
       /* Why no client names anywhere in this entry. One line, in every
          version, because its absence is more conspicuous than its presence. */
       note: { text: 'Client and project details under NDA.', place: { default: 0, ai: 0, general: 0 } },
@@ -172,9 +176,11 @@ export const resumeContent = {
       location: 'Remote',
       period: 'May 2022 - Sep 2022',
       tech: ['HTML', 'CSS', 'JavaScript', 'Python', 'Django'],
-      /* The master carries the development history as history. The other two
-         carry it as a skills line and spend the space elsewhere. */
-      place: { default: 3 },
+      /* Off every version since the lead project went on (11 Nov 2026): the
+         oldest and weakest development entry, and the Diploma in Frontend
+         Engineering covers the same training. /about keeps it (`about`). */
+      place: {},
+      about: 3,
       bullets: [
         { text: 'Built frontend interfaces in HTML, CSS and JavaScript.', place: { default: 0 } },
         { text: 'Learned backend development in Python and Django through project work.', place: { default: 1 } },
@@ -195,6 +201,7 @@ export const resumeContent = {
          jump back in time, and two concurrent roles are ordered by
          relevance to the reader instead. */
       place: { default: 0, ai: 1, general: 0 },
+      about: 0,
       bullets: [
         {
           text: 'Dispense medications and counsel students and staff on safe use.',
@@ -209,6 +216,7 @@ export const resumeContent = {
       period: 'May 2025 - May 2026',
       tech: [],
       place: { default: 2, ai: 2, general: 2 },
+      about: 2,
       bullets: [
         {
           text: 'Rotations across A&E, GOPD, inpatient, theatre, O&G and the ART (HIV) clinic; joined the TB unit on my own initiative.',
@@ -239,7 +247,9 @@ export const resumeContent = {
       place: { general: 4 },
       bullets: [
         { text: 'Grew sales revenue 15% in two months against a 5% target.', place: { general: 0 } },
-        { text: 'Handled wholesale distribution.', place: { general: 1 } },
+        /* Off since the lead project went on: the weakest of the three, and
+           the line that keeps the operations version at two pages. */
+        { text: 'Handled wholesale distribution.', place: {} },
         { text: 'Kept dispensing records accurate.', place: { general: 2 } },
       ],
     },
@@ -255,43 +265,59 @@ export const resumeContent = {
      of the four, and it is still on /work. Roasted then replaced the
      E-Commerce page on the master: it has a server side, three external
      services and real users, where the product page is a frontend build. */
+  /* Who's on my ballot? leads every version, ahead of the evaluation
+     sample: the owner's call on 11 Nov 2026. Its figures are checked
+     against the repo (teesmile/whos-on-my-ballot at e92c9c0): 26,142 pages
+     in the built sitemap, 177,299 polling units from INEC's locator, and
+     LCP 2.0-2.4 s in Lighthouse's simulated slow-3G profile. Roasted came
+     off the developer version when it went on: the weakest of the four
+     there, and still on /work.
+
+     Each project links to its case study on the site and to the live
+     site, as buttons; a project shows only the links it has. */
   projects: [
+    {
+      name: "Who's on my ballot? (launching November 2026), whosonmyballot.ng",
+      line: "A free voter information site for Nigeria's 2027 elections. Built a data pipeline that turns INEC's official candidate lists into more than 26,000 static pages, and a polling-unit lookup covering 177,299 units that runs in the browser. Tested to show its main content in about 2 seconds on a simulated slow 3G connection.",
+      caseStudy: 'https://anthonyugwuja.dev/work/whos-on-my-ballot',
+      url: 'https://whosonmyballot.ng',
+      place: { default: 0, ai: 0, general: 0 } as Placement,
+    },
     {
       name: 'Renal dose check (AI agent benchmark)',
       line: 'A benchmark task that tests whether AI agents can check drug doses from a messy patient chart; simulated agents prove each mistake is caught.',
-      showcase: 'https://anthonyugwuja.dev/work/renal-dosing-task',
-      repo: 'https://github.com/teesmile/renal-dosing-task',
-      place: { default: 0, ai: 0 } as Placement,
+      caseStudy: 'https://anthonyugwuja.dev/work/renal-dosing-task',
+      place: { default: 1, ai: 1 } as Placement,
     },
     {
       name: 'Todo App',
       line: 'Local-first task list that installs and works offline; optional Google sign-in syncs tasks across devices.',
+      caseStudy: 'https://anthonyugwuja.dev/work/todo-app',
       url: 'https://todo.anthonyugwuja.dev',
-      repo: 'https://github.com/teesmile/todo-app-tsc',
-      place: { default: 1 } as Placement,
+      place: { default: 2 } as Placement,
     },
     {
       name: 'Roasted',
       line: 'Farcaster mini app that writes a roast from a user\'s profile and recent casts, turns their avatar into a meme, and shares the card as a cast.',
+      caseStudy: 'https://anthonyugwuja.dev/work/roasted',
       url: 'https://castroast.vercel.app',
-      repo: 'https://github.com/teesmile/roasted-app',
-      place: { default: 2 } as Placement,
+      place: {} as Placement,
     },
     {
       name: 'E-Commerce Product Page',
       line: 'Product page with a gallery, cart state and one responsive layout built from a design file.',
+      caseStudy: 'https://anthonyugwuja.dev/work/ecommerce-product-page',
       url: 'https://shop.anthonyugwuja.dev',
-      repo: 'https://github.com/teesmile/e-commerce-product-page',
       place: {} as Placement,
     },
     {
       name: 'Space Tourism Website',
       line: 'Four content types sharing one navigation shell, spacing system and page transitions.',
+      caseStudy: 'https://anthonyugwuja.dev/work/space-tourism',
       url: 'https://space.anthonyugwuja.dev',
-      repo: 'https://github.com/teesmile/space-tourism',
       place: {} as Placement,
     },
-  ] as { name: string; line: string; url?: string; showcase?: string; repo: string; place: Placement }[],
+  ] as { name: string; line: string; caseStudy?: string; url?: string; place: Placement }[],
 
   /* Reverse chronological, like the experience section. Mixing the two
      orders in one document is the kind of small inconsistency a careful
@@ -300,23 +326,28 @@ export const resumeContent = {
     {
       title: 'Cloud Computing (in progress)',
       institution: 'AltSchool Africa',
-      period: 'Jul 2026-Present',
-      place: { default: 0, ai: 0, general: 0 } as Placement,
+      period: 'Jul 2026 - Present',
+      /* Off the operations version: a course with no credential yet says
+         little to that reader, and its three lines keep it at two pages. */
+      place: { default: 0, ai: 0 } as Placement,
     },
     {
       title: 'Diploma in Frontend Engineering',
       institution: 'AltSchool Africa',
-      period: 'Oct 2024-Oct 2025',
+      period: 'Oct 2024 - Oct 2025',
       note: {
         text: 'Project work in JavaScript, React, Node.js, HTML and CSS, with code review and technical writing throughout.',
-        place: { default: 0 },
+        /* Off since the lead project went on: it restates the Skills
+           section, and its two lines keep the developer version at two
+           pages. */
+        place: {},
       } as Line,
       place: { default: 1, ai: 1, general: 1 } as Placement,
     },
     {
       title: 'B.Pharm, Pharmacy',
       institution: 'University of Nigeria, Nsukka',
-      period: '2017-2023',
+      period: '2017 - 2023',
       place: { default: 2, ai: 2, general: 2 } as Placement,
     },
   ],
@@ -414,5 +445,19 @@ export function resumeFor(variant: Variant = 'default', includePrivate = false) 
   };
 }
 
-/** The experience the site itself shows: the master's selection. */
-export const siteExperience = resumeFor('default').experience;
+/* A bullet's order on /about: its developer-version rank where it has one,
+   else its rank in the AI or operations version. */
+const rank = (place: Placement) => place.default ?? place.ai ?? place.general ?? 99;
+
+/** The experience /about shows, in its own order (`about`), with every
+ *  bullet the role carries in any version. */
+export const siteExperience = resumeContent.experience
+  .filter((role) => role.about !== undefined)
+  .sort((a, b) => (a.about ?? 0) - (b.about ?? 0))
+  .map((role) => ({
+    ...role,
+    note: role.note?.text ?? '',
+    bullets: [...role.bullets]
+      .sort((a, b) => rank(a.place) - rank(b.place))
+      .map((bullet) => bullet.text),
+  }));

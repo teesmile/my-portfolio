@@ -6,6 +6,8 @@
    opts out. Because every colour utility reads a token, no `dark:` variant is
    needed anywhere in the tree — the same class is correct in both themes. */
 @variant light (&:where(.light, .light *));
+/* The CV's second look: ink section headings over an accent rule. */
+@variant cv-look-rule (&:where([data-look='rule'], [data-look='rule'] *));
 
 :root {
   color-scheme: dark;
@@ -34,6 +36,8 @@
   --accent: #f0b429;
   --accent-strong: #f0b429;
   --accent-ink: #0c0d0f;
+  /* The CV's one accent: its section headings and link buttons. */
+  --cv-accent: #f0b429;
   --focus-halo: transparent;
 
   /* The illustration palette: every figure, diagram, banner and the renal
@@ -80,6 +84,8 @@
   --accent: #7a4f08;
   --accent-strong: #f0b429;
   --accent-ink: #0c0d0f;
+  /* About 7:1 on white, and a readable mid-dark grey in greyscale. */
+  --cv-accent: #7a4f08;
   --focus-halo: #14171a;
   /* 5.5:1 on light --raised: --warn there is only 2.8:1. */
   --wrong: #c0362b;
@@ -106,6 +112,7 @@
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-accent-strong: var(--accent-strong);
+  --color-cv-accent: var(--cv-accent);
   /* Content only: the lint squiggle, and the misread cell in the renal
      showcase's chart tables. Never chrome. */
   --color-warn: var(--warn);
@@ -389,8 +396,11 @@
     --raised: #ffffff;
     --line: #c8ccd2;
     --ink: #101316;
-    --muted: #3f4650;
+    /* Lighter than the body on paper so dates, employers and places read as
+       the second level: about 6.9:1 on white, still well past AA. */
+    --muted: #565e69;
     --accent: #1a1d21;
+    --cv-accent: #7a4f08;
     --accent-strong: #101316;
   }
 
@@ -460,9 +470,11 @@
      when the normal layout would leave a second page holding a few stray
      lines. It tightens spacing and margins, and drops the body to the
      10.5pt floor, so the document closes up onto one page instead. */
+  /* The name is the largest, darkest thing on the page. */
   h1 {
-    font-size: 22pt !important;
+    font-size: 28pt !important;
     line-height: 1.1 !important;
+    color: var(--ink) !important;
   }
 
   /* A clear ladder: name 22, section 14, entry 12.5, body 11. Section
@@ -471,7 +483,18 @@
   h2 {
     font-size: 14pt !important;
     line-height: 1.2 !important;
+    color: var(--cv-accent) !important;
+  }
+
+  [data-look='rule'] h2 {
     color: var(--ink) !important;
+  }
+
+  /* Link buttons hold the body-text floor and stay compact. */
+  [data-cv-button] {
+    font-size: 10.5pt !important;
+    line-height: 1.3 !important;
+    padding: 1pt 6pt !important;
   }
 
   h3,
@@ -516,7 +539,7 @@
   }
 
   [data-fit='tight'] h1 {
-    font-size: 20pt !important;
+    font-size: 24pt !important;
   }
 
   [data-fit='tight'] h3,
