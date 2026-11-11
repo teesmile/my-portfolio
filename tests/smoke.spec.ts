@@ -51,26 +51,19 @@ test("no page scrolls sideways on a 360px phone", async ({ browser }) => {
   await context.close();
 });
 
-test("contact: email, and one WhatsApp link per service with its own first message", async ({ page }) => {
+test("contact: email, and one WhatsApp button with the greeting typed", async ({ page }) => {
   await page.goto("/contact");
   await expect(page.locator('a[href^="mailto:"]').first()).toBeVisible();
   await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
 
-  const links = page.locator('a[href^="https://wa.me/"]');
-  await expect(links).toHaveCount(4);
-  const messages = await links.evaluateAll((anchors) =>
-    anchors.map((a) => new URL((a as HTMLAnchorElement).href).searchParams.get("text")),
-  );
-  const opening = "Hi Anthony, I found you through your portfolio. I'd like to talk about";
-  expect(messages).toEqual([
-    `${opening} a full-stack build.`,
-    `${opening} AI evaluation work.`,
-    `${opening} technical SEO or a domain move.`,
-    `${opening} a healthcare app.`,
-  ]);
-  for (const name of ["a full-stack build", "AI evaluation work", "technical SEO or a domain move", "a healthcare app"]) {
-    await expect(page.getByRole("link", { name: `WhatsApp about ${name}` })).toHaveCount(1);
-  }
+  const whatsapp = page.locator('a[href^="https://wa.me/"]');
+  await expect(whatsapp).toHaveCount(1);
+  await expect(whatsapp).toBeVisible();
+  await expect(whatsapp).toHaveAccessibleName("Message me on WhatsApp");
+  await expect(whatsapp).toHaveAttribute("target", "_blank");
+  const url = new URL((await whatsapp.getAttribute("href"))!);
+  expect(url.pathname).toMatch(/^\/\d+$/);
+  expect(url.searchParams.get("text")).toBe("Hi Anthony, I found you through your portfolio.");
 });
 
 test("the writing feed is RSS and every item links to a live piece", async ({ page }) => {
