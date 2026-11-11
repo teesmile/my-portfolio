@@ -82,9 +82,9 @@ export const resumeContent = {
     languages: 'Languages',
   },
   titles: {
-    default: 'Full-stack developer and AI evaluation and data annotation specialist, Pharmacist',
+    default: 'Full-stack developer, AI evaluation and data annotation specialist, Pharmacist',
     ai: 'AI evaluation and data annotation specialist, Pharmacist',
-    general: 'AI evaluation and data quality specialist, Pharmacist',
+    general: 'AI data annotation and quality specialist, Pharmacist',
   },
 
   /* Written out as text so a parser reads them, and linked so a human can
@@ -109,13 +109,13 @@ export const resumeContent = {
      than guessing from position. One paragraph per version. */
   summary: {
     default: [
-      'Full-stack developer with a pharmacy background, building web applications end to end with React, Next.js, TypeScript, Node.js and Python. Experienced in taking products from idea to launch, including offline-first apps, data pipelines and a site of more than 26,000 pages that stays fast on slow connections. Also works as an AI evaluation and data annotation specialist, with more than 1,000 tasks completed across annotation, grading and expert task writing. Brings the care of clinical work to software: clear documentation, thorough testing and attention to what can go wrong.',
+      'Full-stack developer with a pharmacy background, building web applications end to end with React, Next.js, TypeScript, Node.js and Python. Experienced in taking products from idea to launch, including offline-first apps, data pipelines and a site with more than 26,000 pages that stays fast on slow connections. Also works as an AI evaluation and data annotation specialist, with more than 1,000 tasks completed across annotation, grading and expert task writing. Brings the care of clinical work to software: clear documentation, thorough testing and attention to what can go wrong.',
     ],
     ai: [
-      'AI evaluation and data annotation specialist with a pharmacy degree and a software development background. Since 2025, has completed more than 1,000 image and video annotation, comparison and rating tasks with quality ratings mostly between 4.5 and 4.8 out of 5, and written expert-level chemistry tasks with about 90% approved. Also builds terminal-based benchmark tasks for AI coding agents, working in Python, TypeScript and Linux. Works carefully and consistently, and writes clear feedback.',
+      'AI evaluation and data annotation specialist with a pharmacy degree and a software development background. Since 2025, has completed more than 1,000 image and video annotation, comparison and rating tasks with quality ratings mostly between 4.5 and 4.8 out of 5, and has written expert-level science tasks with about 90% approved. Also builds terminal-based benchmark tasks for AI coding agents, working in Python, TypeScript and Linux. Works carefully and consistently, and writes clear feedback.',
     ],
     general: [
-      'AI data quality and operations specialist with a pharmacy background. Has completed more than 1,000 annotation and rating tasks against detailed guidelines, with quality ratings mostly between 4.5 and 4.8 out of 5. Experienced in front-line pharmacy work covering customer service, sales and regulated record-keeping. Used to high-volume, detail-heavy work where accuracy matters, and to explaining decisions clearly in writing.',
+      'AI data annotation and quality specialist with a pharmacy degree. Since 2025, has completed more than 1,000 image and video annotation, comparison and rating tasks with quality ratings mostly between 4.5 and 4.8 out of 5, and has written expert-level science tasks with about 90% approved. Completed a one-year pharmacy internship at Federal Medical Centre Keffi and now works as a pharmacist at the Nasarawa State University clinic, dispensing medicines and counselling patients face to face. Also has working knowledge of Python, TypeScript and Linux.',
     ],
   } as Record<Variant, string[]>,
 
@@ -142,7 +142,8 @@ export const resumeContent = {
          lines they made redundant are folded in, not repeated: "annotate
          image, video and audio data" and "quality bars, rated at the top of
          the reviewer scale" are the first result; "author expert-level
-         tasks in chemistry ... and terminal-based formats" is the second
+         tasks in chemistry, biology and clinical pharmacy ... and
+         terminal-based formats" is the second
          and third; side-by-side rating joins the grading line. */
       bullets: [
         {
@@ -150,7 +151,7 @@ export const resumeContent = {
           place: { default: 0, ai: 0, general: 0 },
         },
         {
-          text: 'Wrote more than 25 expert-level chemistry tasks built to expose model errors, with about 90% approved.',
+          text: 'Wrote more than 25 expert-level science tasks built to expose model errors, with about 90% approved.',
           place: { default: 1, ai: 1, general: 1 },
         },
         {
