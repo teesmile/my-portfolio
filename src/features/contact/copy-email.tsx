@@ -12,7 +12,7 @@ type State = 'idle' | 'copied' | 'failed';
  * embedded browser or over plain http. The button is an enhancement on top,
  * and it says so out loud when it cannot do its job.
  */
-export default function CopyEmail({ email }: { email: string }) {
+export default function CopyEmail({ email, children }: { email: string; children?: React.ReactNode }) {
   const [state, setState] = useState<State>('idle');
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -39,7 +39,9 @@ export default function CopyEmail({ email }: { email: string }) {
   };
 
   return (
-    <div className="flex items-center gap-3 border-t border-line py-3 md:py-4">
+    /* The actions sit on the address's line where there is room and wrap
+       under it on a narrow phone, rather than squeezing the address. */
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-line py-3 md:py-4">
       <span className="text-muted">
         {state === 'copied' ? (
           <CheckIcon className="h-4 w-4" />
@@ -48,7 +50,7 @@ export default function CopyEmail({ email }: { email: string }) {
         )}
       </span>
 
-      <span className="min-w-0 flex-1">
+      <span className="min-w-0 flex-1 basis-48">
         <span className="block text-2xs text-muted">Email</span>
         <a
           href={`mailto:${email}`}
@@ -58,13 +60,16 @@ export default function CopyEmail({ email }: { email: string }) {
         </a>
       </span>
 
-      <button
-        type="button"
-        onClick={copy}
-        className="shrink-0 border border-line px-2.5 py-1 text-2xs text-muted transition-colors hover:border-ink hover:text-ink"
-      >
-        {state === 'copied' ? 'Copied' : 'Copy'}
-      </button>
+      <span className="ml-7 flex shrink-0 items-center gap-2 sm:ml-0">
+        <button
+          type="button"
+          onClick={copy}
+          className="border border-line px-2.5 py-1 text-2xs text-muted transition-colors hover:border-ink hover:text-ink"
+        >
+          {state === 'copied' ? 'Copied' : 'Copy'}
+        </button>
+        {children}
+      </span>
 
       <span role="status" aria-live="polite" className="sr-only">
         {state === 'copied' ? 'Email address copied' : ''}

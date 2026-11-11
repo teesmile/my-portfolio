@@ -198,7 +198,11 @@ export const portfolioConfig = {
     description:
       "Full-stack developer (React, Next.js, TypeScript, Node.js) and AI evaluator, open to remote work with UK, European and US teams. Pharmacist by training.",
   },
-  phone: "+234 903 257 0130",
+  /* WhatsApp, as the international digits wa.me expects: no "+", spaces or
+     leading zero. /contact links it beside the email, opening a chat with
+     `whatsappMessage` already typed. */
+  whatsapp: "2349032570130",
+  whatsappMessage: "Hi Anthony, I found you through your portfolio.",
   email: "anthonyugwujac@gmail.com",
   /* Stated once on the site, on /contact, as a fact rather than a keyword:
      where, and what that means for a team's working day. */
