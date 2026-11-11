@@ -90,11 +90,14 @@ export default async function ResumePage({
         </header>
 
         <div className="mt-8">
-          {resume.summary.map((line) => (
-            <p key={line} className="mb-2 text-sm text-ink">
-              {line}
-            </p>
-          ))}
+          <SectionHeading label={resume.sections.summary} />
+          <div className="mt-3">
+            {resume.summary.map((line) => (
+              <p key={line} className="mb-2 text-sm text-ink last:mb-0">
+                {line}
+              </p>
+            ))}
+          </div>
 
           <SectionHeading label={resume.sections.skills} />
           <div className="mt-3 flex flex-col gap-2">
@@ -117,9 +120,14 @@ export default async function ResumePage({
           <div className="mt-3 flex flex-col gap-6">
             {resume.experience.map((role) => (
               <article key={`${role.title}-${role.period}`}>
+                {/* Three lines, one fact each, joined only by commas: what a
+                    parser maps to title, employer and location, and dates. */}
                 <h3 className="font-display text-base text-ink">{role.title}</h3>
                 <p className="mt-0.5 text-2xs text-muted">
-                  {role.company} &middot; <span className="whitespace-nowrap">{role.period}</span>
+                  {role.company}, {role.location}
+                </p>
+                <p className="text-2xs text-muted">
+                  <span className="whitespace-nowrap">{role.period}</span>
                 </p>
                 {role.note ? (
                   <p className="mt-0.5 text-2xs text-muted">{role.note}</p>

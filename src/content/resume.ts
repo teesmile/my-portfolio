@@ -36,9 +36,15 @@ export type Line = { text: string; place: Placement };
 
 export type ContactItem = { text: string; href: string; private?: boolean };
 
+/* A role prints as three lines, in the order a parser looks for them: the
+   title alone, then "employer, location", then the dates as
+   "Mon YYYY - Mon YYYY" or "Mon YYYY - Present". Commas and plain hyphens
+   only: a middle dot or a long dash is where extractors split fields
+   wrongly or drop characters. */
 export type Role = {
   title: string;
   company: string;
+  location: string;
   period: string;
   /** Rendered on /about, not on the resume. */
   tech: string[];
@@ -62,6 +68,7 @@ export const resumeContent = {
   /* Section labels live here as well, so the document has no text that the
      ATS check cannot trace back to this file. */
   sections: {
+    summary: 'Summary',
     experience: 'Experience',
     projects: 'Selected projects',
     education: 'Education',
@@ -81,7 +88,9 @@ export const resumeContent = {
      `pnpm resume --private` puts it back for applications. */
   contact: [
     { text: 'anthonyugwujac@gmail.com', href: 'mailto:anthonyugwujac@gmail.com' },
-    { text: '+234 903 257 0130', href: 'tel:+2349032570130', private: true },
+    /* WhatsApp is the channel that number answers. Shown as text so it
+       still reads on paper, linked so a click opens a chat. */
+    { text: 'WhatsApp: +234 903 257 0130', href: 'https://wa.me/2349032570130', private: true },
     { text: 'Abuja, Nigeria', href: '' },
     { text: 'anthonyugwuja.dev', href: 'https://anthonyugwuja.dev' },
     { text: 'linkedin.com/in/tonysmile', href: 'https://linkedin.com/in/tonysmile' },
@@ -91,29 +100,26 @@ export const resumeContent = {
   /* No first person, keyword-led, written for a reader scanning twenty of
      these. The site says the same thing in my voice; a resume is not the
      place for it. Each version opens on what its reader is hiring for. */
+  /* Under a "Summary" heading, so a parser files it as the summary rather
+     than guessing from position. One paragraph per version. */
   summary: {
-    /* One paragraph, not two. Two opening lines at this width wrapped to
-       four, and the second was a second claim about the same person — the
-       merge says both things once and buys back the lines that kept
-       Education off page one. */
     default: [
-      'Full-stack developer (React, Next.js, TypeScript, Node.js) and pharmacist who builds accessible product interfaces and evaluates AI model output, catching confident but wrong clinical answers.',
+      'Full-stack developer working in React, Next.js, TypeScript and Node.js. Recent work includes an offline-first task app that syncs across devices and a benchmark that tests AI models on kidney-adjusted drug dosing. Also a pharmacist and a working AI evaluator, so careful about accuracy, edge cases and accessibility. Looking for remote work with UK, European and US teams.',
     ],
     ai: [
-      'Pharmacist who evaluates AI models and catches confident but incorrect answers in clinical and scientific content.',
-      'Authors and reviews expert-level evaluation tasks across text, image, video and terminal-based formats, grading for accuracy, instruction following, reasoning quality and safety.',
+      'AI evaluator and pharmacist, testing AI models since 2025. Writes expert-level tasks in chemistry, biology and clinical pharmacy that models get wrong, and grades their answers for accuracy, reasoning and safety across text, image, video and terminal tasks. Comfortable in Python, TypeScript and Linux, so can take on technical evaluation work as well as subject-expert work.',
     ],
     general: [
-      'AI training and evaluation specialist working on data quality: grading model output against detailed guidelines and flagging subtle factual and reasoning errors.',
-      'Pharmacist with front-line customer service, sales growth and regulated record-keeping experience.',
+      'AI data quality specialist, grading and annotating model output against detailed guidelines since 2025. Pharmacist by training, with front-line customer service, sales and regulated record-keeping experience. Used to high-volume, detail-heavy work and to writing clear feedback.',
     ],
   } as Record<Variant, string[]>,
 
   experience: [
     {
       title: 'AI Training & Evaluation Specialist',
-      company: 'Self-employed, remote · Outlier, Mercor, micro1 and others',
-      period: 'Nov 2025-Present',
+      company: 'Independent contractor (Outlier, Mercor, micro1)',
+      location: 'Remote',
+      period: 'Nov 2025 - Present',
       /* Empty on purpose: /about renders this role's bullets in full, and
          the practices live in the stack's "AI evaluation" row. Four tags
          under six bullets would say the same thing twice. */
@@ -134,8 +140,11 @@ export const resumeContent = {
           place: { default: 1, ai: 1, general: 1 },
         },
         {
+          /* Off the developer version for the same reason as the annotation
+             line below: its Skills line already says "side-by-side model
+             comparison" and "fact verification". */
           text: 'Rate and compare model responses side by side, and verify factual claims against sources.',
-          place: { default: 2, ai: 2, general: 2 },
+          place: { ai: 2, general: 2 },
         },
         {
           /* The differentiator for health and science evaluation, and dead
@@ -144,8 +153,12 @@ export const resumeContent = {
           place: { default: 4, ai: 4 },
         },
         {
+          /* Off the developer version: its Skills line already says
+             "image, video and audio annotation". With the line above, the
+             two lines freed are what keep this role whole on page one
+             there, and the CV at two pages. */
           text: 'Annotate image, video and audio data.',
-          place: { default: 3, ai: 3, general: 3 },
+          place: { ai: 3, general: 3 },
         },
         {
           text: 'Consistently meet quality bars across concurrent projects, with tasks rated at the top of the reviewer scale.',
@@ -156,7 +169,8 @@ export const resumeContent = {
     {
       title: 'Full Stack Developer Trainee',
       company: 'Zuri Team',
-      period: 'May 2022-Sep 2022',
+      location: 'Remote',
+      period: 'May 2022 - Sep 2022',
       tech: ['HTML', 'CSS', 'JavaScript', 'Python', 'Django'],
       /* The master carries the development history as history. The other two
          carry it as a skills line and spend the space elsewhere. */
@@ -170,13 +184,14 @@ export const resumeContent = {
       /* Current clinical post. One line in every version: the title, the
          employer and the dates are the whole point of it. */
       title: 'Pharmacist (NYSC Corps Member)',
-      company: 'Nasarawa State University clinic, Keffi',
-      period: 'Aug 2026-Present',
+      company: 'Nasarawa State University clinic',
+      location: 'Keffi, Nigeria',
+      period: 'Aug 2026 - Present',
       tech: [],
       /* The master and general versions run strict reverse chronological
          order, so the current clinical post opens the section there. In the
          AI version it sits second: it and the evaluation role are both
-         "– Present", so putting the evaluation role first never shows a
+         "- Present", so putting the evaluation role first never shows a
          jump back in time, and two concurrent roles are ordered by
          relevance to the reader instead. */
       place: { default: 0, ai: 1, general: 0 },
@@ -189,8 +204,9 @@ export const resumeContent = {
     },
     {
       title: 'Pharmacy Intern',
-      company: 'Federal Medical Centre, Keffi',
-      period: 'May 2025-May 2026',
+      company: 'Federal Medical Centre',
+      location: 'Keffi, Nigeria',
+      period: 'May 2025 - May 2026',
       tech: [],
       place: { default: 2, ai: 2, general: 2 },
       bullets: [
@@ -204,8 +220,9 @@ export const resumeContent = {
       /* Customer service and covering a regulated role. Worth the space to a
          fintech or operations reader; not to the other two. */
       title: 'Locum Pharmacy Assistant',
-      company: 'Sky Pharmacy, Wuse, Abuja',
-      period: 'Jul 2024-Mar 2025',
+      company: 'Sky Pharmacy',
+      location: 'Wuse, Abuja, Nigeria',
+      period: 'Jul 2024 - Mar 2025',
       tech: [],
       place: { general: 3 },
       bullets: [
@@ -215,8 +232,9 @@ export const resumeContent = {
     },
     {
       title: 'Administrative Assistant',
-      company: 'New System Pharmacy, Nsukka',
-      period: 'Jul 2022-Sep 2022',
+      company: 'New System Pharmacy',
+      location: 'Nsukka, Nigeria',
+      period: 'Jul 2022 - Sep 2022',
       tech: [],
       place: { general: 4 },
       bullets: [
