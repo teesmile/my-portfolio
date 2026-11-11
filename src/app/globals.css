@@ -6,8 +6,16 @@
    opts out. Because every colour utility reads a token, no `dark:` variant is
    needed anywhere in the tree — the same class is correct in both themes. */
 @variant light (&:where(.light, .light *));
-/* The CV's second look: ink section headings over an accent rule. */
-@variant cv-look-rule (&:where([data-look='rule'], [data-look='rule'] *));
+
+/* CV body text: justified to the full measure, the last line left-aligned,
+   never hyphenated (a break hyphen reads as a split word in extraction).
+   Word spacing only stretches; letters are never spaced apart. */
+@utility text-justify-body {
+  text-align: justify;
+  text-align-last: left;
+  text-justify: inter-word;
+  hyphens: none;
+}
 
 :root {
   color-scheme: dark;
@@ -486,8 +494,14 @@
     color: var(--cv-accent) !important;
   }
 
-  [data-look='rule'] h2 {
-    color: var(--ink) !important;
+  /* The column on paper. `pnpm resume` sets --cv-measure to the width that
+     sets the justified text most evenly; without it, the screen's width. */
+  [data-cv-sheet] {
+    padding-inline: 0 !important;
+  }
+
+  [data-cv-sheet] > div {
+    max-width: var(--cv-measure, 602px) !important;
   }
 
   /* Link buttons hold the body-text floor and stay compact. */

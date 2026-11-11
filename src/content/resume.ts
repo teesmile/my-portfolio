@@ -70,18 +70,20 @@ export const resumeContent = {
   },
   /* Section labels live here as well, so the document has no text that the
      ATS check cannot trace back to this file. */
+  /* Named the way a parser and a recruiter both expect, in this order:
+     summary, skills, experience, projects, then education and credentials
+     together under one heading. */
   sections: {
-    summary: 'Summary',
-    experience: 'Experience',
-    projects: 'Selected projects',
-    education: 'Education',
-    credentials: 'Credentials',
+    summary: 'Professional summary',
+    skills: 'Technical skills',
+    experience: 'Professional experience',
+    projects: 'Projects',
+    education: 'Education and credentials',
     languages: 'Languages',
-    skills: 'Skills',
   },
   titles: {
-    default: 'Full-stack developer and AI evaluator, Pharmacist',
-    ai: 'AI evaluation specialist, Pharmacist',
+    default: 'Full-stack developer and AI evaluation and data annotation specialist, Pharmacist',
+    ai: 'AI evaluation and data annotation specialist, Pharmacist',
     general: 'AI evaluation and data quality specialist, Pharmacist',
   },
 
@@ -107,25 +109,27 @@ export const resumeContent = {
      than guessing from position. One paragraph per version. */
   summary: {
     default: [
-      'Full-stack developer working in React, Next.js, TypeScript and Node.js. Recent work includes an offline-first task app that syncs across devices and a benchmark that tests AI models on kidney-adjusted drug dosing. Also a pharmacist and a working AI evaluator, so careful about accuracy, edge cases and accessibility. Looking for remote work with UK, European and US teams.',
+      'Full-stack developer with a pharmacy background, building web applications end to end with React, Next.js, TypeScript, Node.js and Python. Experienced in taking products from idea to launch, including offline-first apps, data pipelines and a site of more than 26,000 pages that stays fast on slow connections. Also works as an AI evaluation and data annotation specialist, with more than 1,000 tasks completed across annotation, grading and expert task writing. Brings the care of clinical work to software: clear documentation, thorough testing and attention to what can go wrong.',
     ],
     ai: [
-      'AI evaluator and pharmacist, testing AI models since 2025. Writes expert-level tasks in chemistry, biology and clinical pharmacy that models get wrong, and grades their answers for accuracy, reasoning and safety across text, image, video and terminal tasks. Comfortable in Python, TypeScript and Linux, so can take on technical evaluation work as well as subject-expert work.',
+      'AI evaluation and data annotation specialist with a pharmacy degree and a software development background. Since 2025, has completed more than 1,000 image and video annotation, comparison and rating tasks with quality ratings mostly between 4.5 and 4.8 out of 5, and written expert-level chemistry tasks with about 90% approved. Also builds terminal-based benchmark tasks for AI coding agents, working in Python, TypeScript and Linux. Works carefully and consistently, and writes clear feedback.',
     ],
     general: [
-      'AI data quality specialist, grading and annotating model output against detailed guidelines since 2025. Pharmacist by training, with front-line customer service, sales and regulated record-keeping experience. Used to high-volume, detail-heavy work and to writing clear feedback.',
+      'AI data quality and operations specialist with a pharmacy background. Has completed more than 1,000 annotation and rating tasks against detailed guidelines, with quality ratings mostly between 4.5 and 4.8 out of 5. Experienced in front-line pharmacy work covering customer service, sales and regulated record-keeping. Used to high-volume, detail-heavy work where accuracy matters, and to explaining decisions clearly in writing.',
     ],
   } as Record<Variant, string[]>,
 
   experience: [
     {
-      title: 'AI Training & Evaluation Specialist',
-      company: 'Independent contractor (Outlier, Mercor, micro1)',
-      location: 'Remote',
+      title: 'AI Evaluation and Data Annotation Specialist',
+      /* Printed as "Freelance, remote". No platform or client is named
+         anywhere on the site or the CVs; the note below says why. */
+      company: 'Freelance',
+      location: 'remote',
       period: 'Nov 2025 - Present',
       /* Empty on purpose: /about renders this role's bullets in full, and
          the practices live in the stack's "AI evaluation" row. Four tags
-         under six bullets would say the same thing twice. */
+         under the bullets would say the same thing twice. */
       tech: [],
       /* First in the AI version only: both this and the NYSC post are
          current, so dates can't order them and relevance does. */
@@ -134,39 +138,38 @@ export const resumeContent = {
       /* Why no client names anywhere in this entry. One line, in every
          version, because its absence is more conspicuous than its presence. */
       note: { text: 'Client and project details under NDA.', place: { default: 0, ai: 0, general: 0 } },
+      /* The three counted results lead, word for word as given. The older
+         lines they made redundant are folded in, not repeated: "annotate
+         image, video and audio data" and "quality bars, rated at the top of
+         the reviewer scale" are the first result; "author expert-level
+         tasks in chemistry ... and terminal-based formats" is the second
+         and third; side-by-side rating joins the grading line. */
       bullets: [
         {
-          text: 'Author expert-level tasks designed to stump frontier models in chemistry, biology and clinical pharmacy, across text, image, video and terminal-based formats.',
+          text: 'Completed more than 1,000 image and video annotation, comparison and rating tasks on a single project, with quality ratings mostly between 4.5 and 4.8 out of 5.',
           place: { default: 0, ai: 0, general: 0 },
         },
         {
-          text: 'Grade outputs for accuracy, instruction following, reasoning quality and safety against detailed guidelines.',
+          text: 'Wrote more than 25 expert-level chemistry tasks built to expose model errors, with about 90% approved.',
           place: { default: 1, ai: 1, general: 1 },
         },
         {
-          /* Off the developer version for the same reason as the annotation
-             line below: its Skills line already says "side-by-side model
-             comparison" and "fact verification". */
-          text: 'Rate and compare model responses side by side, and verify factual claims against sources.',
-          place: { ai: 2, general: 2 },
+          text: 'Built and submitted more than 10 terminal-based benchmark tasks that test AI coding agents.',
+          place: { default: 2, ai: 2, general: 3 },
+        },
+        {
+          /* Off the developer version: its Skills line already says
+             "rubric-based grading", "side-by-side model comparison" and
+             "fact verification", and the three lines are what keep this
+             role whole on page one there. */
+          text: 'Grade and compare model responses for accuracy, instruction following, reasoning quality and safety against detailed guidelines, and verify factual claims against sources.',
+          place: { ai: 3, general: 2 },
         },
         {
           /* The differentiator for health and science evaluation, and dead
              weight on a fintech desk. */
-          text: 'Apply pharmacy and chemistry knowledge to catch confident but incorrect answers in clinical and scientific content.',
+          text: 'Write tasks in biology and clinical pharmacy too, and apply pharmacy knowledge to catch confident but incorrect answers in clinical and scientific content.',
           place: { default: 4, ai: 4 },
-        },
-        {
-          /* Off the developer version: its Skills line already says
-             "image, video and audio annotation". With the line above, the
-             two lines freed are what keep this role whole on page one
-             there, and the CV at two pages. */
-          text: 'Annotate image, video and audio data.',
-          place: { ai: 3, general: 3 },
-        },
-        {
-          text: 'Consistently meet quality bars across concurrent projects, with tasks rated at the top of the reviewer scale.',
-          place: { default: 5, ai: 5, general: 4 },
         },
       ],
     },
@@ -269,9 +272,8 @@ export const resumeContent = {
      sample: the owner's call on 11 Nov 2026. Its figures are checked
      against the repo (teesmile/whos-on-my-ballot at e92c9c0): 26,142 pages
      in the built sitemap, 177,299 polling units from INEC's locator, and
-     LCP 2.0-2.4 s in Lighthouse's simulated slow-3G profile. Roasted came
-     off the developer version when it went on: the weakest of the four
-     there, and still on /work.
+     LCP 2.0-2.4 s in Lighthouse's simulated slow-3G profile. Roasted stays
+     on the developer version, fourth, as a one-line entry.
 
      Each project links to its case study on the site and to the live
      site, as buttons; a project shows only the links it has. */
@@ -291,17 +293,20 @@ export const resumeContent = {
     },
     {
       name: 'Todo App',
-      line: 'Local-first task list that installs and works offline; optional Google sign-in syncs tasks across devices.',
+      line: 'Local-first task list that works offline and syncs across devices via Google sign-in.',
       caseStudy: 'https://anthonyugwuja.dev/work/todo-app',
       url: 'https://todo.anthonyugwuja.dev',
       place: { default: 2 } as Placement,
     },
     {
       name: 'Roasted',
-      line: 'Farcaster mini app that writes a roast from a user\'s profile and recent casts, turns their avatar into a meme, and shares the card as a cast.',
+      /* Back on the developer version as a short entry (owner's call, 11
+         Nov 2026), held to one line so the CV stays at two pages. /work
+         carries the full description. */
+      line: 'Farcaster mini app that writes a roast from a user\'s profile and recent casts.',
       caseStudy: 'https://anthonyugwuja.dev/work/roasted',
       url: 'https://castroast.vercel.app',
-      place: {} as Placement,
+      place: { default: 3 } as Placement,
     },
     {
       name: 'E-Commerce Product Page',
@@ -379,7 +384,7 @@ export const resumeContent = {
     },
     {
       label: 'AI evaluation',
-      items: ['LLM evaluation', 'multimodal annotation', 'data annotation', 'image, video and audio annotation', 'fact verification', 'rubric-based grading', 'side-by-side model comparison'],
+      items: ['LLM evaluation', 'data annotation', 'multimodal (image, video and audio) annotation', 'fact verification', 'rubric-based grading', 'side-by-side model comparison'],
       place: { default: 2, ai: 0, general: 0 },
     },
     {

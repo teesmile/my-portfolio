@@ -12,19 +12,19 @@ export const metadata: Metadata = pageMetadata({
   path: "/resume",
 });
 
-/* Section headings carry the CV's one accent, in one of two looks (see
-   `data-look` below): the heading itself in the accent, or the heading in
-   ink with a thin accent rule beneath it. The rule is the stated exception
-   in the working rules: the resume is read as a document, not navigated. */
+/* Section headings carry the CV's one accent: the heading itself is set in
+   it. Nothing else on the page takes it except the link buttons. */
 function SectionHeading({ label }: { label: string }) {
   return (
     <div data-section-heading className="mt-10 first:mt-0">
-      <h2 className="text-sm text-cv-accent cv-look-rule:text-ink">{label}</h2>
-      {/* A border, not a background: PDF printing drops backgrounds. */}
-      <div className="mt-1.5 hidden w-full border-t border-cv-accent cv-look-rule:block" aria-hidden="true" />
+      <h2 className="text-sm text-cv-accent">{label}</h2>
     </div>
   );
 }
+
+/* Body text runs the full measure: justified, last line left, never
+   hyphenated (a break hyphen extracts as a fused or split word). */
+const JUSTIFY = "text-justify-body";
 
 /* A link as a small outlined button: the accent's colour, no underline. A
    real <a>, so it stays a clickable link annotation in the PDF. */
@@ -43,9 +43,10 @@ function LinkButton({ href, label, external }: { href: string; label: string; ex
 }
 
 /**
- * One column, in a fixed order: summary, skills, experience, projects,
- * education, credentials, languages. A version that carries no projects
- * drops that section rather than printing an empty heading.
+ * One column, in a fixed order: summary, skills, experience, projects, then
+ * education and credentials under one heading, then languages. A version
+ * that carries no projects drops that section rather than printing an empty
+ * heading.
  *
  * Single column is not a style choice. A two-column document interleaves in
  * the text stream when it is extracted, which is how "todo-app…vercel.app/"
@@ -55,7 +56,7 @@ function LinkButton({ href, label, external }: { href: string; label: string; ex
 export default async function ResumePage({
   searchParams,
 }: {
-  searchParams: Promise<{ variant?: string; private?: string; look?: string }>;
+  searchParams: Promise<{ variant?: string; private?: string }>;
 }) {
   const params = await searchParams;
   const variant: Variant =
@@ -70,14 +71,13 @@ export default async function ResumePage({
      that is deliberately kept off the site. */
   const privateAllowed = process.env.RESUME_ALLOW_PRIVATE === "1";
   const resume = resumeFor(variant, privateAllowed && params.private === "1");
-  /* Two looks while one is being chosen: accent headings (the default) or
-     ink headings over an accent rule (?look=rule). */
-  const look = params.look === "rule" ? "rule" : "headings";
 
   return (
-    <section data-look={look} className="px-4 sm:px-6 py-20 md:py-24">
+    <section data-cv-sheet className="px-4 sm:px-6 py-20 md:py-24">
       <div className="mx-auto max-w-(--container-reading)">
-        <header className="border-b border-line pb-6">
+        {/* Centred: name, title line and contact lines. Centring changes no
+            text, so the extraction reads the same three lines in order. */}
+        <header className="border-b border-line pb-6 text-center">
           <h1 data-cv-name className="text-2xl text-ink">{resume.name}</h1>
           <p className="mt-2 text-sm text-muted">{resume.title}</p>
 
@@ -114,7 +114,7 @@ export default async function ResumePage({
           <SectionHeading label={resume.sections.summary} />
           <div className="mt-3">
             {resume.summary.map((line) => (
-              <p key={line} className="mb-2 text-sm text-ink last:mb-0">
+              <p key={line} className={`mb-2 text-sm text-ink last:mb-0 ${JUSTIFY}`}>
                 {line}
               </p>
             ))}
@@ -129,7 +129,10 @@ export default async function ResumePage({
                   {group.items.map((item, index) => (
                     <span key={item}>
                       {index > 0 ? ", " : ""}
-                      <span className="whitespace-nowrap">{item}</span>
+                      {/* Short items hold together ("Tailwind CSS"); a long
+                          one may wrap, or it drops whole to the next line
+                          and leaves a short line behind it. */}
+                      <span className={item.split(" ").length < 3 ? "whitespace-nowrap" : undefined}>{item}</span>
                     </span>
                   ))}
                 </span>
@@ -153,7 +156,7 @@ export default async function ResumePage({
                 {role.note ? (
                   <p className="mt-0.5 text-2xs text-muted">{role.note}</p>
                 ) : null}
-                <ul className="mt-2 flex flex-col gap-1.5 text-2xs leading-6 text-ink">
+                <ul className={`mt-2 flex flex-col gap-1.5 text-2xs leading-6 text-ink ${JUSTIFY}`}>
                   {role.bullets.map((bullet) => (
                     <li key={bullet} className="border-l border-line pl-3">
                       {bullet}
@@ -171,7 +174,7 @@ export default async function ResumePage({
             {resume.projects.map((project) => (
               <article key={project.name}>
                 <h3 className="font-display text-sm text-ink">{project.name}</h3>
-                <p className="mt-0.5 text-2xs leading-6 text-ink">{project.line}</p>
+                <p className={`mt-0.5 text-2xs leading-6 text-ink ${JUSTIFY}`}>{project.line}</p>
                 {/* Both links on one line, each unbreakable in itself: a URL
                     that wraps mid-token extracts as two words, but the line
                     may break at the separator between them. Three projects
@@ -222,10 +225,8 @@ export default async function ResumePage({
                 ) : null}
               </article>
             ))}
-          </div>
-
-          <SectionHeading label={resume.sections.credentials} />
-          <div className="mt-3 flex flex-col gap-3">
+            {/* Credentials follow the qualifications in the same section,
+                in the same three-line shape. */}
             {resume.credentials.map((credential) => (
               <article key={credential.label}>
                 <h3 className="font-display text-sm text-ink">{credential.label}</h3>
