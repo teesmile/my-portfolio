@@ -229,8 +229,6 @@ export const portfolioConfig = {
   },
   takingWork: true,
   resumePdf: "/Anthony-Ugwuja-Resume.pdf",
-  currently:
-    "Reading model-written code most of the week, and building the next thing with a real server behind it.",
   statement:
     "I ship across the stack and catch what AI gets wrong. Pharmacist by training, engineer by choice.",
   /* The hero says it in two voices: the headline in Syne, the line under it
@@ -432,19 +430,23 @@ export const portfolioConfig = {
   ],
   // /lab exists as a route but stays out of the nav until it holds one
   // experiment. An empty page linked from the nav is worse than no link.
-  // Grouped by layer, and only tools that appear in a listed project or role.
-  // The data row stayed empty until something shipped with a database: the
-  // todo app's sync (Supabase Postgres) is the first.
+  // Grouped by layer, and only tools that appear in a listed project or role,
+  // or that run this site's own build (GitHub Actions and Playwright, the
+  // checks every pull request passes). Basics a reviewer takes as given
+  // (HTML, CSS, JavaScript under TypeScript, Git, GitHub, pnpm, Linux) and
+  // Django, which only the 2022 traineeship used, stay off: the CVs and the
+  // timeline carry them as history.
   stack: [
     {
-      layer: "Frontend",
-      items: ["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "HTML", "CSS"],
+      layer: "Frontend and backend",
+      items: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Node.js", "Python"],
     },
-    { layer: "Backend", items: ["Node.js", "Python", "Django"] },
-    { layer: "Data", items: ["Supabase", "PostgreSQL", "IndexedDB"] },
-    { layer: "Infrastructure", items: ["Git", "GitHub", "Vercel", "pnpm", "Linux"] },
+    {
+      layer: "Data and delivery",
+      items: ["Supabase", "PostgreSQL", "IndexedDB", "Vercel", "GitHub Actions", "Playwright"],
+    },
     /* The services Roasted is built on. Four, so on /about the row merges
-       into the one above as "Infrastructure and services". */
+       into the one above as "Data, delivery and services". */
     { layer: "Services", items: ["Farcaster", "Neynar", "Gemini", "Replicate"] },
     /* Practices rather than tools: no logos exist for them, so the row draws
        them as text chips instead of borrowing an icon that means something
@@ -485,7 +487,6 @@ export const portfolioConfig = {
       "Sites that load fast and get found: technical SEO, domain moves, structured data and performance, built in from day one or fixed on an existing site.",
       "Healthcare apps where the clinical details matter: built by a developer who's also a licensed pharmacist.",
     ],
-    contactNote: "Email reaches me fastest.",
     labHeading: "Interaction experiments, one at a time.",
     labIntro:
       "Where I try the things a client project would not pay for, and where I settle arguments with a measurement instead of an opinion.",

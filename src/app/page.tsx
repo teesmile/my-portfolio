@@ -6,6 +6,7 @@ import ToolsRow from "@/features/landing/tools-row";
 import Reveals from "@/components/layout/reveals";
 import JsonLd from "@/components/ui/json-ld";
 import { personJsonLd, websiteJsonLd } from "@/lib/structured-data";
+import { feedAlternate } from "@/lib/metadata";
 
 /* Only the canonical. The root layout already carries this page's title,
    description and Open Graph block, and restating the title here would run it
@@ -22,7 +23,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  alternates: { canonical: "/" },
+  alternates: { canonical: "/", types: feedAlternate },
 };
 
 /* The person the site is about, in full, and the site itself. Every other
