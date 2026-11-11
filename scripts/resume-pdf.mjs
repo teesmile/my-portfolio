@@ -9,12 +9,21 @@
  * Every version may run to two pages, never with a stub second page.
  *   --private                        adds the phone number, gitignored folder
  *
+ * Documents kept off the site (a CV for another field, a copy tailored to
+ * one job) are JSON files outside the repo, in the shape of
+ * src/content/resume-document.ts, printed through the same page:
+ *   --document <file.json> --out <file.pdf>
+ *                                    prints that document, with the phone
+ *   --variant <v> --dump <file.json> writes a version as such a document,
+ *                                    as the starting point for a tailored copy
+ *
  * The PDF is generated from the same component and the same data as the page,
  * so the document cannot drift from the site. The check afterwards is the
  * point: a resume that looks right and extracts as mush is worse than no PDF,
  * because nobody sees the failure.
  */
-import { spawn, execFileSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
+import { startGroup, stopAll, stopOnExit } from "./lib/processes.mjs";
 import { mkdir, readFile, readdir, writeFile, stat } from "node:fs/promises";
 import { createServer } from "node:net";
 import path from "node:path";
@@ -38,7 +47,19 @@ const variantArg = process.argv.indexOf("--variant");
 const variant = variantArg > -1 ? process.argv[variantArg + 1] : "default";
 /* --private writes a copy carrying the phone number into a gitignored
    folder. The public document and the site never show it. */
-const isPrivate = process.argv.includes("--private");
+const argValue = (flag) => {
+  const at = process.argv.indexOf(flag);
+  return at > -1 ? process.argv[at + 1] : undefined;
+};
+const documentFile = argValue("--document") && path.resolve(argValue("--document"));
+const dumpFile = argValue("--dump") && path.resolve(argValue("--dump"));
+/* A document kept off the site is private by definition: it carries the
+   phone number, and it is only ever written where --out says. */
+const isPrivate = process.argv.includes("--private") || Boolean(documentFile);
+if (documentFile && !argValue("--out")) {
+  console.error("--document needs --out: a private document is never written into the repo");
+  process.exit(1);
+}
 /* --out writes somewhere else, for comparing a change without touching
    the real documents. */
 const outArg = process.argv.indexOf("--out");
@@ -90,19 +111,20 @@ if (!built || newestSource > built.mtimeMs) {
 }
 
 /* The private view is off unless this server is told otherwise, and only a
-   --private run tells it. The server is local, started here and killed when
-   this process exits, so the variable never exists anywhere a visitor could
+   --private run tells it. The server is local, started here and stopped
+   with this script (scripts/lib/processes.mjs stops the whole process group,
+   on every way out), so the variable never exists anywhere a visitor could
    reach. */
-const server = spawn("pnpm", ["start", "--port", String(PORT)], {
-  stdio: "ignore",
-  env: { ...process.env, ...(isPrivate ? { RESUME_ALLOW_PRIVATE: "1" } : {}) },
+stopOnExit();
+startGroup("pnpm", ["start", "--port", String(PORT)], {
+  env: {
+    ...process.env,
+    ...(isPrivate || dumpFile ? { RESUME_ALLOW_PRIVATE: "1" } : {}),
+    ...(documentFile ? { RESUME_DOCUMENT: documentFile } : {}),
+  },
 });
-const chrome = spawn("chromium", ["--headless","--no-sandbox","--disable-gpu",
-  `--remote-debugging-port=${DEBUG_PORT}`,"about:blank"], { stdio: "ignore" });
-const stop = () => { server.kill("SIGKILL"); chrome.kill("SIGKILL"); };
-process.on("exit", stop);
-process.on("SIGINT", () => { stop(); process.exit(1); });
-process.on("uncaughtException", (error) => { console.error(error); stop(); process.exit(1); });
+startGroup("chromium", ["--headless","--no-sandbox","--disable-gpu",
+  `--remote-debugging-port=${DEBUG_PORT}`,"about:blank"]);
 
 async function ready(check, label) {
   for (let i = 0; i < 60; i += 1) {
@@ -112,11 +134,24 @@ async function ready(check, label) {
   throw new Error(`${label} never became ready`);
 }
 
-const query = [variant === "default" ? "" : `variant=${variant}`, isPrivate ? "private=1" : ""]
+const query = [
+  variant === "default" || documentFile ? "" : `variant=${variant}`,
+  isPrivate ? "private=1" : "",
+  documentFile ? "document=1" : "",
+]
   .filter(Boolean)
   .join("&");
 const url = `http://localhost:${PORT}/resume${query ? `?${query}` : ""}`;
 await ready(() => fetch(url).then((r) => r.ok), "the server");
+
+if (dumpFile) {
+  const doc = await fetch(`http://localhost:${PORT}/resume/document?variant=${variant}`).then((r) => r.json());
+  await mkdir(path.dirname(dumpFile), { recursive: true });
+  await writeFile(dumpFile, `${JSON.stringify(doc, null, 2)}\n`);
+  console.log(`wrote ${dumpFile} (variant: ${variant})`);
+  stopAll();
+  process.exit(0);
+}
 const target = await ready(async () => {
   const pages = await fetch(`http://127.0.0.1:${DEBUG_PORT}/json/list`).then((r) => r.json());
   return pages.find((p) => p.type === "page")?.webSocketDebuggerUrl;
@@ -355,7 +390,7 @@ const bytes = printed.buffer;
 await mkdir(path.dirname(OUT), { recursive: true });
 await writeFile(OUT, bytes);
 socket.close();
-stop();
+stopAll();
 
 /* ---- what an ATS reads ------------------------------------------------ */
 
@@ -479,7 +514,7 @@ if (pages === 2 && lastPage < MIN_SECOND_PAGE_LINES) {
   failures.push(`page two holds only ${lastPage} lines, even after tightening — cut a line or two, or add a section's worth`);
 }
 
-console.log(`${path.relative(process.cwd(), OUT)} — ${Math.round(bytes.length / 1024)} KB, ${pages} page${pages === 1 ? "" : "s"} (${printed.lines.join(" + ")} lines${printed.tight ? ", tight" : ""}, measure ${printed.measure}px), variant: ${variant}${isPrivate ? ", private" : ""}${fitNote ? ` — ${fitNote}` : ""}`);
+console.log(`${path.relative(process.cwd(), OUT)} — ${Math.round(bytes.length / 1024)} KB, ${pages} page${pages === 1 ? "" : "s"} (${printed.lines.join(" + ")} lines${printed.tight ? ", tight" : ""}, measure ${printed.measure}px), ${documentFile ? `document: ${path.basename(documentFile)}` : `variant: ${variant}`}${isPrivate ? ", private" : ""}${fitNote ? ` — ${fitNote}` : ""}`);
 
 if (failures.length) {
   console.error(`\nATS check failed:\n  ${failures.join("\n  ")}`);

@@ -9,7 +9,7 @@
  *
  *   node scripts/measure-frames.mjs [origin]
  */
-import { spawn } from "node:child_process";
+import { startGroup, stopAll, stopOnExit } from "./lib/processes.mjs";
 import { setTimeout as wait } from "node:timers/promises";
 
 const origin = process.argv[2] ?? "http://localhost:3000";
@@ -20,7 +20,8 @@ const reducedMotion = process.argv.includes("--reduced");
 const port = 9370;
 const BUDGET = 16.7;
 
-const chrome = spawn("chromium", ["--headless","--no-sandbox","--disable-gpu",
+stopOnExit();
+startGroup("chromium", ["--headless","--no-sandbox","--disable-gpu",
   `--remote-debugging-port=${port}`,"--window-size=1280,900","about:blank"], { stdio: "ignore" });
 
 async function endpoint() {
@@ -133,5 +134,5 @@ const failed = results.filter((r) => r.longest > BUDGET);
 console.log(failed.length ? `\n${failed.length} scenario(s) over the 16.7ms budget` : "\nall five scenarios inside the 16.7ms budget");
 
 socket.close();
-chrome.kill();
+stopAll();
 process.exit(0);
