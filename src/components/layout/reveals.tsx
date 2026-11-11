@@ -70,6 +70,21 @@ function setupReveals(initial: number, armNow: boolean) {
   const onLoad = targets.slice(0, initial);
   const rest = targets.slice(initial);
 
+  /* Two entrances. What is on screen when the page loads keeps the quick,
+     short one: it includes the page's largest paint, and a longer rise there
+     measurably delayed LCP (mobile Lighthouse fell from 97-99 to 86-88 on /
+     and /work). What the reader scrolls to gets the fuller rise; it is never
+     the largest paint, and it is where scrolling felt static. */
+  const LOAD_RISE = 14;
+  const showOnLoad = (els: HTMLElement[]) =>
+    gsap.to(els, {
+      opacity: 1,
+      y: 0,
+      duration: DURATION.base,
+      ease: EASE.out,
+      stagger: STAGGER.tight,
+      overwrite: 'auto',
+    });
   const show = (els: HTMLElement[]) =>
     gsap.to(els, {
       opacity: 1,
@@ -89,12 +104,15 @@ function setupReveals(initial: number, armNow: boolean) {
       overwrite: 'auto',
     });
 
-  gsap.set([...onLoad, ...rest], { opacity: 0, y: REVEAL.distance });
+  const onScreen = (el: HTMLElement) => el.getBoundingClientRect().top < window.innerHeight * ENTER;
+  const firstScreen = rest.filter(onScreen);
+  gsap.set([...onLoad, ...firstScreen], { opacity: 0, y: LOAD_RISE });
+  gsap.set(rest.filter((el) => !firstScreen.includes(el)), { opacity: 0, y: REVEAL.distance });
   gsap.to(onLoad, {
     opacity: 1,
     y: 0,
-    duration: REVEAL.duration,
-    ease: REVEAL.ease,
+    duration: DURATION.base,
+    ease: EASE.out,
     stagger: STAGGER.base,
   });
 
@@ -134,10 +152,10 @@ function setupReveals(initial: number, armNow: boolean) {
 
   const arm = () => {
     armed = true;
-    const reached = rest.filter(
-      (el) => el.getBoundingClientRect().top < window.innerHeight * ENTER,
-    );
-    if (reached.length) show(reached);
+    /* The sweep of what is already on screen uses the quick entrance: on
+       a page nobody scrolls, this is what reveals the first screen. */
+    const reached = rest.filter(onScreen);
+    if (reached.length) showOnLoad(reached);
   };
 
   window.addEventListener('scroll', arm, { once: true, passive: true });
