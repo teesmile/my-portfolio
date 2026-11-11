@@ -3,7 +3,7 @@
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
-import { DURATION, EASE, STAGGER, prefersReducedMotion } from '@/lib/motion';
+import { DURATION, EASE, REVEAL, STAGGER, prefersReducedMotion } from '@/lib/motion';
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -74,27 +74,27 @@ function setupReveals(initial: number, armNow: boolean) {
     gsap.to(els, {
       opacity: 1,
       y: 0,
-      duration: DURATION.base,
-      ease: EASE.out,
-      stagger: STAGGER.tight,
+      duration: REVEAL.duration,
+      ease: REVEAL.ease,
+      stagger: REVEAL.stagger,
       overwrite: 'auto',
     });
 
   const hide = (els: HTMLElement[]) =>
     gsap.to(els, {
       opacity: 0,
-      y: 14,
+      y: REVEAL.distance,
       duration: DURATION.fast,
       ease: EASE.in,
       overwrite: 'auto',
     });
 
-  gsap.set([...onLoad, ...rest], { opacity: 0, y: 14 });
+  gsap.set([...onLoad, ...rest], { opacity: 0, y: REVEAL.distance });
   gsap.to(onLoad, {
     opacity: 1,
     y: 0,
-    duration: DURATION.base,
-    ease: EASE.out,
+    duration: REVEAL.duration,
+    ease: REVEAL.ease,
     stagger: STAGGER.base,
   });
 

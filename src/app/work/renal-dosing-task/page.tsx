@@ -12,6 +12,7 @@ import type { Route } from "next";
 import JsonLd from "@/components/ui/json-ld";
 import { breadcrumbJsonLd } from "@/lib/structured-data";
 import { published } from "@/config/writing";
+import CountUp from "@/components/ui/count-up";
 
 export const metadata: Metadata = pageMetadata({
   title: "Clinical AI benchmark: renal dose check",
@@ -92,17 +93,23 @@ export default function RenalDosingPage() {
 
             <aside data-reveal className="lg:col-span-4 lg:col-start-9">
               <dl className="flex flex-col border-t border-line text-sm">
-                {[
-                  ["Patients", `${renal.patients.length}, synthetic`],
-                  ["Tests", `${renal.testCount}, all must pass`],
-                  ["Traps", `${traps.length}`],
-                  ["Valid look-alikes", `${lookAlikes.length}`],
-                  ["CrCl tolerance", `${renal.tolerance * 100}% relative`],
-                  ["Flagged orders", "exact set match"],
-                ].map(([term, value]) => (
+                {/* The counts count up as the list scrolls in; the words
+                    around them, and the two facts that are not counts, stay
+                    still. */}
+                {([
+                  ["Patients", renal.patients.length, ", synthetic"],
+                  ["Tests", renal.testCount, ", all must pass"],
+                  ["Traps", traps.length, ""],
+                  ["Valid look-alikes", lookAlikes.length, ""],
+                  ["CrCl tolerance", null, `${renal.tolerance * 100}% relative`],
+                  ["Flagged orders", null, "exact set match"],
+                ] as [string, number | null, string][]).map(([term, count, rest]) => (
                   <div key={term} className="grid grid-cols-[9rem_1fr] gap-4 border-b border-line py-3">
                     <dt className="text-2xs text-muted">{term}</dt>
-                    <dd className="text-ink">{value}</dd>
+                    <dd className="text-ink">
+                      {count !== null ? <CountUp value={count} /> : null}
+                      {rest}
+                    </dd>
                   </div>
                 ))}
               </dl>
