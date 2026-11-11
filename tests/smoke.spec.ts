@@ -64,6 +64,16 @@ test("contact: email, and one WhatsApp button with the greeting typed", async ({
   const url = new URL((await whatsapp.getAttribute("href"))!);
   expect(url.pathname).toMatch(/^\/\d+$/);
   expect(url.searchParams.get("text")).toBe("Hi Anthony, I found you through your portfolio.");
+
+  /* WhatsApp's own glyph, the white file on the dark theme and the black one
+     on the light theme, and it has actually loaded. */
+  for (const [theme, file] of [["dark", "White"], ["light", "Black"]] as const) {
+    await page.evaluate((t) => document.documentElement.classList.toggle("light", t === "light"), theme);
+    const glyph = whatsapp.locator("img:visible");
+    await expect(glyph, theme).toHaveCount(1);
+    await expect(glyph, theme).toHaveAttribute("src", `/brand/whatsapp/Digital_Glyph_${file}_RGB_2026.svg`);
+    expect(await glyph.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0), theme).toBe(true);
+  }
 });
 
 test("the writing feed is RSS and every item links to a live piece", async ({ page }) => {
