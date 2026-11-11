@@ -7,6 +7,7 @@ import gsap from 'gsap';
 import { Flip } from 'gsap/Flip';
 import type { Project } from '@/config/site';
 import { TechList } from '@/components/ui/tech';
+import { ButtonLink } from '@/components/ui/button';
 import { captureFlip } from '@/lib/flip-state';
 
 gsap.registerPlugin(Flip);
@@ -89,13 +90,13 @@ export default function WorkEntry({
         <div className="mt-5">
           <TechList items={project.tech} />
         </div>
-        <Link
-          href={`/work/${project.slug}`}
-          onClick={handoff}
-          className="mt-6 inline-block text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
-        >
-          Case study
-        </Link>
+        {/* A button, centred on a phone where it stands alone under the
+            text; left with the text from sm up. */}
+        <div className="mt-6 flex max-sm:justify-center">
+          <ButtonLink href={`/work/${project.slug}`} variant="secondary" size="sm" onClick={handoff}>
+            Case study
+          </ButtonLink>
+        </div>
       </div>
     </article>
   );

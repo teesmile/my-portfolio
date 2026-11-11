@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
 import RenalLoop from "@/features/landing/renal-loop";
+import { ButtonLink } from "@/components/ui/button";
 
 /**
  * The evaluation work on /work.
@@ -44,21 +45,13 @@ export default function EvaluationEntry() {
           <h3 className="text-2xs text-muted">The sample</h3>
           <p className="mt-2 font-display text-base text-ink">{evaluation.sample.title}</p>
           <p className="mt-2 text-sm text-muted">{evaluation.sample.summary}</p>
-          <div className="mt-5 flex flex-wrap items-baseline gap-x-6 gap-y-3">
-            <Link
-              href="/work/renal-dosing-task"
-              className="text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
-            >
+          <div className="mt-5 flex flex-wrap items-center gap-3 max-sm:justify-center">
+            <ButtonLink href="/work/renal-dosing-task" size="sm">
               See the traps and the evidence
-            </Link>
-            <a
-              href={evaluation.sample.repo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-muted underline decoration-line underline-offset-[6px] transition-colors hover:text-ink"
-            >
+            </ButtonLink>
+            <ButtonLink href={evaluation.sample.repo} variant="secondary" size="sm" external>
               Read the source
-            </a>
+            </ButtonLink>
           </div>
         </aside>
       </div>

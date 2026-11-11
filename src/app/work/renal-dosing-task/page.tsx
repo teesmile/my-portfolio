@@ -8,6 +8,7 @@ import { renal, renalTraps } from "@/content/renal-dosing";
 import { FictionalNote, TrapGrid } from "@/features/renal/parts";
 import { Evidence, PipelineFigure } from "@/features/renal/evidence";
 import Link from "next/link";
+import { ButtonLink } from "@/components/ui/button";
 import type { Route } from "next";
 import JsonLd from "@/components/ui/json-ld";
 import { breadcrumbJsonLd } from "@/lib/structured-data";
@@ -76,7 +77,7 @@ export default function RenalDosingPage() {
 
           <div className="mt-14 grid gap-12 lg:grid-cols-12">
             <section data-reveal className="min-w-0 max-w-(--container-reading) lg:col-span-7" aria-labelledby="what">
-              <h2 id="what" className="text-lg text-ink">What an agent benchmark is</h2>
+              <h2 id="what" className="text-lg text-accent">What an agent benchmark is</h2>
               <div className="mt-4 flex flex-col gap-5 text-base text-ink">
                 <p>
                   An agent benchmark hands an AI model a job in a real environment, here a Linux terminal with a few files in it, and grades what it produces with automated tests. The model can run commands, write code and check its own work. What it can&apos;t do is talk its way past the tests: they read the output file and nothing else.
@@ -113,14 +114,11 @@ export default function RenalDosingPage() {
                   </div>
                 ))}
               </dl>
-              <a
-                href={renal.repo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-6 inline-block text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
-              >
-                Read the task on GitHub
-              </a>
+              <div className="mt-6 flex max-sm:justify-center">
+                <ButtonLink href={renal.repo} size="sm" external>
+                  Read the task on GitHub
+                </ButtonLink>
+              </div>
               {writeUp ? (
                 <p className="mt-4 text-sm">
                   <span className="block text-2xs text-muted">How it was built</span>
@@ -136,7 +134,7 @@ export default function RenalDosingPage() {
           </div>
 
           <section className="mt-20" aria-labelledby="traps">
-            <h2 data-reveal id="traps" className="text-lg text-ink">The traps</h2>
+            <h2 data-reveal id="traps" className="text-lg text-accent">The traps</h2>
             <p data-reveal className="mt-4 max-w-(--container-reading) text-base text-ink">
               Each trap changes one patient&apos;s answer, or a small group built for the same trap, and no patient carries two. So when a patient fails, it points at one mistake. Open one to see the patient&apos;s rows and both readings of them.
             </p>
@@ -144,7 +142,7 @@ export default function RenalDosingPage() {
           </section>
 
           <section className="mt-20" aria-labelledby="look-alikes">
-            <h2 data-reveal id="look-alikes" className="text-lg text-ink">Valid look-alikes</h2>
+            <h2 data-reveal id="look-alikes" className="text-lg text-accent">Valid look-alikes</h2>
             <p data-reveal className="mt-4 max-w-(--container-reading) text-base text-ink">
               These two patients are legitimate. They&apos;re there to punish shortcuts, the blanket rules that guess a unit from the size of a number instead of reading the unit column.
             </p>
@@ -152,7 +150,7 @@ export default function RenalDosingPage() {
           </section>
 
           <section className="mt-24" aria-labelledby="evidence">
-            <h2 data-reveal id="evidence" className="text-xl text-ink">The evidence</h2>
+            <h2 data-reveal id="evidence" className="text-xl text-accent">The evidence</h2>
             <p data-reveal className="mt-4 max-w-(--container-reading) text-base text-ink">
               A benchmark is only as good as its grading. Two things have to hold: the answer key is right, and the tests pass right answers and fail wrong ones.
             </p>

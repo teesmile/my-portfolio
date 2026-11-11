@@ -14,6 +14,7 @@ import type { Route } from "next";
 import JsonLd from "@/components/ui/json-ld";
 import { breadcrumbJsonLd } from "@/lib/structured-data";
 import { published } from "@/config/writing";
+import { ButtonLink } from "@/components/ui/button";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -110,7 +111,7 @@ export default async function CaseStudyPage({ params }: Params) {
                 {project.description}
               </p>
 
-              <h2 data-reveal className="mt-12 text-lg text-ink">
+              <h2 data-reveal className="mt-12 text-lg text-accent">
                 What it does
               </h2>
               <ul className="mt-5 flex max-w-(--container-reading) flex-col gap-3 text-sm text-muted">
@@ -123,7 +124,7 @@ export default async function CaseStudyPage({ params }: Params) {
 
               {project.hard?.length ? (
                 <>
-                  <h2 data-reveal className="mt-14 text-lg text-ink">
+                  <h2 data-reveal className="mt-14 text-lg text-accent">
                     What was hard
                   </h2>
                   <div className="mt-5 flex max-w-(--container-reading) flex-col gap-4 text-sm text-ink">
@@ -136,7 +137,7 @@ export default async function CaseStudyPage({ params }: Params) {
                 </>
               ) : null}
 
-              <h2 data-reveal className="mt-14 text-lg text-ink">
+              <h2 data-reveal className="mt-14 text-lg text-accent">
                 Architecture
               </h2>
               {project.architecture ? (
@@ -180,19 +181,21 @@ export default async function CaseStudyPage({ params }: Params) {
                   </>
                 ) : null}
                 <p className="text-2xs text-muted">More work</p>
-                <ul className="mt-2 flex flex-col gap-2">
+                {/* Case studies are buttons everywhere on the site. The
+                    previous/next sense is in the accessible name, where a
+                    screen reader hears it, and in the order. */}
+                <ul className="mt-3 flex flex-wrap gap-3 max-sm:justify-center">
                   {neighbours.map(({ label, item }) => (
                     <li key={item.slug}>
-                      <span className="text-2xs text-muted">{label}: </span>
-                      <Link href={`/work/${item.slug}` as Route} className="text-ink underline decoration-line underline-offset-[6px] transition-colors hover:text-accent">
+                      <ButtonLink href={`/work/${item.slug}`} variant="secondary" size="sm" aria-label={`${label}: ${item.title}`}>
                         {item.title}
-                      </Link>
+                      </ButtonLink>
                     </li>
                   ))}
                   <li>
-                    <Link href="/work/renal-dosing-task" className="text-ink underline decoration-line underline-offset-[6px] transition-colors hover:text-accent">
-                      The AI evaluation sample: renal dose check
-                    </Link>
+                    <ButtonLink href="/work/renal-dosing-task" variant="secondary" size="sm">
+                      Renal dose check (AI evaluation sample)
+                    </ButtonLink>
                   </li>
                 </ul>
               </nav>
@@ -204,29 +207,18 @@ export default async function CaseStudyPage({ params }: Params) {
                 <TechList items={project.tech} />
               </div>
 
-              <div className="mt-8 flex flex-col gap-3">
-                <a
-                  href={project.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex w-fit items-center gap-1.5 text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
-                >
-                  {/* Before launch the address serves a "Coming soon" page,
-                      so the link names the address rather than promising a
-                      live project. */}
+              <div className="mt-8 flex flex-wrap items-center gap-3 max-sm:justify-center">
+                {/* Before launch the address serves a "Coming soon" page,
+                    so the button names the address rather than promising a
+                    live project. */}
+                <ButtonLink href={project.link} external>
                   {project.status ? `Open ${new URL(project.link).host}` : "Open the live project"}
                   <ExternalLinkIcon className="h-3.5 w-3.5" />
-                  <span className="sr-only">(opens in a new tab)</span>
-                </a>
+                </ButtonLink>
                 {project.repo ? (
-                  <a
-                    href={project.repo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-muted underline decoration-line underline-offset-[6px] transition-colors hover:text-ink"
-                  >
+                  <ButtonLink href={project.repo} variant="secondary" external>
                     Read the source
-                  </a>
+                  </ButtonLink>
                 ) : null}
               </div>
             </aside>

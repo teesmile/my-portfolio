@@ -14,10 +14,10 @@ import { feedAlternate } from "@/lib/metadata";
    twice. */
 /* The browser's own bar (Android Chrome) takes the hero's surface on this
    page, so it continues the hero instead of drawing another seam above it.
-   The values are --raised in each theme, the hero's background. */
+   The values are --raised in each theme, the top of the hero's surface. */
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#15171a" },
+    { media: "(prefers-color-scheme: dark)", color: "#1a1d22" },
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
   ],
 };

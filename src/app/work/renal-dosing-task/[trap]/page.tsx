@@ -109,7 +109,7 @@ export default async function TrapPage({ params }: Params) {
         </div>
 
         <section className="mt-16" aria-labelledby="rows">
-          <h2 data-reveal id="rows" className="text-lg text-ink">The patient&apos;s rows</h2>
+          <h2 data-reveal id="rows" className="text-lg text-accent">The patient&apos;s rows</h2>
           <p data-reveal className="mt-4 max-w-(--container-reading) text-sm text-muted">
             Exactly what the agent sees for {trap.patient_id}, copied from the chart. The value this mistake misreads is underlined.
           </p>
@@ -119,7 +119,7 @@ export default async function TrapPage({ params }: Params) {
         </section>
 
         <section className="mt-16" aria-labelledby="readings">
-          <h2 data-reveal id="readings" className="text-lg text-ink">Two readings of the same rows</h2>
+          <h2 data-reveal id="readings" className="text-lg text-accent">Two readings of the same rows</h2>
           <p data-reveal className="mt-4 max-w-(--container-reading) text-sm text-muted">
             Every step is shown. Where the careless reading goes wrong, the value is underlined.
           </p>
@@ -146,7 +146,7 @@ export default async function TrapPage({ params }: Params) {
         </section>
 
         <section className="mt-16" aria-labelledby="test">
-          <h2 data-reveal id="test" className="text-lg text-ink">
+          <h2 data-reveal id="test" className="text-lg text-accent">
             {own.length > 1 ? "The tests that catch it" : "The test that catches it"}
           </h2>
           <p data-reveal className="mt-4 max-w-(--container-reading) text-sm text-muted">

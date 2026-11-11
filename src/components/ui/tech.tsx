@@ -38,7 +38,7 @@ function luminance(hex: string) {
    black, so on the dark surface they fall back to ink rather than disappearing
    into the background. */
 function darkSafe(hex: string) {
-  const contrast = (luminance(hex) + 0.05) / (luminance("0c0d0f") + 0.05);
+  const contrast = (luminance(hex) + 0.05) / (luminance("121417") + 0.05);
   return contrast >= 3 ? `#${hex}` : "var(--ink)";
 }
 

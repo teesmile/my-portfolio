@@ -32,9 +32,12 @@
   /* The wrong reading in the renal loop: text, so it needs text contrast.
      The same red in dark (6.4:1 on --raised); darker in light. */
   --wrong: #ff6b5e;
-  --surface: #0c0d0f;
-  --raised: #15171a;
-  --line: #23272d;
+  /* Lifted graphite rather than near-black: the same ink and muted text
+     still clear 15:1 and 7:1 on it. The near-black it replaces is kept
+     under [data-hero="0"] below, for comparison on the preview. */
+  --surface: #121417;
+  --raised: #1a1d22;
+  --line: #2a2f36;
   --ink: #edeff2;
   --muted: #9ba3ad;
   /* The one saturated hue: amber-gold, interaction only.
@@ -47,6 +50,16 @@
   /* The CV's one accent: its section headings and link buttons. */
   --cv-accent: #f0b429;
   --focus-halo: transparent;
+  /* Buttons (src/components/ui/button.tsx). The solid button is the bright
+     gold with dark text in both themes; hover takes it a step towards the
+     ink and press a second step, mixed in OKLab so the two steps look even.
+     The outline button and the icon buttons tint on hover and press. */
+  --accent-hover: color-mix(in oklab, var(--accent-strong) 90%, var(--accent-ink));
+  --accent-press: color-mix(in oklab, var(--accent-strong) 80%, var(--accent-ink));
+  --accent-soft: color-mix(in oklab, var(--accent) 12%, transparent);
+  --accent-soft-press: color-mix(in oklab, var(--accent) 22%, transparent);
+  --tint: color-mix(in oklab, var(--ink) 8%, transparent);
+  --tint-press: color-mix(in oklab, var(--ink) 14%, transparent);
 
   /* The illustration palette: every figure, diagram, banner and the renal
      loop draw from these and nothing else. Content colour, not chrome.
@@ -121,6 +134,12 @@
   --color-accent-ink: var(--accent-ink);
   --color-accent-strong: var(--accent-strong);
   --color-cv-accent: var(--cv-accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-press: var(--accent-press);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-press: var(--accent-soft-press);
+  --color-tint: var(--tint);
+  --color-tint-press: var(--tint-press);
   /* Content only: the lint squiggle, and the misread cell in the renal
      showcase's chart tables. Never chrome. */
   --color-warn: var(--warn);
@@ -193,7 +212,9 @@
   --radius-sm: 2px;
   --radius-md: 4px;
   --radius-lg: 8px;
-  /* Pills: the hero's back button. */
+  /* Every button on the site, including the back control and the CV's
+     link buttons: gently rounded, the same everywhere. */
+  --radius-button: 6px;
   --radius-pill: 9999px;
 
   --container-reading: 38rem;
@@ -750,24 +771,129 @@
   97.5%, 100% { opacity: 0; }
 }
 
-/* The hero's own surface, ending where the hero ends, with a little grain
-   for depth. CSS and one inline SVG: no canvas, nothing that animates. */
+/* The hero's surface and the page surfaces behind it.
+
+   Three candidates are on the preview, chosen with ?hero=a, ?hero=b or
+   ?hero=c (the choice is remembered for the tab; ?hero=0 is the look this
+   round replaces). A is the default. Each is designed for both themes and
+   is colour and gradients only: nothing here costs more to paint than the
+   two glows it replaces, and nothing in it moves.
+
+     a  graphite    the hero's surface fades down into the page, so there is
+                    no block and no seam; a little grain for depth
+     b  blueprint   a fine dot grid on the raised surface, fading out towards
+                    the bottom, on a cooler slate
+     c  warm wash   one soft amber wash from the top left, a third as strong
+                    as the old glows, on a warm charcoal; warm paper in light
+
+   The grain is one inline SVG turbulence, rasterised once and tiled; it
+   sits under the content and never repaints. */
 .editor-surface {
-  background-color: var(--raised);
-  border-bottom: 1px solid var(--line);
+  background: linear-gradient(to bottom, var(--raised), var(--surface));
   position: relative;
   isolation: isolate;
 }
 
-/* Grain: a single inline SVG turbulence, rasterised once by the browser and
-   tiled. It sits under the content and never repaints. */
 .editor-surface::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
-  opacity: 0.045;
+  opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* The wash layer inside the hero (hero.tsx): empty for A. */
+.hero-wash {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* B: blueprint. */
+:root[data-hero='b'] {
+  --surface: #0f1216;
+  --raised: #161a20;
+  --line: #272c34;
+}
+
+:root[data-hero='b'].light {
+  --surface: #f5f6f8;
+  --raised: #ffffff;
+  --line: #dbdfe5;
+}
+
+:root[data-hero='b'] .editor-surface {
+  background: var(--raised);
+  border-bottom: 1px solid var(--line);
+}
+
+:root[data-hero='b'] .editor-surface::before {
+  content: none;
+}
+
+:root[data-hero='b'] .hero-wash {
+  background-image: radial-gradient(circle, color-mix(in oklab, var(--line) 70%, var(--muted)) 1px, transparent 1.6px);
+  background-size: 24px 24px;
+  background-position: 12px 12px;
+  mask-image: linear-gradient(to bottom, rgb(0 0 0 / 0.85) 0%, rgb(0 0 0 / 0.55) 45%, transparent 92%);
+}
+
+/* C: warm wash. */
+:root[data-hero='c'] {
+  --surface: #141312;
+  --raised: #1c1a18;
+  --line: #2d2a27;
+}
+
+:root[data-hero='c'].light {
+  --surface: #f7f5f1;
+  --raised: #fffdf9;
+  --line: #e0dbd3;
+}
+
+:root[data-hero='c'] .editor-surface {
+  background: var(--raised);
+  border-bottom: 1px solid var(--line);
+}
+
+:root[data-hero='c'] .editor-surface::before {
+  opacity: 0.04;
+}
+
+:root[data-hero='c'] .hero-wash {
+  background-image: radial-gradient(75% 65% at 12% 10%, color-mix(in oklab, #f0b429 9%, transparent), transparent 72%);
+}
+
+:root[data-hero='c'].light .hero-wash {
+  background-image: radial-gradient(75% 65% at 12% 10%, color-mix(in oklab, #f0b429 13%, transparent), transparent 72%);
+}
+
+/* 0: the look before this round, for comparison. */
+:root[data-hero='0'] {
+  --surface: #0c0d0f;
+  --raised: #15171a;
+  --line: #23272d;
+}
+
+:root[data-hero='0'].light {
+  --surface: #f5f6f8;
+  --raised: #ffffff;
+  --line: #dbdfe5;
+}
+
+:root[data-hero='0'] .editor-surface {
+  background: var(--raised);
+  border-bottom: 1px solid var(--line);
+}
+
+:root[data-hero='0'] .editor-surface::before {
+  opacity: 0.045;
+}
+
+:root[data-hero='0'] .hero-wash {
+  background-image: radial-gradient(60% 55% at 22% 28%, var(--ill-glow), transparent 70%), radial-gradient(38% 45% at 82% 26%, var(--ill-glow), transparent 70%);
 }
 
 

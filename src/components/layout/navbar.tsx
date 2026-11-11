@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { portfolioConfig } from '@/config/site';
 import ThemeToggle from './theme-toggle';
+import { buttonClass } from '@/components/ui/button';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -118,12 +119,14 @@ export default function Navbar() {
           href="/"
           aria-label={`${portfolioConfig.name} - go to the home page`}
           aria-current={pathname === '/' ? 'page' : undefined}
-          className="relative z-50 font-display text-lg text-ink underline decoration-2 decoration-transparent underline-offset-[6px] transition-colors hover:decoration-accent"
+          /* The one coloured thing in the bar: the name in the accent, so
+             the bar has a mark rather than a row of equal words. */
+          className="relative z-50 font-display text-lg text-accent underline decoration-2 decoration-transparent underline-offset-[6px] transition-colors hover:decoration-accent"
         >
           {portfolioConfig.name}
         </Link>
 
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           <ul className="hidden items-center gap-6 text-sm md:flex">
             {portfolioConfig.navLinks.map((link) => (
               <li key={link.name}>
@@ -155,12 +158,15 @@ export default function Navbar() {
             </li>
           </ul>
 
+          {/* The two icon buttons sit flush with the content edge: the
+              square tap area is wider than the mark inside it. */}
+          <div className="-mr-3 flex items-center gap-1">
           <ThemeToggle />
 
           <button
             type="button"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="relative z-60 -m-2 p-2 text-muted transition-colors hover:text-ink md:hidden"
+            className={buttonClass('icon', 'md', 'relative z-60 md:hidden')}
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={isMenuOpen}
             aria-controls="mobile-menu"
@@ -180,6 +186,7 @@ export default function Navbar() {
               )}
             </svg>
           </button>
+          </div>
         </div>
       </div>
 

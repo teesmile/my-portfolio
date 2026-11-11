@@ -1,27 +1,45 @@
+import { siGithub, siX } from "simple-icons";
 import { portfolioConfig } from "@/config/site";
+import { linkedin, type BrandIcon } from "@/components/ui/brand-icons";
+import { buttonClass } from "@/components/ui/button";
+
+/* The three profiles as marks only. GitHub and X are simple-icons; LinkedIn
+   is not carried there, so its mark is in brand-icons.ts. */
+const marks: Record<string, BrandIcon> = { github: siGithub, linkedin, twitter: siX };
 
 export default function Footer() {
   return (
     /* Its own layer on the page surface: nothing in a page's content, however
        it is transformed, can paint over the footer or take its clicks. */
     <footer className="relative z-10 border-t border-line bg-surface px-4 pt-6 sm:px-6 md:pt-10">
-      <div className="mx-auto flex max-w-(--container-view) flex-col items-start gap-4 text-left text-2xs text-muted sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+      {/* Phones: the marks in one centred row, the copyright centred under
+          them. From sm up: copyright left, marks right. The DOM keeps the
+          copyright first either way; the column is reversed on phones. */}
+      <div className="mx-auto flex max-w-(--container-view) flex-col-reverse items-center gap-4 text-center text-2xs text-muted sm:flex-row sm:justify-between sm:gap-6 sm:text-left">
         <p>
           &copy; {new Date().getFullYear()} {portfolioConfig.name}
         </p>
-        <ul className="flex flex-wrap gap-x-6 gap-y-2">
-          {portfolioConfig.socials.map((social) => (
-            <li key={social.name}>
-              <a
-                href={social.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline decoration-line underline-offset-[6px] transition-colors hover:text-ink"
-              >
-                {social.name}
-              </a>
-            </li>
-          ))}
+        <ul className="-mr-3 flex items-center gap-1 sm:-mr-3" aria-label="Profiles elsewhere">
+          {portfolioConfig.socials.map((social) => {
+            const mark = marks[social.iconKey];
+            return (
+              <li key={social.name}>
+                {/* Icon only, 44px square so it is comfortable to tap; the
+                    name is there for a screen reader and nobody else. */}
+                <a
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={buttonClass("icon")}
+                >
+                  <svg viewBox={mark.viewBox ?? "0 0 24 24"} className="h-5 w-5 fill-current" aria-hidden="true">
+                    <path d={mark.path} />
+                  </svg>
+                  <span className="sr-only">{social.name} (opens in a new tab)</span>
+                </a>
+              </li>
+            );
+          })}
         </ul>
       </div>
 

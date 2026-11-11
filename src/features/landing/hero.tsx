@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
+import { ButtonLink } from "@/components/ui/button";
 import DefectDeck from "./defect-deck";
 import CorrectedHeadline from "./corrected-line";
 
@@ -15,9 +15,9 @@ import CorrectedHeadline from "./corrected-line";
  * paint. The page's one orchestrated moment is the correction
  * (corrected-line.tsx), and the deck's clock waits for it to settle.
  *
- * Warmth comes from a static amber glow behind the headline and portrait,
- * two radial gradients in the --ill-glow token. Nothing in the background
- * moves.
+ * The background is the hero's surface and an optional wash layer, both
+ * defined in globals.css (.editor-surface, .hero-wash) and chosen per
+ * [data-hero] on <html>. Nothing in the background moves.
  *
  * Phones: the portrait is small and sits beside the supporting paragraph,
  * not above the deck, so the headline and the deck both stay within
@@ -45,10 +45,7 @@ export default function Hero() {
     >
       {/* The nav is transparent only while this is in view: the first 4px. */}
       <span data-home-top aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-1" />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_55%_at_22%_28%,var(--ill-glow),transparent_70%),radial-gradient(38%_45%_at_82%_26%,var(--ill-glow),transparent_70%)]"
-      />
+      <div aria-hidden="true" className="hero-wash" />
       {/* One grid, two arrangements, and a single portrait element in both:
           two copies (one per breakpoint) meant two downloads, and the
           phone's lazy copy became the page's LCP at 2.9 s.
@@ -66,16 +63,14 @@ export default function Hero() {
           <p className="mt-6 font-mono-brand text-mono-sm text-muted lg:text-mono">{monoLine}</p>
         </div>
 
-        <div className="col-span-2 mt-12 flex items-baseline gap-8 lg:col-span-4 lg:row-start-2 lg:mt-14">
-          <Link
-            href="/work"
-            className="text-lg text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
-          >
-            See the work
-          </Link>
-          <Link href="/about" className="text-sm text-muted transition-colors hover:text-ink">
-            How I got here
-          </Link>
+        {/* The two ways on: solid for the work, outlined for the person.
+            Centred on a phone, where the row stands on its own under the
+            headline; left-aligned from sm up, where it heads the column. */}
+        <div className="col-span-2 mt-10 flex flex-wrap items-center gap-3 max-sm:justify-center lg:col-span-4 lg:row-start-2 lg:mt-14">
+          <ButtonLink href="/work">See my work</ButtonLink>
+          <ButtonLink href="/about" variant="secondary">
+            About me
+          </ButtonLink>
         </div>
 
         <p className="mt-8 self-end text-sm text-muted lg:col-span-4 lg:row-start-3 lg:mt-10 lg:max-w-[34ch] lg:self-start">

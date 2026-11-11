@@ -4,7 +4,6 @@ import JsonLd from "@/components/ui/json-ld";
 import { SITE_URL } from "@/config/site-url";
 import { WEBSITE_ID, breadcrumbJsonLd, personJsonLd } from "@/lib/structured-data";
 import Image from "next/image";
-import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
 import { siteExperience } from "@/content/resume";
 import { TechList } from "@/components/ui/tech";
@@ -12,6 +11,7 @@ import StackRows from "@/features/about/stack-rows";
 import Reveals from "@/components/layout/reveals";
 import TechGlitch from "@/components/ui/tech-glitch";
 import { ExternalLinkIcon } from "@/components/ui/icons";
+import { ButtonLink } from "@/components/ui/button";
 
 export const metadata: Metadata = pageMetadata({
   title: "About",
@@ -19,6 +19,7 @@ export const metadata: Metadata = pageMetadata({
   description:
     "Full-stack developer and AI evaluator who checks model-written code and clinical answers, with a pharmacy degree behind it. Experience, talks and stack.",
   path: "/about",
+  image: "/about/opengraph-image",
 });
 
 export default function AboutPage() {
@@ -49,7 +50,7 @@ export default function AboutPage() {
               ))}
             </div>
 
-            <h2 className="mt-16 text-lg text-ink">How I got here</h2>
+            <h2 className="mt-16 text-lg text-accent">How I got here</h2>
             <p className="mt-3 max-w-(--container-reading) text-sm text-muted">
               Two tracks, running at the same time rather than one replacing the
               other.
@@ -76,7 +77,7 @@ export default function AboutPage() {
 
             {/* The timeline's grid, so a talk reads as one more dated entry
                 on its track rather than as a separate kind of card. */}
-            <h2 className="mt-16 text-lg text-ink">Talks</h2>
+            <h2 className="mt-16 text-lg text-accent">Talks</h2>
             <ol className="mt-6 flex max-w-(--container-reading) flex-col">
               {talks.map((talk) => (
                 <li
@@ -112,7 +113,7 @@ export default function AboutPage() {
               ))}
             </ol>
 
-            <h2 className="mt-16 text-lg text-ink">Experience</h2>
+            <h2 className="mt-16 text-lg text-accent">Experience</h2>
             <div className="mt-6 flex max-w-(--container-reading) flex-col gap-8">
               {siteExperience.map((role) => (
                 <article key={`${role.title}-${role.period}`} data-reveal className="border-t border-line pt-5">
@@ -150,7 +151,10 @@ export default function AboutPage() {
             {/* No frame, no border, no backing panel: the source is a clean
                 cutout, so anything behind it reads as a box the photo was
                 pasted into — and in light mode that box was white. */}
-            <div className="relative aspect-square w-full">
+            {/* On a phone the column is the full width and the portrait
+                would fill it edge to edge; it is held to a smaller square
+                and centred instead, as a photo rather than a banner. */}
+            <div className="relative aspect-square w-full max-sm:mx-auto max-sm:max-w-72">
               <Image
                 src="/portrait-clean-v2.webp"
                 alt={`${portfolioConfig.name} portrait`}
@@ -166,20 +170,11 @@ export default function AboutPage() {
               <StackRows layers={stack} />
             </div>
 
-            <div className="mt-10 flex flex-wrap items-center gap-5">
-              <Link
-                href="/resume"
-                className="text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
-              >
-                Read the resume
-              </Link>
-              <a
-                href={portfolioConfig.resumePdf}
-                download
-                className="border border-line px-3 py-1.5 text-2xs text-ink transition-colors hover:border-ink"
-              >
+            <div className="mt-10 flex flex-wrap items-center gap-3 max-sm:justify-center">
+              <ButtonLink href="/resume">Read the resume</ButtonLink>
+              <ButtonLink href={portfolioConfig.resumePdf} variant="secondary" download>
                 Download PDF
-              </a>
+              </ButtonLink>
             </div>
           </div>
         </div>

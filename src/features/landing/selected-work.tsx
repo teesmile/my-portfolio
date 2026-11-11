@@ -86,7 +86,7 @@ export default function SelectedWork() {
       className="px-4 sm:px-6 py-20 [contain-intrinsic-size:auto_56rem] [content-visibility:auto] md:py-28"
     >
       <div className="mx-auto max-w-(--container-view)">
-        <h2 data-reveal id="selected-work" className="text-xl text-ink">
+        <h2 data-reveal id="selected-work" className="text-xl text-accent">
           Selected work
         </h2>
         <ul className="mt-10 grid gap-12 md:grid-cols-3 md:gap-8">

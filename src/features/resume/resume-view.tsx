@@ -1,6 +1,7 @@
 import { Fragment, type ReactNode } from "react";
 import Link from "next/link";
 import type { DocSection, ResumeDocument } from "@/content/resume-document";
+import { buttonClass } from "@/components/ui/button";
 
 /* Section headings carry the CV's one accent: the heading itself is set in
    it. Nothing else on the page takes it except the link buttons. */
@@ -24,7 +25,7 @@ function LinkButton({ href, label, external }: { href: string; label: string; ex
       data-cv-button
       href={href}
       {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      className="mr-1 inline-block border border-cv-accent px-2 py-0.5 text-2xs leading-5 text-cv-accent no-underline transition-colors hover:bg-cv-accent hover:text-surface"
+      className="mr-1 inline-block rounded-button border border-cv-accent px-2 py-0.5 text-2xs leading-5 text-cv-accent no-underline transition-colors hover:bg-cv-accent hover:text-surface"
     >
       {label}
       {external ? <span className="sr-only print:hidden"> (opens in a new tab)</span> : null}
@@ -279,7 +280,7 @@ export default function ResumeView({ doc }: { doc: ResumeDocument }) {
               data-no-print
               href={doc.pdfHref}
               download
-              className="mt-5 inline-block border border-line px-4 py-2 text-2xs text-ink transition-colors hover:border-ink"
+              className={buttonClass("secondary", "sm", "mt-5")}
             >
               Download PDF
             </a>
