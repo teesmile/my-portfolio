@@ -53,7 +53,7 @@ export const personJsonLd = {
       "@type": "EducationalOccupationalCredential",
       credentialCategory: "license",
       name: "Pharmacist",
-      recognizedBy: { "@type": "Organization", name: "Pharmacists Council of Nigeria" },
+      recognizedBy: { "@type": "Organization", name: "Pharmacy Council of Nigeria" },
     },
     {
       "@type": "EducationalOccupationalCredential",

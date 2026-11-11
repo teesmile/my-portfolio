@@ -11,7 +11,7 @@
  * waits for fonts and images (the portrait scene embeds /portrait-clean-v2.webp),
  * hides the site chrome, and checks each PNG's header reads 1200×630.
  */
-import { spawn } from "node:child_process";
+import { startGroup, stopAll, stopOnExit } from "./lib/processes.mjs";
 import { mkdir, readFile, writeFile, stat } from "node:fs/promises";
 import { createServer } from "node:net";
 import path from "node:path";
@@ -41,10 +41,10 @@ const slugs = [...source.matchAll(/slug:\s*"([^"]+)"/g)].map((m) => m[1]);
 
 const PORT = await freePort();
 const DEBUG = await freePort();
-const server = spawn("pnpm", ["start", "--port", String(PORT)], { stdio: "ignore" });
-const chrome = spawn("chromium", ["--headless=new", "--no-sandbox", "--hide-scrollbars", `--remote-debugging-port=${DEBUG}`, "about:blank"], { stdio: "ignore" });
-const stop = () => { server.kill("SIGKILL"); chrome.kill("SIGKILL"); };
-process.on("exit", stop);
+/* Stopped with this script, as whole process groups (scripts/lib/processes.mjs). */
+stopOnExit();
+startGroup("pnpm", ["start", "--port", String(PORT)]);
+startGroup("chromium", ["--headless=new", "--no-sandbox", "--hide-scrollbars", `--remote-debugging-port=${DEBUG}`, "about:blank"]);
 
 async function ready(check, label) {
   for (let i = 0; i < 60; i += 1) {
@@ -99,6 +99,6 @@ for (const slug of slugs) {
 }
 
 socket.close();
-stop();
+stopAll();
 if (failed) process.exit(1);
 console.log(`\n${slugs.length} share images written to public/share/`);

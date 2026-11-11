@@ -22,7 +22,8 @@
  * point: a resume that looks right and extracts as mush is worse than no PDF,
  * because nobody sees the failure.
  */
-import { spawn, execFileSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
+import { startGroup, stopAll, stopOnExit } from "./lib/processes.mjs";
 import { mkdir, readFile, readdir, writeFile, stat } from "node:fs/promises";
 import { createServer } from "node:net";
 import path from "node:path";
@@ -110,23 +111,20 @@ if (!built || newestSource > built.mtimeMs) {
 }
 
 /* The private view is off unless this server is told otherwise, and only a
-   --private run tells it. The server is local, started here and killed when
-   this process exits, so the variable never exists anywhere a visitor could
+   --private run tells it. The server is local, started here and stopped
+   with this script (scripts/lib/processes.mjs stops the whole process group,
+   on every way out), so the variable never exists anywhere a visitor could
    reach. */
-const server = spawn("pnpm", ["start", "--port", String(PORT)], {
-  stdio: "ignore",
+stopOnExit();
+startGroup("pnpm", ["start", "--port", String(PORT)], {
   env: {
     ...process.env,
     ...(isPrivate || dumpFile ? { RESUME_ALLOW_PRIVATE: "1" } : {}),
     ...(documentFile ? { RESUME_DOCUMENT: documentFile } : {}),
   },
 });
-const chrome = spawn("chromium", ["--headless","--no-sandbox","--disable-gpu",
-  `--remote-debugging-port=${DEBUG_PORT}`,"about:blank"], { stdio: "ignore" });
-const stop = () => { server.kill("SIGKILL"); chrome.kill("SIGKILL"); };
-process.on("exit", stop);
-process.on("SIGINT", () => { stop(); process.exit(1); });
-process.on("uncaughtException", (error) => { console.error(error); stop(); process.exit(1); });
+startGroup("chromium", ["--headless","--no-sandbox","--disable-gpu",
+  `--remote-debugging-port=${DEBUG_PORT}`,"about:blank"]);
 
 async function ready(check, label) {
   for (let i = 0; i < 60; i += 1) {
@@ -151,7 +149,7 @@ if (dumpFile) {
   await mkdir(path.dirname(dumpFile), { recursive: true });
   await writeFile(dumpFile, `${JSON.stringify(doc, null, 2)}\n`);
   console.log(`wrote ${dumpFile} (variant: ${variant})`);
-  stop();
+  stopAll();
   process.exit(0);
 }
 const target = await ready(async () => {
@@ -392,7 +390,7 @@ const bytes = printed.buffer;
 await mkdir(path.dirname(OUT), { recursive: true });
 await writeFile(OUT, bytes);
 socket.close();
-stop();
+stopAll();
 
 /* ---- what an ATS reads ------------------------------------------------ */
 

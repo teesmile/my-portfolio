@@ -7,7 +7,7 @@
  *
  *   node scripts/measure-shift.mjs [origin] [width] [height]
  */
-import { spawn } from "node:child_process";
+import { startGroup, stopAll, stopOnExit } from "./lib/processes.mjs";
 import { setTimeout as wait } from "node:timers/promises";
 
 const origin = process.argv[2] ?? "http://localhost:3000";
@@ -15,7 +15,8 @@ const width = Number(process.argv[3] ?? 1280);
 const height = Number(process.argv[4] ?? 900);
 const port = 9222;
 
-const chrome = spawn("chromium", [
+stopOnExit();
+startGroup("chromium", [
   "--headless",
   "--no-sandbox",
   "--disable-gpu",
@@ -103,5 +104,5 @@ const shifted =
 console.log(JSON.stringify({ shiftFree: !shifted, before, after }, null, 2));
 
 socket.close();
-chrome.kill();
+stopAll();
 process.exit(shifted ? 1 : 0);

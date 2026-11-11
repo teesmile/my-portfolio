@@ -372,7 +372,7 @@ export const resumeContent = {
   ],
 
   credentials: [
-    { label: 'Pharmacist', issuer: 'Pharmacists Council of Nigeria', date: '', place: { default: 0, ai: 0, general: 0 } as Placement },
+    { label: 'Pharmacist', issuer: 'Pharmacy Council of Nigeria', date: '', place: { default: 0, ai: 0, general: 0 } as Placement },
     { label: 'AI Fluency Framework', issuer: 'Anthropic', date: 'Jul 2026', place: { default: 1, ai: 1, general: 1 } as Placement },
   ],
 
