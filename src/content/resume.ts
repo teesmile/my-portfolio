@@ -121,7 +121,7 @@ export const resumeContent = {
       'AI evaluation and data annotation specialist with a pharmacy degree and a software development background. Since 2025, has completed more than 1,000 image and video annotation, comparison and rating tasks with quality ratings mostly between 4.5 and 4.8 out of 5, and has written expert-level science tasks with about 90% approved. Also builds terminal-based benchmark tasks for AI coding agents, working in Python, TypeScript and Linux. Works carefully and consistently, and writes clear feedback.',
     ],
     general: [
-      'AI data annotation and quality specialist with a pharmacy degree. Since 2025, has completed more than 1,000 image and video annotation, comparison and rating tasks with quality ratings mostly between 4.5 and 4.8 out of 5, and has written expert-level science tasks with about 90% approved. Completed a one-year pharmacy internship at Federal Medical Centre Keffi and now works as a pharmacist at the Nasarawa State University clinic, dispensing medicines and counselling patients face to face. Also has working knowledge of Python, TypeScript and Linux.',
+      'AI data annotation and quality specialist with a pharmacy degree. Since 2025, has completed more than 1,000 image and video annotation, comparison and rating tasks with quality ratings mostly between 4.5 and 4.8 out of 5, and has written expert-level science tasks with about 90% approved. Completed a one-year pharmacy internship at Federal Medical Centre Keffi and now serves as a corps pharmacist at the Nasarawa State University clinic under the National Youth Service Corps, dispensing medicines and counselling patients face to face. Also has working knowledge of Python, TypeScript and Linux.',
     ],
   } as Record<Variant, string[]>,
 
@@ -199,7 +199,7 @@ export const resumeContent = {
     {
       /* Current clinical post. One line in every version: the title, the
          employer and the dates are the whole point of it. */
-      title: 'Pharmacist (NYSC Corps Member)',
+      title: 'Corps Pharmacist (National Youth Service Corps)',
       company: 'Nasarawa State University clinic',
       location: 'Keffi, Nigeria',
       period: 'Aug 2026 - Present',

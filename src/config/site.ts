@@ -306,7 +306,7 @@ export const portfolioConfig = {
     { period: "May 2025-May 2026", label: "Pharmacy intern, Federal Medical Centre, Keffi", track: "pharmacy" },
     { period: "Nov 2025-Present", label: "AI evaluation and data annotation, freelance", track: "code" },
     { period: "Jul 2026-Present", label: "Cloud Computing, AltSchool Africa", track: "code" },
-    { period: "Aug 2026-Present", label: "Pharmacist, NYSC, Nasarawa State University clinic", track: "pharmacy" },
+    { period: "Aug 2026-Present", label: "Corps pharmacist, NYSC, Nasarawa State University clinic", track: "pharmacy" },
     { period: "Oct 2026", label: "Full pharmacist licence", track: "pharmacy" },
   ] as { period: string | null; label: string; track: "pharmacy" | "code" }[],
   // Talks on /about, in the timeline's grid. The deck is the talk as given:
