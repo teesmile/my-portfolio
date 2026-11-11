@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/metadata";
 import { portfolioConfig } from "@/config/site";
 import { PinIcon } from "@/components/ui/icons";
+import { siWhatsapp } from "simple-icons";
 import CopyEmail from "@/features/contact/copy-email";
 import LocalClock from "@/features/contact/local-clock";
 import ContactEntrance from "@/features/contact/contact-entrance";
@@ -33,7 +34,24 @@ export default function ContactPage() {
 
         <div className="mt-6 grid gap-8 md:mt-8 lg:grid-cols-12 lg:items-center lg:gap-16">
           <div data-contact-left className="lg:col-span-6">
-            <CopyEmail email={portfolioConfig.email} />
+            <CopyEmail email={portfolioConfig.email}>
+              {/* The second way in, beside the first. wa.me opens the app on
+                  a phone and WhatsApp Web on a desktop, with the greeting
+                  already typed. The mark is the simple-icons one the tools
+                  rows use, drawn in the button's own colour: buttons are
+                  chrome, and chrome stays neutral. */}
+              <a
+                href={`https://wa.me/${portfolioConfig.whatsapp}?text=${encodeURIComponent(portfolioConfig.whatsappMessage)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 border border-line px-2.5 py-1 text-2xs text-muted transition-colors hover:border-ink hover:text-ink"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3.5 w-3.5 fill-current">
+                  <path d={siWhatsapp.path} />
+                </svg>
+                <span className="sr-only">Message me on </span>WhatsApp
+              </a>
+            </CopyEmail>
 
             <div className="flex items-center gap-3 border-y border-line py-3 md:py-4">
               <span className="text-muted">
@@ -59,26 +77,11 @@ export default function ContactPage() {
               </span>
             </div>
 
-            {/* Each service opens WhatsApp with its own first message, so a
-                visitor never starts from a blank chat. wa.me hands off to the
-                app on a phone and to WhatsApp Web on a desktop. The visible
-                label is the same on every row; the hidden topic tells a
-                screen reader which conversation each one starts. */}
             <div className="border-b border-line py-3 md:py-4">
               <h2 className="text-2xs text-muted">What I can help with</h2>
-              <ul className="mt-2 flex flex-col gap-2.5 text-sm text-ink">
-                {portfolioConfig.copy.helpWith.map((service) => (
-                  <li key={service.topic} className="flex items-start justify-between gap-4">
-                    <span className="min-w-0">{service.line}</span>
-                    <a
-                      href={`https://wa.me/${portfolioConfig.whatsapp}?text=${encodeURIComponent(service.message)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="shrink-0 border border-line px-2.5 py-1 text-2xs text-muted transition-colors hover:border-ink hover:text-ink"
-                    >
-                      WhatsApp<span className="sr-only"> about {service.topic}</span>
-                    </a>
-                  </li>
+              <ul className="mt-2 flex flex-col gap-1.5 text-sm text-ink">
+                {portfolioConfig.copy.helpWith.map((line) => (
+                  <li key={line.slice(0, 30)}>{line}</li>
                 ))}
               </ul>
             </div>
