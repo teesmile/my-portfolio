@@ -229,7 +229,7 @@ export const resumeContent = {
       about: 2,
       bullets: [
         {
-          text: 'Rotations across A&E, GOPD, inpatient, theatre, O&G and the ART (HIV) clinic; joined the TB unit on my own initiative.',
+          text: 'Rotated through A&E, GOPD, inpatient, theatre, O&G and the ART (HIV) clinic, and joined the TB unit on my own initiative.',
           place: { default: 0, ai: 0, general: 0 },
         },
       ],
@@ -245,7 +245,7 @@ export const resumeContent = {
       place: { general: 3 },
       bullets: [
         { text: 'Assisted the resident pharmacist and covered the role in their absence.', place: { general: 0 } },
-        { text: 'Front-line customer service across 45-hour weeks.', place: { general: 1 } },
+        { text: 'Provided front-line customer service across 45-hour weeks.', place: { general: 1 } },
       ],
     },
     {
@@ -288,7 +288,11 @@ export const resumeContent = {
   projects: [
     {
       name: "Who's on my ballot? (launching November 2026), whosonmyballot.ng",
-      line: "A free voter information site for Nigeria's 2027 elections. Built a data pipeline that turns INEC's official candidate lists into more than 26,000 static pages, and a polling-unit lookup covering 177,299 units that runs in the browser. Tested to show its main content in about 2 seconds on a simulated slow 3G connection.",
+      line: "Built a free voter information site for Nigeria's 2027 elections, with a data pipeline that turns INEC's official candidate lists into more than 26,000 static pages and a polling-unit lookup covering 177,299 units that runs in the browser, tested to show its main content in about 2 seconds on a simulated slow 3G connection.",
+      /* Two lines on the operations version: the same facts, less of them. */
+      lineFor: {
+        general: "Built a free voter information site for Nigeria's 2027 elections, turning INEC's official candidate lists into more than 26,000 static pages with a polling-unit lookup covering 177,299 units.",
+      },
       caseStudy: 'https://anthonyugwuja.dev/work/whos-on-my-ballot',
       url: 'https://whosonmyballot.ng',
       /* Second on the AI version, behind the benchmark: that reader is
@@ -297,13 +301,13 @@ export const resumeContent = {
     },
     {
       name: 'Renal dose check (AI agent benchmark)',
-      line: 'A benchmark task that tests whether AI agents can check drug doses from a messy patient chart; simulated agents prove each mistake is caught.',
+      line: 'Built a benchmark task that tests whether AI agents can check drug doses from a messy patient chart, with simulated agents proving each mistake is caught.',
       caseStudy: 'https://anthonyugwuja.dev/work/renal-dosing-task',
       place: { default: 1, ai: 0 } as Placement,
     },
     {
       name: 'Todo App',
-      line: 'Local-first task list that works offline and syncs across devices via Google sign-in.',
+      line: 'Built a local-first task list that works offline and syncs across devices via Google sign-in.',
       caseStudy: 'https://anthonyugwuja.dev/work/todo-app',
       url: 'https://todo.anthonyugwuja.dev',
       place: { default: 2 } as Placement,
@@ -313,26 +317,26 @@ export const resumeContent = {
       /* Back on the developer version as a short entry (owner's call, 11
          Nov 2026), held to one line so the CV stays at two pages. /work
          carries the full description. */
-      line: 'Farcaster mini app that writes a roast from a user\'s profile and recent casts.',
+      line: 'Built a Farcaster mini app that writes a roast from a user\'s profile and recent casts.',
       caseStudy: 'https://anthonyugwuja.dev/work/roasted',
       url: 'https://castroast.vercel.app',
       place: { default: 3 } as Placement,
     },
     {
       name: 'E-Commerce Product Page',
-      line: 'Product page with a gallery, cart state and one responsive layout built from a design file.',
+      line: 'Built a product page with a gallery, cart state and one responsive layout from a design file.',
       caseStudy: 'https://anthonyugwuja.dev/work/ecommerce-product-page',
       url: 'https://shop.anthonyugwuja.dev',
       place: {} as Placement,
     },
     {
       name: 'Space Tourism Website',
-      line: 'Four content types sharing one navigation shell, spacing system and page transitions.',
+      line: 'Built four content types that share one navigation shell, spacing system and page transitions.',
       caseStudy: 'https://anthonyugwuja.dev/work/space-tourism',
       url: 'https://space.anthonyugwuja.dev',
       place: {} as Placement,
     },
-  ] as { name: string; line: string; caseStudy?: string; url?: string; place: Placement }[],
+  ] as { name: string; line: string; lineFor?: Partial<Record<Variant, string>>; caseStudy?: string; url?: string; place: Placement }[],
 
   /* Reverse chronological, like the experience section. Mixing the two
      orders in one document is the kind of small inconsistency a careful
@@ -371,6 +375,14 @@ export const resumeContent = {
     { label: 'Pharmacist', issuer: 'Pharmacists Council of Nigeria', date: '', place: { default: 0, ai: 0, general: 0 } as Placement },
     { label: 'AI Fluency Framework', issuer: 'Anthropic', date: 'Jul 2026', place: { default: 1, ai: 1, general: 1 } as Placement },
   ],
+
+  /* Research, as one line at the foot of Education and credentials on the
+     AI version. The citations themselves are on the pharmacy CV, which is
+     kept off the site. */
+  research: {
+    text: 'Co-author of one journal article and two international conference posters in pharmacy and HIV research (2024).',
+    place: { ai: 0 },
+  } as Line,
 
   /* One line, and it is the point of the AI version: a second language is
      evaluation work there, not a personal detail. Every version carries it.
@@ -441,7 +453,10 @@ export function resumeFor(variant: Variant = 'default', includePrivate = false) 
     note: item.note && inVariant(item.note.place, variant) ? item.note.text : '',
   }));
 
-  const projects = select(resumeContent.projects, variant);
+  const projects = select(resumeContent.projects, variant).map((project) => ({
+    ...project,
+    line: project.lineFor?.[variant] ?? project.line,
+  }));
 
   return {
     ...resumeContent,
@@ -454,6 +469,7 @@ export function resumeFor(variant: Variant = 'default', includePrivate = false) 
     projects,
     education,
     credentials: select(resumeContent.credentials, variant),
+    research: inVariant(resumeContent.research.place, variant) ? resumeContent.research.text : '',
     languages: inVariant(resumeContent.languages.place, variant)
       ? resumeContent.languages.text
       : '',
