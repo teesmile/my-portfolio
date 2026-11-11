@@ -78,7 +78,7 @@ export default function WorkEntry({
 
       <div className={layout.body}>
         <p className="text-2xs text-muted">
-          {project.year} &middot; {project.role}
+          {project.status ?? project.year} &middot; {project.role}
         </p>
         <h2 className="mt-3 text-xl text-ink">
           <Link href={`/work/${project.slug}`} onClick={handoff} className="hover:text-accent">
