@@ -72,7 +72,7 @@ export default async function CaseStudyPage({ params }: Params) {
         backHref="/work"
         backLabel="All work"
         title={project.title}
-        meta={`${project.year} · ${project.role}`}
+        meta={`${project.status ?? project.year} · ${project.role}`}
         flipId={`work-${project.slug}`}
       >
         {project.preview ? (
@@ -211,7 +211,10 @@ export default async function CaseStudyPage({ params }: Params) {
                   rel="noopener noreferrer"
                   className="inline-flex w-fit items-center gap-1.5 text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
                 >
-                  Open the live project
+                  {/* Before launch the address serves a "Coming soon" page,
+                      so the link names the address rather than promising a
+                      live project. */}
+                  {project.status ? `Open ${new URL(project.link).host}` : "Open the live project"}
                   <ExternalLinkIcon className="h-3.5 w-3.5" />
                   <span className="sr-only">(opens in a new tab)</span>
                 </a>

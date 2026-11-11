@@ -20,6 +20,9 @@ export type Project = {
    *  public repo — the card hides the "Source" link rather than linking to
    *  something that is not the source. */
   repo?: string;
+  /** Shown in place of the year until a project is public, e.g.
+   *  "Launching 18 November 2026". Remove it on launch day. */
+  status?: string;
   /** A real capture of the running project. Absent until one exists — the
    *  index renders a typographic frame rather than a mock interface. */
   preview?: string;
@@ -49,6 +52,56 @@ export type Project = {
    simpler ones further down. Nothing is ever deleted from this list; a
    weaker project moves down here and comes off the resume instead. */
 const projects: Project[] = [
+  {
+    /* The lead project. Every fact and figure is from the repo
+       (teesmile/whos-on-my-ballot at e92c9c0: data/generated/report.md, the
+       built sitemap, tests and scripts) and its decision log, checked on
+       11 Nov 2026. Non-partisan by design: no party or candidate is named
+       here or anywhere on this site. Pre-launch, nothing is claimed that
+       the notes keep open: no real-device timing, no results, no "no ads". */
+    id: 5,
+    slug: "whos-on-my-ballot",
+    preview: "/work/whos-on-my-ballot.webp",
+    title: "Who's on my ballot?",
+    status: "Launching 18 November 2026",
+    seo: {
+      title: "Who's on my ballot? A non-partisan voter guide for Nigeria",
+      description:
+        "A free, non-partisan voter information site for Nigeria's 2027 elections: 26,000+ static pages from INEC's lists and a polling-unit lookup in the browser.",
+    },
+    updated: "2026-11-11",
+    description:
+      "A free, non-partisan voter information site for Nigeria's 2027 elections. A voter says where they will vote and sees every race on the ballot at that polling unit, with every candidate side by side, from INEC's published candidate lists.",
+    role: "Design, data pipeline and build",
+    year: "2026",
+    tech: ["Next.js", "TypeScript", "Python", "pdfplumber", "esbuild", "Playwright", "Vercel"],
+    link: "https://whosonmyballot.ng",
+    repo: "https://github.com/teesmile/whos-on-my-ballot",
+    highlights: [
+      "More than 26,000 static pages (26,142 in the current build), generated from INEC's published candidate lists by a Python pipeline",
+      "Three ways to find a ballot: the code printed on a voter's card, a search by polling-unit name or landmark, or browsing state, LGA, ward and polling unit, which works with JavaScript off",
+      "The lookup runs in the browser across 177,299 polling units from INEC's polling-unit locator: one file per state, fetched after the state is picked, and nothing typed is sent or stored",
+      "HTML without the framework: Next.js renders every page at build time, then the build removes its runtime and adds one module of about 2 KB gzipped, and fails if any framework script is left",
+      "In Lighthouse's simulated slow-3G, low-end-phone profile, the main content appears in 2.0-2.4 s on all 11 key pages",
+      "The same fields and the same layout for every candidate, checked by a test whatever the party, and no rankings, polls, predictions or endorsements",
+      "WCAG 2.2 AA with 44px tap targets throughout, checked with axe and an automated screen-reader walk, with and without JavaScript",
+      "No cookies, no trackers or analytics, and no accounts",
+    ],
+    hard: [
+      "INEC publishes its candidate lists as PDFs with a large watermark across every page and names that wrap across lines, which breaks plain text extraction. The pipeline reads each table by the position of each word, joins wrapped lines without changing INEC's text, and checks itself twice on all 104 PDFs: its row count must equal an independent count of serial numbers, and the serial numbers must run 1 to N.",
+      "INEC's own counts disagree. Its polling-unit locator lists 177,299 polling units; its published total is 176,846. The site reports the difference instead of forcing the numbers to match, and the build fails if a fresh crawl does not reproduce the reviewed baseline, which catches a truncated crawl or a change at INEC.",
+      "Some wards cannot be placed in a single State Assembly constituency, because INEC's sources contradict each other or say nothing. Rather than guess, those wards show every race they could belong to: 912 wards, 13.9% of polling units.",
+      "A page per polling unit would be about 177,000 near-identical pages. Ballots are keyed by the combination of races instead, so every lookup lands on one of 364 ballot pages for 16 January and 955 for 6 February.",
+    ],
+    architecture: {
+      dataModel:
+        "No database. A Python pipeline turns INEC's candidate PDFs, its polling-unit locator and its constituency workbook into JSON committed to the repo, so every data change is a reviewable diff. Every record carries its source, a SHA-256 hash, the page and row, and when it was retrieved.",
+      api: "None. Every page is static HTML. The site's one script fetches a single per-state file of polling units after the visitor picks a state, and matches what they type in memory.",
+      auth: "None: no accounts, no cookies and no analytics.",
+      hosting:
+        "A static export on Vercel with strict security headers, including a content security policy. CI runs the pipeline's tests on INEC's PDFs, unit, browser and accessibility tests, a page-size budget and Lighthouse. A daily job checks INEC's sources and opens an issue when anything changes.",
+    },
+  },
   {
     id: 1,
     slug: "todo-app",
