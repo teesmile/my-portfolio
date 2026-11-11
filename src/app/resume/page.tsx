@@ -43,8 +43,9 @@ function LinkButton({ href, label, external }: { href: string; label: string; ex
 }
 
 /**
- * One column, in a fixed order: summary, skills, experience, projects, then
- * education and credentials under one heading, then languages. A version
+ * One column: summary, skills, experience and projects (projects first on
+ * the developer version), then education and credentials under one
+ * heading, then languages. A version
  * that carries no projects drops that section rather than printing an empty
  * heading.
  *
@@ -71,6 +72,73 @@ export default async function ResumePage({
      that is deliberately kept off the site. */
   const privateAllowed = process.env.RESUME_ALLOW_PRIVATE === "1";
   const resume = resumeFor(variant, privateAllowed && params.private === "1");
+
+  const experienceSection = (
+    <>
+      <SectionHeading label={resume.sections.experience} />
+      <div className="mt-3 flex flex-col gap-6">
+        {resume.experience.map((role) => (
+          <article key={`${role.title}-${role.period}`}>
+            {/* Three lines, one fact each, joined only by commas: what a
+                parser maps to title, employer and location, and dates. */}
+            <h3 className="font-display text-base text-ink">{role.title}</h3>
+            <p className="mt-0.5 text-2xs text-muted">
+              {role.company}, {role.location}
+            </p>
+            <p className="text-2xs text-muted">
+              <span className="whitespace-nowrap">{role.period}</span>
+            </p>
+            {role.note ? (
+              <p className="mt-0.5 text-2xs text-muted">{role.note}</p>
+            ) : null}
+            <ul className={`mt-2 flex flex-col gap-1.5 text-2xs leading-6 text-ink ${JUSTIFY}`}>
+              {role.bullets.map((bullet) => (
+                <li key={bullet} className="border-l border-line pl-3">
+                  {bullet}
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </>
+  );
+
+  const projectsSection = resume.projects.length ? (
+    <>
+      <SectionHeading label={resume.sections.projects} />
+      <div className="mt-3 flex flex-col gap-4">
+        {resume.projects.map((project) => (
+          <article key={project.name}>
+            <h3 className="font-display text-sm text-ink">{project.name}</h3>
+            <p className={`mt-0.5 text-2xs leading-6 text-ink ${JUSTIFY}`}>{project.line}</p>
+            {/* Both links on one line, each unbreakable in itself: a URL
+                that wraps mid-token extracts as two words, but the line
+                may break at the separator between them. Three projects
+                at two link lines each is three lines of paper. */}
+            {/* The case study on the site, then the live site: whichever
+                exist, as buttons. In the PDF both stay real links. */}
+            {/* Inline, with a real space between them rather than a flex
+                gap: a gap adds no text, and the PDF's text layer would read
+                "Case studyLive site". */}
+            <p className="mt-1.5">
+              {[
+                project.caseStudy ? <LinkButton key="case" href={project.caseStudy} label="Case study" /> : null,
+                project.url ? <LinkButton key="live" href={project.url} label="Live site" external /> : null,
+              ]
+                .filter(Boolean)
+                .map((button, index) => (
+                  <Fragment key={index}>
+                    {index > 0 ? " " : null}
+                    {button}
+                  </Fragment>
+                ))}
+            </p>
+          </article>
+        ))}
+      </div>
+    </>
+  ) : null;
 
   return (
     <section data-cv-sheet className="px-4 sm:px-6 py-20 md:py-24">
@@ -140,68 +208,10 @@ export default async function ResumePage({
             ))}
           </div>
 
-          <SectionHeading label={resume.sections.experience} />
-          <div className="mt-3 flex flex-col gap-6">
-            {resume.experience.map((role) => (
-              <article key={`${role.title}-${role.period}`}>
-                {/* Three lines, one fact each, joined only by commas: what a
-                    parser maps to title, employer and location, and dates. */}
-                <h3 className="font-display text-base text-ink">{role.title}</h3>
-                <p className="mt-0.5 text-2xs text-muted">
-                  {role.company}, {role.location}
-                </p>
-                <p className="text-2xs text-muted">
-                  <span className="whitespace-nowrap">{role.period}</span>
-                </p>
-                {role.note ? (
-                  <p className="mt-0.5 text-2xs text-muted">{role.note}</p>
-                ) : null}
-                <ul className={`mt-2 flex flex-col gap-1.5 text-2xs leading-6 text-ink ${JUSTIFY}`}>
-                  {role.bullets.map((bullet) => (
-                    <li key={bullet} className="border-l border-line pl-3">
-                      {bullet}
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
-
-          {resume.projects.length ? (
-            <>
-              <SectionHeading label={resume.sections.projects} />
-              <div className="mt-3 flex flex-col gap-4">
-            {resume.projects.map((project) => (
-              <article key={project.name}>
-                <h3 className="font-display text-sm text-ink">{project.name}</h3>
-                <p className={`mt-0.5 text-2xs leading-6 text-ink ${JUSTIFY}`}>{project.line}</p>
-                {/* Both links on one line, each unbreakable in itself: a URL
-                    that wraps mid-token extracts as two words, but the line
-                    may break at the separator between them. Three projects
-                    at two link lines each is three lines of paper. */}
-                {/* The case study on the site, then the live site: whichever
-                    exist, as buttons. In the PDF both stay real links. */}
-                {/* Inline, with a real space between them rather than a flex
-                    gap: a gap adds no text, and the PDF's text layer would read
-                    "Case studyLive site". */}
-                <p className="mt-1.5">
-                  {[
-                    project.caseStudy ? <LinkButton key="case" href={project.caseStudy} label="Case study" /> : null,
-                    project.url ? <LinkButton key="live" href={project.url} label="Live site" external /> : null,
-                  ]
-                    .filter(Boolean)
-                    .map((button, index) => (
-                      <Fragment key={index}>
-                        {index > 0 ? " " : null}
-                        {button}
-                      </Fragment>
-                    ))}
-                </p>
-              </article>
-            ))}
-              </div>
-            </>
-          ) : null}
+          {/* Projects lead on a version whose reader hires for the work
+              itself (the developer CV); elsewhere the roles come first. */}
+          {resume.projectsFirst ? projectsSection : experienceSection}
+          {resume.projectsFirst ? experienceSection : projectsSection}
 
           <SectionHeading label={resume.sections.education} />
           <div className="mt-3 flex flex-col gap-3">

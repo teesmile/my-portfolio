@@ -81,11 +81,17 @@ export const resumeContent = {
     education: 'Education and credentials',
     languages: 'Languages',
   },
+  /* One role per title line, the role that version is applying for. The
+     summary under it opens on the same role and gives the rest as
+     background. */
   titles: {
-    default: 'Full-stack developer, AI evaluation and data annotation specialist, Pharmacist',
-    ai: 'AI evaluation and data annotation specialist, Pharmacist',
-    general: 'AI data annotation and quality specialist, Pharmacist',
+    default: 'Full-stack developer (React, Next.js, TypeScript, Node.js)',
+    ai: 'AI evaluation and data annotation specialist (pharmacy and science)',
+    general: 'AI data annotation and quality specialist',
   },
+  /* Projects before experience on the developer version, where the work
+     itself is what the reader hires for; the other two put the roles first. */
+  projectsFirst: { default: true, ai: false, general: false } as Record<Variant, boolean>,
 
   /* Written out as text so a parser reads them, and linked so a human can
      click them. Both, not either. */
@@ -269,8 +275,9 @@ export const resumeContent = {
      of the four, and it is still on /work. Roasted then replaced the
      E-Commerce page on the master: it has a server side, three external
      services and real users, where the product page is a frontend build. */
-  /* Who's on my ballot? leads every version, ahead of the evaluation
-     sample: the owner's call on 11 Nov 2026. Its figures are checked
+  /* Who's on my ballot? leads the developer and operations versions; the
+     AI version leads with the evaluation sample, which is what that reader
+     hires for (the owner's calls, 11 Nov 2026). Its figures are checked
      against the repo (teesmile/whos-on-my-ballot at e92c9c0): 26,142 pages
      in the built sitemap, 177,299 polling units from INEC's locator, and
      LCP 2.0-2.4 s in Lighthouse's simulated slow-3G profile. Roasted stays
@@ -284,13 +291,15 @@ export const resumeContent = {
       line: "A free voter information site for Nigeria's 2027 elections. Built a data pipeline that turns INEC's official candidate lists into more than 26,000 static pages, and a polling-unit lookup covering 177,299 units that runs in the browser. Tested to show its main content in about 2 seconds on a simulated slow 3G connection.",
       caseStudy: 'https://anthonyugwuja.dev/work/whos-on-my-ballot',
       url: 'https://whosonmyballot.ng',
-      place: { default: 0, ai: 0, general: 0 } as Placement,
+      /* Second on the AI version, behind the benchmark: that reader is
+         hiring for evaluation work. */
+      place: { default: 0, ai: 1, general: 0 } as Placement,
     },
     {
       name: 'Renal dose check (AI agent benchmark)',
       line: 'A benchmark task that tests whether AI agents can check drug doses from a messy patient chart; simulated agents prove each mistake is caught.',
       caseStudy: 'https://anthonyugwuja.dev/work/renal-dosing-task',
-      place: { default: 1, ai: 1 } as Placement,
+      place: { default: 1, ai: 0 } as Placement,
     },
     {
       name: 'Todo App',
@@ -438,6 +447,7 @@ export function resumeFor(variant: Variant = 'default', includePrivate = false) 
     ...resumeContent,
     contact,
     title: resumeContent.titles[variant],
+    projectsFirst: resumeContent.projectsFirst[variant],
     pdfHref: resumeContent.pdf[variant],
     summary: resumeContent.summary[variant],
     experience,
