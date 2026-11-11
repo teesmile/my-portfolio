@@ -1,0 +1,24 @@
+# Stock phrases the site, the Writing pieces and the CVs never use.
+#
+# One phrase per line; blank lines and lines starting with "#" are ignored.
+# Matching ignores case and catches the usual endings, so "leverage" also
+# finds "leverages", "leveraged" and "leveraging", "delve" finds "delving",
+# and "synergy" finds "synergies". A space in a phrase matches any run of
+# spaces or a line break; a hyphen also matches a space ("detail oriented").
+#
+# scripts/check-voice.mjs reads this file; `pnpm build` fails on any hit.
+
+leverage
+utilize
+passionate about
+game-changer
+cutting-edge
+seamless
+robust
+delve
+tapestry
+testament
+synergy
+results-driven
+detail-oriented
+proven track record
