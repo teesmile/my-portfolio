@@ -7,6 +7,6 @@
       .glyph  { stroke: #f5f6f8; }
     }
   </style>
-  <rect class="ground" width="32" height="32" rx="7" />
-  <path class="glyph" d="M7 23 16 9.5 25 23" />
+  <circle class="ground" cx="16" cy="16" r="16" />
+  <path class="glyph" d="M8.4 22 16 10.5 23.6 22" />
 </svg>
