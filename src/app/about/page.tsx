@@ -116,9 +116,11 @@ export default function AboutPage() {
             <div className="mt-6 flex max-w-(--container-reading) flex-col gap-8">
               {siteExperience.map((role) => (
                 <article key={`${role.title}-${role.period}`} data-reveal className="border-t border-line pt-5">
-                  <p className="text-2xs text-muted tabular-nums">{role.period}</p>
+                  {/* The CVs space their ranges ("Nov 2025 - Present") for
+                      parsers; the site writes ranges unspaced. */}
+                  <p className="text-2xs text-muted tabular-nums">{role.period.replace(" - ", "-")}</p>
                   <h3 className="mt-2 font-display text-base text-ink">{role.title}</h3>
-                  <p className="mt-1 text-sm text-muted">{role.company}</p>
+                  <p className="mt-1 text-sm text-muted">{role.company}, {role.location}</p>
                   {role.note ? (
                     <p className="mt-1 text-2xs text-muted">{role.note}</p>
                   ) : null}

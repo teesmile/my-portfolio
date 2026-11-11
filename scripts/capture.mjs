@@ -18,7 +18,8 @@
  * the moment before the app mounts. Anything still loading after 20 s fails
  * the run with the URL and the text it was waiting on.
  */
-import { execFile, spawn } from "node:child_process";
+import { execFile } from "node:child_process";
+import { startGroup, stopGroup, stopOnExit } from "./lib/processes.mjs";
 import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { createServer } from "node:net";
 import { promisify } from "node:util";
@@ -67,7 +68,8 @@ const freePort = () =>
 
 async function browser() {
   const port = await freePort();
-  const chrome = spawn(
+  stopOnExit();
+  const chrome = startGroup(
     "chromium",
     ["--headless=new", "--no-sandbox", "--hide-scrollbars", `--remote-debugging-port=${port}`, "about:blank"],
     { stdio: "ignore" },
@@ -109,7 +111,7 @@ async function browser() {
     evaluate,
     close: () => {
       socket.close();
-      chrome.kill("SIGKILL");
+      stopGroup(chrome);
     },
   };
 }

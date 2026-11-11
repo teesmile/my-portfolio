@@ -9,11 +9,12 @@ import Reveals from "@/components/layout/reveals";
 export const metadata: Metadata = pageMetadata({
   title: "Full-stack projects and AI evaluation",
   description:
-    "Case studies from a full-stack developer: an offline-first app with sync, a Farcaster mini app, and an AI-agent benchmark built on clinical data.",
+    "Case studies from a full-stack developer: a voter information site for Nigeria's 2027 elections, an offline-first app with sync, and an AI-agent benchmark.",
   path: "/work",
 });
 
 export default function WorkPage() {
+  const [lead, ...rest] = portfolioConfig.projects;
   return (
     <section className="px-4 sm:px-6 py-20 md:py-24">
       <Reveals />
@@ -22,12 +23,14 @@ export default function WorkPage() {
         <h1 data-reveal className="max-w-[18ch] text-xl text-ink md:text-2xl">
           {portfolioConfig.copy.workHeading}
         </h1>
-        {/* The evaluation work leads, then projects strongest and newest
-            first. See the Projects rule in the working rules. */}
+        {/* The lead project first, then the evaluation work, then the rest
+            strongest and newest first. The lead keeps index 0, so its frame
+            is the one fetched eagerly as the page's largest paint. */}
         <div className="mt-16 flex flex-col gap-20">
+          {lead ? <WorkEntry project={lead} index={0} /> : null}
           <EvaluationEntry />
-          {portfolioConfig.projects.map((project, index) => (
-            <WorkEntry key={project.slug} project={project} index={index} />
+          {rest.map((project, index) => (
+            <WorkEntry key={project.slug} project={project} index={index + 1} />
           ))}
         </div>
       </div>
