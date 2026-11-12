@@ -42,8 +42,8 @@
   --muted: #9ba3ad;
   /* The scroll reveals (src/components/layout/reveals.tsx): the CSS half
      of REVEAL in src/lib/motion.ts. Keep the two in step. */
-  --reveal-distance: 40px;
-  --reveal-duration: 600ms;
+  --reveal-distance: 48px;
+  --reveal-duration: 700ms;
   /* The light behind the home portrait: the portrait's own blue and
      orange, sampled from the image, soft enough to fade into the surface.
      Content colour, tied to the image, not chrome. */
@@ -875,30 +875,30 @@
   }
 }
 
-/* Scroll reveals (src/components/layout/reveals.tsx). Four states:
+/* Scroll reveals (src/components/layout/reveals.tsx). The states:
 
-     (empty)  visible, the default; the component may put it to wait
-     wait     entirely below the viewport when the page mounted: hidden,
-              lowered, until it arrives
-     in       arriving: a finite animation to opacity 1, delayed by
-              --reveal-delay for items arriving together
+     (empty)  the entrance, from first paint: the item rises 48px and fades
+              in over 0.7s as soon as it is painted, with no JavaScript.
+              A reload plays this for the first screen.
+     wait     entirely below the viewport: hidden and lowered until it
+              arrives (only the component sets this, and only off screen)
+     in       arriving: the same animation, delayed by --reveal-delay for
+              items arriving together
      done     landed, plain again
+     rise     the page's largest text: rises from first paint but never
+              starts invisible, so the largest paint is not delayed
 
-   And two entrances for the first screen, written into the markup, which
-   run from first paint with no JavaScript: "load" fades and rises, "rise"
-   only rises (for the page's largest paint, so it never starts invisible).
    Every one of these is a finite animation that ends visible. */
-[data-reveal='wait'] {
-  opacity: 0;
-  transform: translateY(var(--reveal-distance));
-}
-
+[data-reveal=''],
+[data-reveal='true'],
 [data-reveal='in'] {
   animation: reveal-in var(--reveal-duration) var(--ease-out) var(--reveal-delay, 0s) both;
 }
 
-[data-reveal='load'] {
-  animation: reveal-load var(--duration-base) var(--ease-out) var(--reveal-delay, 0s) both;
+[data-reveal='wait'] {
+  opacity: 0;
+  transform: translateY(var(--reveal-distance));
+  animation: none;
 }
 
 [data-reveal='rise'] {
@@ -909,17 +909,6 @@
   from {
     opacity: 0;
     transform: translateY(var(--reveal-distance));
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes reveal-load {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
   }
   to {
     opacity: 1;

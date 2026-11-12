@@ -33,7 +33,7 @@ export default function EvaluationEntry() {
         </div>
       </Link>
 
-      <div data-reveal="" className="lg:col-span-7 lg:row-start-1">
+      <div data-reveal="" style={{ "--reveal-delay": "120ms" } as React.CSSProperties} className="lg:col-span-7 lg:row-start-1">
         <p className="text-2xs text-muted">
           {evaluation.period} &middot; {evaluation.role}
         </p>

@@ -53,7 +53,7 @@ export function TrapGrid({ traps, label }: { traps: Trap[]; label: string }) {
       className="mt-6 grid pl-px pt-px sm:grid-cols-2 lg:grid-cols-4"
     >
       {traps.map((trap) => (
-        <li key={trap.slug} data-reveal className="-ml-px -mt-px border border-line">
+        <li key={trap.slug} data-reveal="" className="-ml-px -mt-px border border-line">
           <Link
             href={`/work/renal-dosing-task/${trap.slug}`}
             className="group flex h-full flex-col p-5 transition-colors hover:bg-raised focus-visible:bg-raised"

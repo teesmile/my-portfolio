@@ -43,17 +43,15 @@ export const EASE = {
 } as const;
 
 /**
- * How a block arrives as it is scrolled to: it starts 40px lower and fades
- * in over 0.6s, settling softly (--ease-out in globals.css, where the
+ * How a block arrives as it is scrolled to: it starts 48px lower and fades
+ * in over 0.7s, settling softly (--ease-out in globals.css, where the
  * animation itself lives as CSS; these are the same numbers for anything
- * that reads them from JavaScript). 40px reads as movement on a phone
- * without anything travelling far enough to look like it came from
- * somewhere else. Transforms and opacity only, so nothing reflows and
- * nothing counts as layout shift.
+ * that reads them from JavaScript). Transforms and opacity only, so
+ * nothing reflows and nothing counts as layout shift.
  */
 export const REVEAL = {
-  distance: 40,
-  duration: 0.6,
+  distance: 48,
+  duration: 0.7,
   /** Between blocks that arrive together, such as a row of cards. */
   stagger: 0.09,
 } as const;

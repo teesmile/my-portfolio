@@ -10,6 +10,7 @@ import { TechList } from "@/components/ui/tech";
 import StackRows from "@/features/about/stack-rows";
 import Reveals from "@/components/layout/reveals";
 import { textLinkClass } from "@/components/ui/text-link";
+import { stagger } from "@/components/layout/stagger";
 import TechGlitch from "@/components/ui/tech-glitch";
 import { ExternalLinkIcon } from "@/components/ui/icons";
 import { ButtonLink } from "@/components/ui/button";
@@ -41,32 +42,29 @@ export default function AboutPage() {
       <div className="mx-auto max-w-(--container-view)">
         <div className="grid min-w-0 gap-16 lg:grid-cols-12 lg:gap-20">
           <div className="min-w-0 lg:col-span-7">
-            <h1 data-reveal="load" className="max-w-[20ch] text-xl text-ink md:text-2xl">
+            <h1 data-reveal="rise" className="max-w-[20ch] text-xl text-ink md:text-2xl">
               {copy.aboutHeading}
             </h1>
 
             <div className="mt-10 flex max-w-(--container-reading) flex-col gap-6 text-base text-ink">
               {copy.aboutParagraphs.map((paragraph, index) => (
-                <p
-                  key={paragraph.slice(0, 40)}
-                  data-reveal={index === 0 ? "load" : ""}
-                  style={index === 0 ? ({ "--reveal-delay": "100ms" } as React.CSSProperties) : undefined}
-                >
+                <p key={paragraph.slice(0, 40)} data-reveal="" style={stagger(index)}>
                   {paragraph}
                 </p>
               ))}
             </div>
 
-            <h2 data-reveal className="mt-16 text-lg text-accent">How I got here</h2>
-            <p data-reveal className="mt-3 max-w-(--container-reading) text-sm text-muted">
+            <h2 data-reveal="" className="mt-16 text-lg text-accent">How I got here</h2>
+            <p data-reveal="" className="mt-3 max-w-(--container-reading) text-sm text-muted">
               Two tracks, running at the same time rather than one replacing the
               other.
             </p>
             <ol className="mt-6 flex max-w-(--container-reading) flex-col">
-              {timeline.map((entry) => (
+              {timeline.map((entry, index) => (
                 <li
                   key={entry.label}
-                  data-reveal
+                  data-reveal=""
+                  style={stagger(index)}
                   className="grid grid-cols-[6.5rem_1fr_auto] items-baseline gap-4 border-t border-line py-4 text-sm"
                 >
                   <span className="text-2xs text-muted tabular-nums">
@@ -84,12 +82,13 @@ export default function AboutPage() {
 
             {/* The timeline's grid, so a talk reads as one more dated entry
                 on its track rather than as a separate kind of card. */}
-            <h2 data-reveal className="mt-16 text-lg text-accent">Talks</h2>
+            <h2 data-reveal="" className="mt-16 text-lg text-accent">Talks</h2>
             <ol className="mt-6 flex max-w-(--container-reading) flex-col">
-              {talks.map((talk) => (
+              {talks.map((talk, index) => (
                 <li
                   key={talk.title}
-                  data-reveal
+                  data-reveal=""
+                  style={stagger(index)}
                   className="grid grid-cols-[6.5rem_1fr_auto] items-baseline gap-4 border-t border-line py-4 text-sm"
                 >
                   <span className="text-2xs text-muted tabular-nums">{talk.period}</span>
@@ -120,10 +119,10 @@ export default function AboutPage() {
               ))}
             </ol>
 
-            <h2 data-reveal className="mt-16 text-lg text-accent">Experience</h2>
+            <h2 data-reveal="" className="mt-16 text-lg text-accent">Experience</h2>
             <div className="mt-6 flex max-w-(--container-reading) flex-col gap-8">
-              {siteExperience.map((role) => (
-                <article key={`${role.title}-${role.period}`} data-reveal className="border-t border-line pt-5">
+              {siteExperience.map((role, index) => (
+                <article key={`${role.title}-${role.period}`} data-reveal="" style={stagger(index)} className="border-t border-line pt-5">
                   {/* The CVs space their ranges ("Nov 2025 - Present") for
                       parsers; the site writes ranges unspaced. */}
                   <p className="text-2xs text-muted tabular-nums">{role.period.replace(" - ", "-")}</p>

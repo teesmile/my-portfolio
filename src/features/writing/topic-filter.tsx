@@ -39,7 +39,7 @@ export default function TopicFilter({ entries }: { entries: WritingEntry[] }) {
 
       <div className="flex flex-col">
         {shown.map((entry, index) => (
-          <article key={entry.slug} data-reveal={index === 0 ? 'load' : ''} className="border-b border-line py-8">
+          <article key={entry.slug} data-reveal="" style={{ '--reveal-delay': `${Math.min(index, 5) * 90}ms` } as React.CSSProperties} className="border-b border-line py-8">
             <p className="text-2xs text-muted tabular-nums">
               {dateOf(entry)} &middot; {readingTime(entry)} min read &middot; {entry.topic}
             </p>

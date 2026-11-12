@@ -19,14 +19,14 @@ export default function BugsSection() {
     <section aria-labelledby="bugs" className="px-4 sm:px-6 pt-20 pb-8 md:pt-28 md:pb-12">
       <div className="mx-auto grid max-w-(--container-view) gap-10 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-4">
-          <h2 data-reveal id="bugs" className="text-xl text-accent">
+          <h2 data-reveal="" id="bugs" className="text-xl text-accent">
             {copy.deckHeading}
           </h2>
-          <p data-reveal className="mt-4 max-w-[36ch] text-sm text-muted">
+          <p data-reveal="" className="mt-4 max-w-[36ch] text-sm text-muted">
             {copy.deckIntro}
           </p>
         </div>
-        <div data-reveal className="lg:col-span-7 lg:col-start-6">
+        <div data-reveal="" className="lg:col-span-7 lg:col-start-6">
           <DefectDeck />
         </div>
       </div>

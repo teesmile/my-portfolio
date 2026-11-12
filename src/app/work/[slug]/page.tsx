@@ -16,6 +16,7 @@ import { breadcrumbJsonLd } from "@/lib/structured-data";
 import { published } from "@/config/writing";
 import { ButtonLink } from "@/components/ui/button";
 import { textLinkClass } from "@/components/ui/text-link";
+import { stagger } from "@/components/layout/stagger";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -110,18 +111,18 @@ export default async function CaseStudyPage({ params }: Params) {
           <div className="grid gap-12 lg:grid-cols-12 lg:gap-y-16">
             <div className="lg:col-span-7 lg:row-start-1">
               <p
-                data-reveal="load"
+                data-reveal=""
                 className="max-w-(--container-reading) text-base text-ink"
               >
                 {project.description}
               </p>
 
-              <h2 data-reveal className="mt-12 text-lg text-accent">
+              <h2 data-reveal="" className="mt-12 text-lg text-accent">
                 What it does
               </h2>
               <ul className="mt-5 flex max-w-(--container-reading) flex-col gap-3 text-sm text-muted">
-                {project.highlights.map((highlight) => (
-                  <li key={highlight} data-reveal className="border-l border-line pl-4">
+                {project.highlights.map((highlight, index) => (
+                  <li key={highlight} data-reveal="" style={stagger(index)} className="border-l border-line pl-4">
                     {highlight}
                   </li>
                 ))}
@@ -129,12 +130,12 @@ export default async function CaseStudyPage({ params }: Params) {
 
               {project.hard?.length ? (
                 <>
-                  <h2 data-reveal className="mt-14 text-lg text-accent">
+                  <h2 data-reveal="" className="mt-14 text-lg text-accent">
                     What was hard
                   </h2>
                   <div className="mt-5 flex max-w-(--container-reading) flex-col gap-4 text-sm text-ink">
-                    {project.hard.map((paragraph) => (
-                      <p key={paragraph.slice(0, 40)} data-reveal>
+                    {project.hard.map((paragraph, index) => (
+                      <p key={paragraph.slice(0, 40)} data-reveal="" style={stagger(index)}>
                         {paragraph}
                       </p>
                     ))}
@@ -142,7 +143,7 @@ export default async function CaseStudyPage({ params }: Params) {
                 </>
               ) : null}
 
-              <h2 data-reveal className="mt-14 text-lg text-accent">
+              <h2 data-reveal="" className="mt-14 text-lg text-accent">
                 Architecture
               </h2>
               {project.architecture ? (
@@ -152,10 +153,11 @@ export default async function CaseStudyPage({ params }: Params) {
                     ["API", project.architecture.api],
                     ["Auth", project.architecture.auth],
                     ["Hosting", project.architecture.hosting],
-                  ].map(([label, value]) => (
+                  ].map(([label, value], index) => (
                     <div
                       key={label}
-                      data-reveal
+                      data-reveal=""
+                      style={stagger(index)}
                       className="grid grid-cols-[7rem_1fr] gap-4 border-t border-line py-4 text-sm"
                     >
                       <dt className="text-2xs text-muted">{label}</dt>
@@ -164,14 +166,14 @@ export default async function CaseStudyPage({ params }: Params) {
                   ))}
                 </dl>
               ) : (
-                <p data-reveal className="mt-4 max-w-(--container-reading) text-sm text-muted">
+                <p data-reveal="" className="mt-4 max-w-(--container-reading) text-sm text-muted">
                   Frontend only: no server, no database, no sign-in. The section
                   stays here because the next build has all three.
                 </p>
               )}
             </div>
 
-            <aside data-reveal className="lg:col-span-4 lg:col-start-9 lg:row-start-1">
+            <aside data-reveal="" className="lg:col-span-4 lg:col-start-9 lg:row-start-1">
               <h2 className="text-2xs text-muted">Built with</h2>
               <div className="mt-3">
                 <TechList items={project.tech} />
@@ -193,7 +195,7 @@ export default async function CaseStudyPage({ params }: Params) {
               </div>
             </aside>
 
-            <nav aria-label="Related" data-reveal className="max-w-(--container-reading) border-t border-line pt-6 text-sm lg:col-span-7 lg:row-start-2">
+            <nav aria-label="Related" data-reveal="" className="max-w-(--container-reading) border-t border-line pt-6 text-sm lg:col-span-7 lg:row-start-2">
                 {related.length ? (
                   <>
                     <p className="text-2xs text-muted">Related writing</p>

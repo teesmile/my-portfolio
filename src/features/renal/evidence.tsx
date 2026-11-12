@@ -101,7 +101,7 @@ export function Evidence() {
   return (
     <>
       <div className="grid gap-12 lg:grid-cols-12">
-        <div data-reveal className="min-w-0 max-w-(--container-reading) lg:col-span-7">
+        <div data-reveal="" className="min-w-0 max-w-(--container-reading) lg:col-span-7">
           <h3 className="text-lg text-ink">The reference passes</h3>
           <p className="mt-4 text-base text-ink">
             The answer key comes from the reference solution, so the first thing to prove is that the key is right. A second implementation, written in SQL against the instruction alone and sharing no code with the reference, agrees on all {renal.independent.patients} patients: the same CrCl at 0.1 mL/min and the same flagged orders.
@@ -123,17 +123,17 @@ export function Evidence() {
           </ul>
         </div>
 
-        <div data-reveal className="min-w-0 lg:col-span-5">
+        <div data-reveal="" className="min-w-0 lg:col-span-5">
           <MarginFigure />
         </div>
       </div>
 
-      <h3 data-reveal className="mt-16 text-lg text-ink">Which mistake fails which test</h3>
-      <p data-reveal className="mt-4 max-w-(--container-reading) text-base text-ink">
+      <h3 data-reveal="" className="mt-16 text-lg text-ink">Which mistake fails which test</h3>
+      <p data-reveal="" className="mt-4 max-w-(--container-reading) text-base text-ink">
         One simulated agent runs with each mistake switched on alone, and the real test file grades it. Every mistake fails, and only on the patients built for it.
       </p>
 
-      <div data-reveal>
+      <div data-reveal="">
         <Scroller label="Simulated mistakes and the tests each one fails">
           <table className="mt-3 w-full min-w-[40rem] border-collapse text-left">
             <thead>
@@ -201,7 +201,7 @@ export function Evidence() {
         </Scroller>
       </div>
 
-      <p data-reveal className="mt-6 max-w-(--container-reading) text-2xs text-muted">
+      <p data-reveal="" className="mt-6 max-w-(--container-reading) text-2xs text-muted">
         Graded with the task&apos;s own pytest suite when this page was built from commit{" "}
         <span className="font-mono">{renal.source.commit.slice(0, 7)}</span> ({renal.source.committed_at}). The run matched the evidence committed in the repository{renal.evidenceProblems.length ? "" : ", which reports no problems"}.
       </p>

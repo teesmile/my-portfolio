@@ -13,8 +13,8 @@ import CorrectedHeadline from "./corrected-line";
  * in red → "wrong" in amber, corrected-line.tsx); that is the page's one
  * orchestrated moment. Most of the headline is plain server-rendered text,
  * so it is the page's first paint and its entrance only rises (never
- * fades). The line, the buttons and the portrait fade and rise a step
- * apart, from first paint, as CSS (globals.css, [data-reveal="load"]).
+ * fades). The line, the buttons and the portrait rise and fade in a step
+ * apart, from first paint, as CSS (globals.css, [data-reveal]).
  *
  * The background is the hero's surface and its wash (globals.css,
  * .editor-surface and .hero-wash); the light behind the portrait is
@@ -60,7 +60,7 @@ export default function Hero() {
             className="max-w-[16ch] text-balance text-headline-sm text-ink lg:text-headline"
           />
           <p
-            data-reveal="load"
+            data-reveal=""
             style={{ "--reveal-delay": "80ms" } as React.CSSProperties}
             className="mt-6 max-w-[40ch] text-base text-muted lg:mt-8 lg:text-lg lg:leading-[1.4]"
           >
@@ -70,7 +70,7 @@ export default function Hero() {
           {/* The two ways on: solid for the work, outlined for the person,
               the same width and height. */}
           <div
-            data-reveal="load"
+            data-reveal=""
             style={{ "--reveal-delay": "160ms" } as React.CSSProperties}
             className="mt-10 flex flex-wrap items-center gap-3 max-lg:justify-center lg:mt-12"
           >
@@ -84,7 +84,7 @@ export default function Hero() {
         </div>
 
         <div
-          data-reveal="load"
+          data-reveal=""
           style={{ "--reveal-delay": "120ms" } as React.CSSProperties}
           className="hero-portrait relative mx-auto w-full max-w-[17rem] self-end sm:max-w-[20rem] lg:col-span-5 lg:max-w-none lg:justify-self-end"
         >

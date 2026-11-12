@@ -45,8 +45,8 @@ export default function WorkEntry({
   };
 
   /* The frame and the text arrive as two steps. The lead entry is on the
-     first screen: its frame is the page's largest paint and is never hidden,
-     and its text takes the entrance on load. */
+     first screen: its frame is the page's largest paint and only rises,
+     never starting invisible; its text follows a step behind. */
   const lead = index === 0;
 
   return (
@@ -54,7 +54,7 @@ export default function WorkEntry({
       <Link
         href={`/work/${project.slug}`}
         onClick={handoff}
-        data-reveal={lead ? undefined : ''}
+        data-reveal={lead ? 'rise' : ''}
         className={`${layout.frame} group block`}
         aria-label={`Read the ${project.title} case study`}
       >
@@ -83,7 +83,7 @@ export default function WorkEntry({
         </div>
       </Link>
 
-      <div data-reveal={lead ? 'load' : ''} style={lead ? ({ '--reveal-delay': '120ms' } as React.CSSProperties) : undefined} className={layout.body}>
+      <div data-reveal="" style={{ '--reveal-delay': '120ms' } as React.CSSProperties} className={layout.body}>
         <p className="text-2xs text-muted">
           {project.status ?? project.year} &middot; {project.role}
         </p>

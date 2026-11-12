@@ -76,6 +76,19 @@ async function checkPage(page: Page, name: string) {
     await readThrough(page);
     expect.soft(await hiddenText(page, false), `${name}: hidden after reading through`).toEqual([]);
     expect.soft(await page.locator('[data-reveal="wait"]').count(), `${name}: still waiting to reveal`).toBe(0);
+
+    /* The reveals replay: back at the top, what has dropped below the
+       screen is waiting again, and the first screen is still all there.
+       Reading down a second time must leave nothing hidden either. */
+    const tall = await page.evaluate(() => document.documentElement.scrollHeight > window.innerHeight * 2);
+    if (tall) {
+      await page.evaluate(() => window.scrollTo(0, 0));
+      await page.waitForTimeout(600);
+      expect.soft(await hiddenText(page, true), `${name}: hidden on the first screen after scrolling back up`).toEqual([]);
+      expect.soft(await page.locator('[data-reveal="wait"]').count(), `${name}: nothing re-armed for a replay`).toBeGreaterThan(0);
+      await readThrough(page);
+      expect.soft(await hiddenText(page, false), `${name}: hidden after reading through a second time`).toEqual([]);
+    }
   });
 }
 

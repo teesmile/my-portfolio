@@ -18,6 +18,7 @@ import Figure from "@/features/writing/figures";
 import Image from "next/image";
 import { ButtonLink } from "@/components/ui/button";
 import { textLinkClass } from "@/components/ui/text-link";
+import { stagger } from "@/components/layout/stagger";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -102,7 +103,7 @@ export default async function WritingEntryPage({ params }: Params) {
               Draft. Not listed on Writing and not indexed until it&apos;s published.
             </p>
           ) : null}
-          <p data-reveal="load" className="max-w-(--container-reading) text-base text-muted">
+          <p data-reveal="" className="max-w-(--container-reading) text-base text-muted">
             {entry.standfirst}
           </p>
 
@@ -115,21 +116,21 @@ export default async function WritingEntryPage({ params }: Params) {
                    first: the heading, each paragraph, the figure, the
                    screens and the links. */
                 <section key={section.id} id={section.id} className="scroll-mt-28">
-                  <h2 data-reveal className="text-lg text-accent">{section.heading}</h2>
+                  <h2 data-reveal="" className="text-lg text-accent">{section.heading}</h2>
                   <div className="mt-4 flex flex-col gap-5 text-base text-ink">
-                    {section.paragraphs.map((paragraph) => (
-                      <p key={paragraph.slice(0, 40)} data-reveal>{paragraph}</p>
+                    {section.paragraphs.map((paragraph, index) => (
+                      <p key={paragraph.slice(0, 40)} data-reveal="" style={stagger(index + 1)}>{paragraph}</p>
                     ))}
                   </div>
                   {section.figure ? (
-                    <div data-reveal>
+                    <div data-reveal="">
                       <Figure name={section.figure} />
                     </div>
                   ) : null}
                   {/* Evidence: recreated screens, each with its own caption
                       word for word. Content colour, so it keeps its own. */}
                   {section.images?.map((image) => (
-                    <figure key={image.src} data-reveal className="my-8 border-y border-line py-6">
+                    <figure key={image.src} data-reveal="" className="my-8 border-y border-line py-6">
                       <Image
                         src={image.src}
                         alt={image.alt}
@@ -142,7 +143,7 @@ export default async function WritingEntryPage({ params }: Params) {
                     </figure>
                   ))}
                   {section.links?.length ? (
-                    <ul data-reveal className="mt-5 flex flex-col gap-2 text-sm">
+                    <ul data-reveal="" className="mt-5 flex flex-col gap-2 text-sm">
                       {section.links.map((link) => (
                         <li key={link.href}>
                           <a
@@ -163,7 +164,7 @@ export default async function WritingEntryPage({ params }: Params) {
 
               {/* Where the piece leads next: the project it is about, as a
                   button, then the rest of the writing as plain links. */}
-              <nav aria-label="Related" data-reveal className="border-t border-line pt-6 text-sm">
+              <nav aria-label="Related" data-reveal="" className="border-t border-line pt-6 text-sm">
                 {entry.project ? (
                   <div>
                     <p className="text-2xs text-muted max-sm:text-center">The project</p>

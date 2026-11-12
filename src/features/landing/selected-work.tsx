@@ -5,6 +5,7 @@ import { portfolioConfig } from "@/config/site";
 import { published } from "@/config/writing";
 import RenalLoop from "./renal-loop";
 import { textLinkClass } from "@/components/ui/text-link";
+import { stagger } from "@/components/layout/stagger";
 
 /* Three previews, three kinds of thing: the benchmark's key idea as a
    loop, the app as it looks on a phone, the latest piece as it looks when
@@ -90,12 +91,12 @@ export default function SelectedWork() {
       className="px-4 sm:px-6 py-20 [contain-intrinsic-size:auto_56rem] [content-visibility:auto] md:py-28"
     >
       <div className="mx-auto max-w-(--container-view)">
-        <h2 data-reveal id="selected-work" className="text-xl text-accent">
+        <h2 data-reveal="" id="selected-work" className="text-xl text-accent">
           Selected work
         </h2>
         <ul className="mt-10 grid gap-12 md:grid-cols-3 md:gap-8">
-          {cards.map((card) => (
-            <li key={card.href} data-reveal>
+          {cards.map((card, index) => (
+            <li key={card.href} data-reveal="" style={stagger(index)}>
               <Link href={card.href} className="group block">
                 <div className="relative aspect-[16/10] w-full overflow-clip border border-line bg-raised">
                   {card.preview}
@@ -111,7 +112,7 @@ export default function SelectedWork() {
         </ul>
         {/* The two newest pieces by name. The Writing card is one link, and a
             link cannot hold others, so they sit under the cards instead. */}
-        <p data-reveal className="mt-12 text-sm text-muted">
+        <p data-reveal="" className="mt-12 text-sm text-muted">
           Latest writing:{" "}
           {newest.slice(0, 2).map((entry, i) => (
             <span key={entry.slug}>
