@@ -20,7 +20,7 @@ export default function WorkPage() {
       <Reveals />
       <TechGlitch />
       <div className="mx-auto max-w-(--container-view)">
-        <h1 data-reveal className="max-w-[18ch] text-xl text-ink md:text-2xl">
+        <h1 data-reveal="rise" className="max-w-[18ch] text-xl text-ink md:text-2xl">
           {portfolioConfig.copy.workHeading}
         </h1>
         {/* The lead project first, then the evaluation work, then the rest

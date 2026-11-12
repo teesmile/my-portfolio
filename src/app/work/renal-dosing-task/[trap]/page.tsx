@@ -97,10 +97,10 @@ export default async function TrapPage({ params }: Params) {
           {trap.kind === "trap" ? "Trap" : "Valid look-alike"} &middot; {familyLabel(trap.family)} &middot; patient{" "}
           {trap.patient_id}
         </p>
-        <h1 data-reveal className="mt-3 max-w-[22ch] text-xl text-ink md:text-2xl">
+        <h1 data-reveal="rise" className="mt-3 max-w-[22ch] text-xl text-ink md:text-2xl">
           {trap.name}
         </h1>
-        <p data-reveal className="mt-6 max-w-(--container-reading) text-base text-ink">
+        <p data-reveal="" style={{ "--reveal-delay": "100ms" } as React.CSSProperties} className="mt-6 max-w-(--container-reading) text-base text-ink">
           {trap.why}
         </p>
 
@@ -109,21 +109,21 @@ export default async function TrapPage({ params }: Params) {
         </div>
 
         <section className="mt-16" aria-labelledby="rows">
-          <h2 data-reveal id="rows" className="text-lg text-ink">The patient&apos;s rows</h2>
-          <p data-reveal className="mt-4 max-w-(--container-reading) text-sm text-muted">
+          <h2 data-reveal="" id="rows" className="text-lg text-accent">The patient&apos;s rows</h2>
+          <p data-reveal="" className="mt-4 max-w-(--container-reading) text-sm text-muted">
             Exactly what the agent sees for {trap.patient_id}, copied from the chart. The value this mistake misreads is underlined.
           </p>
-          <div data-reveal>
+          <div data-reveal="">
             <ChartRows trap={trap} />
           </div>
         </section>
 
         <section className="mt-16" aria-labelledby="readings">
-          <h2 data-reveal id="readings" className="text-lg text-ink">Two readings of the same rows</h2>
-          <p data-reveal className="mt-4 max-w-(--container-reading) text-sm text-muted">
+          <h2 data-reveal="" id="readings" className="text-lg text-accent">Two readings of the same rows</h2>
+          <p data-reveal="" className="mt-4 max-w-(--container-reading) text-sm text-muted">
             Every step is shown. Where the careless reading goes wrong, the value is underlined.
           </p>
-          <div data-reveal className="mt-8 grid gap-12 md:grid-cols-2 md:gap-10">
+          <div data-reveal="" className="mt-8 grid gap-12 md:grid-cols-2 md:gap-10">
             <WalkColumn
               title="What a careless agent computes"
               lead={trap.slip}
@@ -146,13 +146,13 @@ export default async function TrapPage({ params }: Params) {
         </section>
 
         <section className="mt-16" aria-labelledby="test">
-          <h2 data-reveal id="test" className="text-lg text-ink">
+          <h2 data-reveal="" id="test" className="text-lg text-accent">
             {own.length > 1 ? "The tests that catch it" : "The test that catches it"}
           </h2>
-          <p data-reveal className="mt-4 max-w-(--container-reading) text-sm text-muted">
+          <p data-reveal="" className="mt-4 max-w-(--container-reading) text-sm text-muted">
             The careless output, graded by the task&apos;s real test file. This is what pytest printed.
           </p>
-          <ul data-reveal className="mt-6 flex max-w-(--container-reading) flex-col gap-4">
+          <ul data-reveal="" className="mt-6 flex max-w-(--container-reading) flex-col gap-4">
             {own.map((failure) => (
               <li key={failure.test} className="border-l border-line pl-4">
                 <p className="font-mono text-2xs text-ink">
@@ -165,19 +165,19 @@ export default async function TrapPage({ params }: Params) {
           </ul>
 
           {sources.map((source) => (
-            <figure key={source.name} data-reveal className="mt-8 max-w-(--container-reading) border-y border-line py-4">
+            <figure key={source.name} data-reveal="" className="mt-8 max-w-(--container-reading) border-y border-line py-4">
               <figcaption className="font-mono text-2xs text-muted">tests/test_outputs.py</figcaption>
               <div className="mt-3" dangerouslySetInnerHTML={{ __html: source.html }} />
             </figure>
           ))}
 
           {trap.also_changed.length ? (
-            <p data-reveal className="mt-8 max-w-(--container-reading) text-sm text-muted">
+            <p data-reveal="" className="mt-8 max-w-(--container-reading) text-sm text-muted">
               The same mistake also changes {trap.also_changed.join(", ")}, which share this trap family, and
               fails {trap.failures.length - own.length} more of their tests. No patient from another family moves.
             </p>
           ) : (
-            <p data-reveal className="mt-8 max-w-(--container-reading) text-sm text-muted">
+            <p data-reveal="" className="mt-8 max-w-(--container-reading) text-sm text-muted">
               No other patient&apos;s answer moves under this mistake, so this one failure is the whole signal.
             </p>
           )}

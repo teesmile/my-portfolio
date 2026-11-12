@@ -16,6 +16,9 @@ import OnThisPage from "@/features/writing/on-this-page";
 import Illustration from "@/features/writing/illustrations";
 import Figure from "@/features/writing/figures";
 import Image from "next/image";
+import { ButtonLink } from "@/components/ui/button";
+import { textLinkClass } from "@/components/ui/text-link";
+import { stagger } from "@/components/layout/stagger";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -100,7 +103,7 @@ export default async function WritingEntryPage({ params }: Params) {
               Draft. Not listed on Writing and not indexed until it&apos;s published.
             </p>
           ) : null}
-          <p className="max-w-(--container-reading) text-base text-muted">
+          <p data-reveal="" className="max-w-(--container-reading) text-base text-muted">
             {entry.standfirst}
           </p>
 
@@ -109,18 +112,25 @@ export default async function WritingEntryPage({ params }: Params) {
                 otherwise cram into the body. */}
             <div className="flex max-w-(--container-reading) flex-col gap-10 lg:col-span-7">
               {entry.sections.map((section) => (
-                <section key={section.id} id={section.id} data-reveal className="scroll-mt-28">
-                  <h2 className="text-lg text-ink">{section.heading}</h2>
+                /* Each part of a section arrives on its own, the heading
+                   first: the heading, each paragraph, the figure, the
+                   screens and the links. */
+                <section key={section.id} id={section.id} className="scroll-mt-28">
+                  <h2 data-reveal="" className="text-lg text-accent">{section.heading}</h2>
                   <div className="mt-4 flex flex-col gap-5 text-base text-ink">
-                    {section.paragraphs.map((paragraph) => (
-                      <p key={paragraph.slice(0, 40)}>{paragraph}</p>
+                    {section.paragraphs.map((paragraph, index) => (
+                      <p key={paragraph.slice(0, 40)} data-reveal="" style={stagger(index + 1)}>{paragraph}</p>
                     ))}
                   </div>
-                  <Figure name={section.figure} />
+                  {section.figure ? (
+                    <div data-reveal="">
+                      <Figure name={section.figure} />
+                    </div>
+                  ) : null}
                   {/* Evidence: recreated screens, each with its own caption
                       word for word. Content colour, so it keeps its own. */}
                   {section.images?.map((image) => (
-                    <figure key={image.src} className="my-8 border-y border-line py-6">
+                    <figure key={image.src} data-reveal="" className="my-8 border-y border-line py-6">
                       <Image
                         src={image.src}
                         alt={image.alt}
@@ -133,7 +143,7 @@ export default async function WritingEntryPage({ params }: Params) {
                     </figure>
                   ))}
                   {section.links?.length ? (
-                    <ul className="mt-5 flex flex-col gap-2 text-sm">
+                    <ul data-reveal="" className="mt-5 flex flex-col gap-2 text-sm">
                       {section.links.map((link) => (
                         <li key={link.href}>
                           <a
@@ -141,7 +151,7 @@ export default async function WritingEntryPage({ params }: Params) {
                             {...(link.href.startsWith("http")
                               ? { target: "_blank", rel: "noopener noreferrer" }
                               : {})}
-                            className="text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
+                            className={textLinkClass}
                           >
                             {link.text}
                           </a>
@@ -152,26 +162,25 @@ export default async function WritingEntryPage({ params }: Params) {
                 </section>
               ))}
 
-              {/* Where the piece leads next: the project it is about, then the
-                  rest of the writing. Plain links, the same weight as the
-                  section links above. */}
-              <nav aria-label="Related" data-reveal className="border-t border-line pt-6 text-sm">
+              {/* Where the piece leads next: the project it is about, as a
+                  button, then the rest of the writing as plain links. */}
+              <nav aria-label="Related" data-reveal="" className="border-t border-line pt-6 text-sm">
                 {entry.project ? (
-                  <p>
-                    <span className="text-2xs text-muted">The project</span>
-                    <br />
-                    {entry.project.href.startsWith("/") ? (
-                      <Link href={entry.project.href as Route} className="text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent">
-                        {entry.project.name}
-                      </Link>
-                    ) : (
-                      <a href={entry.project.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent">
-                        {entry.project.name}
-                        <ExternalLinkIcon className="h-3.5 w-3.5" />
-                        <span className="sr-only"> (opens in a new tab)</span>
-                      </a>
-                    )}
-                  </p>
+                  <div>
+                    <p className="text-2xs text-muted max-sm:text-center">The project</p>
+                    <div className="mt-3 flex max-sm:justify-center">
+                      {entry.project.href.startsWith("/") ? (
+                        <ButtonLink href={entry.project.href} size="sm">
+                          {entry.project.name}
+                        </ButtonLink>
+                      ) : (
+                        <ButtonLink href={entry.project.href} size="sm" external>
+                          {entry.project.name}
+                          <ExternalLinkIcon className="h-3.5 w-3.5" />
+                        </ButtonLink>
+                      )}
+                    </div>
+                  </div>
                 ) : null}
                 {others.length ? (
                   <>
@@ -179,7 +188,7 @@ export default async function WritingEntryPage({ params }: Params) {
                     <ul className="mt-2 flex flex-col gap-2">
                       {others.map((item) => (
                         <li key={item.slug}>
-                          <Link href={`/writing/${item.slug}` as Route} className="text-ink underline decoration-line underline-offset-[6px] transition-colors hover:text-accent">
+                          <Link href={`/writing/${item.slug}` as Route} className={textLinkClass}>
                             {item.title}
                           </Link>
                         </li>

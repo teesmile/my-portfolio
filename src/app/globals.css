@@ -32,11 +32,23 @@
   /* The wrong reading in the renal loop: text, so it needs text contrast.
      The same red in dark (6.4:1 on --raised); darker in light. */
   --wrong: #ff6b5e;
-  --surface: #0c0d0f;
-  --raised: #15171a;
-  --line: #23272d;
+  /* Warm charcoal rather than near-black (the "C" background chosen on
+     the visual round): the same ink and muted text still clear 15:1 and
+     7:1 on it, and the amber accent 10:1. */
+  --surface: #141312;
+  --raised: #1c1a18;
+  --line: #2d2a27;
   --ink: #edeff2;
   --muted: #9ba3ad;
+  /* The scroll reveals (src/components/layout/reveals.tsx): the CSS half
+     of REVEAL in src/lib/motion.ts. Keep the two in step. */
+  --reveal-distance: 48px;
+  --reveal-duration: 700ms;
+  /* The light behind the home portrait: the portrait's own blue and
+     orange, sampled from the image, soft enough to fade into the surface.
+     Content colour, tied to the image, not chrome. */
+  --portrait-blue: color-mix(in oklab, #2f5fd0 42%, transparent);
+  --portrait-orange: color-mix(in oklab, #e8853a 42%, transparent);
   /* The one saturated hue: amber-gold, interaction only.
      --accent is link text, 10.43:1 on this surface.
      --accent-strong is the same bright gold in both modes, for fills and focus
@@ -47,6 +59,16 @@
   /* The CV's one accent: its section headings and link buttons. */
   --cv-accent: #f0b429;
   --focus-halo: transparent;
+  /* Buttons (src/components/ui/button.tsx). The solid button is the bright
+     gold with dark text in both themes; hover takes it a step towards the
+     ink and press a second step, mixed in OKLab so the two steps look even.
+     The outline button and the icon buttons tint on hover and press. */
+  --accent-hover: color-mix(in oklab, var(--accent-strong) 90%, var(--accent-ink));
+  --accent-press: color-mix(in oklab, var(--accent-strong) 80%, var(--accent-ink));
+  --accent-soft: color-mix(in oklab, var(--accent) 12%, transparent);
+  --accent-soft-press: color-mix(in oklab, var(--accent) 22%, transparent);
+  --tint: color-mix(in oklab, var(--ink) 8%, transparent);
+  --tint-press: color-mix(in oklab, var(--ink) 14%, transparent);
 
   /* The illustration palette: every figure, diagram, banner and the renal
      loop draw from these and nothing else. Content colour, not chrome.
@@ -80,11 +102,14 @@
 
 .light {
   color-scheme: light;
-  --surface: #f5f6f8;
-  --raised: #ffffff;
-  --line: #dbdfe5;
+  /* Warm paper, the light half of the same background. */
+  --surface: #f7f5f1;
+  --raised: #fffdf9;
+  --line: #e0dbd3;
   --ink: #14171a;
   --muted: #575f69;
+  --portrait-blue: color-mix(in oklab, #2f5fd0 18%, transparent);
+  --portrait-orange: color-mix(in oklab, #e8853a 34%, transparent);
   /* Bronze-gold for link text, 6.58:1 on light --surface. The bright gold
      stays the fill colour so a button looks identical in both modes.
      The halo exists because bright gold against a near-white surface is only
@@ -121,6 +146,12 @@
   --color-accent-ink: var(--accent-ink);
   --color-accent-strong: var(--accent-strong);
   --color-cv-accent: var(--cv-accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-press: var(--accent-press);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-soft-press: var(--accent-soft-press);
+  --color-tint: var(--tint);
+  --color-tint-press: var(--tint-press);
   /* Content only: the lint squiggle, and the misread cell in the renal
      showcase's chart tables. Never chrome. */
   --color-warn: var(--warn);
@@ -144,10 +175,6 @@
   /* System stack, not a third downloaded family: code set in a serif is
      unreadable, and a webfont for six lines of sample code is not worth it. */
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  /* A real monospace voice for the hero line. Code keeps the system stack:
-     Martian Mono is wide by design, which is good for one line and bad for
-     forty of them. */
-  --font-mono-brand: var(--font-martian), var(--font-mono);
 
 }
 
@@ -193,7 +220,9 @@
   --radius-sm: 2px;
   --radius-md: 4px;
   --radius-lg: 8px;
-  /* Pills: the hero's back button. */
+  /* Every button on the site, including the back control and the CV's
+     link buttons: gently rounded, the same everywhere. */
+  --radius-button: 6px;
   --radius-pill: 9999px;
 
   --container-reading: 38rem;
@@ -750,25 +779,138 @@
   97.5%, 100% { opacity: 0; }
 }
 
-/* The hero's own surface, ending where the hero ends, with a little grain
-   for depth. CSS and one inline SVG: no canvas, nothing that animates. */
+/* The hero's surface: the raised warm charcoal (warm paper in light) with a
+   hairline under it, a little grain for depth, and one soft amber wash
+   from the top left. Colour and gradients only; nothing in it moves. The
+   grain is one inline SVG turbulence, rasterised once and tiled; it sits
+   under the content and never repaints. */
 .editor-surface {
-  background-color: var(--raised);
+  background: var(--raised);
   border-bottom: 1px solid var(--line);
   position: relative;
   isolation: isolate;
 }
 
-/* Grain: a single inline SVG turbulence, rasterised once by the browser and
-   tiled. It sits under the content and never repaints. */
 .editor-surface::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
-  opacity: 0.045;
+  opacity: 0.04;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* The wash layer inside the hero (hero.tsx). */
+.hero-wash {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(75% 65% at 12% 10%, color-mix(in oklab, #f0b429 9%, transparent), transparent 72%);
+}
 
+.light .hero-wash {
+  background-image: radial-gradient(75% 65% at 12% 10%, color-mix(in oklab, #f0b429 13%, transparent), transparent 72%);
+}
 
+/* The light behind the portrait (hero.tsx), in the portrait's own blue and
+   orange, fading into the surface: blue over the left shoulder and the
+   hair, orange on the lit cheek, centred on the portrait. Each light is
+   one radial gradient with an eased falloff (four stops rather than two):
+   a straight ramp to transparent reads as a disc with an edge, and a glow
+   has no edge. */
+.portrait-glow {
+  position: absolute;
+  inset: -28% -30% -24%;
+  z-index: -1;
+  pointer-events: none;
+  --glow-blue-mid: color-mix(in srgb, var(--portrait-blue) 55%, transparent);
+  --glow-blue-far: color-mix(in srgb, var(--portrait-blue) 18%, transparent);
+  --glow-orange-mid: color-mix(in srgb, var(--portrait-orange) 55%, transparent);
+  --glow-orange-far: color-mix(in srgb, var(--portrait-orange) 18%, transparent);
+  background-image:
+    radial-gradient(46% 44% at 40% 36%, var(--portrait-blue) 0%, var(--glow-blue-mid) 30%, var(--glow-blue-far) 58%, transparent 80%),
+    radial-gradient(44% 42% at 66% 68%, var(--portrait-orange) 0%, var(--glow-orange-mid) 30%, var(--glow-orange-far) 58%, transparent 80%);
+}
+
+/* The portrait floats, so its cut shoulders dissolve into the light
+   rather than ending in a straight edge. */
+.hero-portrait img {
+  mask-image: linear-gradient(to bottom, black 72%, transparent 100%);
+}
+
+/* Scroll reveals (src/components/layout/reveals.tsx). The states:
+
+     (empty)  the entrance, from first paint: the item rises 48px over
+              0.7s as soon as it is painted, with no JavaScript. A reload
+              plays this for the first screen. It fades from a quarter,
+              never from nothing: Chrome records the largest paint of an
+              element that starts at opacity 0 only when its fade ends
+              (measured: LCP 0.9s to 4.1s on /about), and anything on the
+              first screen can be that element.
+     wait     entirely below the viewport: hidden and lowered until it
+              arrives (only the component sets this, and only off screen)
+     in       arriving from below the screen: the full fade from nothing,
+              delayed by --reveal-delay for items arriving together
+     done     landed, plain again
+     rise     the page's largest text: rises from first paint and never
+              fades at all
+
+   Every one of these is a finite animation that ends visible. */
+[data-reveal=''],
+[data-reveal='true'] {
+  animation: reveal-enter var(--reveal-duration) var(--ease-out) var(--reveal-delay, 0s) both;
+}
+
+[data-reveal='in'] {
+  animation: reveal-in var(--reveal-duration) var(--ease-out) var(--reveal-delay, 0s) both;
+}
+
+[data-reveal='wait'] {
+  opacity: 0;
+  transform: translateY(var(--reveal-distance));
+  animation: none;
+}
+
+[data-reveal='rise'] {
+  animation: reveal-rise var(--duration-base) var(--ease-out) both;
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--reveal-distance));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes reveal-enter {
+  from {
+    opacity: 0.25;
+    transform: translateY(var(--reveal-distance));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes reveal-rise {
+  from {
+    transform: translateY(14px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}

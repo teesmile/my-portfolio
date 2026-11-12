@@ -7,6 +7,7 @@ import gsap from 'gsap';
 import { Flip } from 'gsap/Flip';
 import type { Project } from '@/config/site';
 import { TechList } from '@/components/ui/tech';
+import { ButtonLink } from '@/components/ui/button';
 import { captureFlip } from '@/lib/flip-state';
 
 gsap.registerPlugin(Flip);
@@ -43,11 +44,17 @@ export default function WorkEntry({
     captureFlip(`work-${project.slug}`, Flip.getState(frameRef.current));
   };
 
+  /* The frame and the text arrive as two steps. The lead entry is on the
+     first screen: its frame is the page's largest paint and only rises,
+     never starting invisible; its text follows a step behind. */
+  const lead = index === 0;
+
   return (
-    <article data-reveal className="grid gap-8 border-t border-line pt-10 lg:grid-cols-12 lg:gap-12">
+    <article className="grid gap-8 border-t border-line pt-10 lg:grid-cols-12 lg:gap-12">
       <Link
         href={`/work/${project.slug}`}
         onClick={handoff}
+        data-reveal={lead ? 'rise' : ''}
         className={`${layout.frame} group block`}
         aria-label={`Read the ${project.title} case study`}
       >
@@ -76,7 +83,7 @@ export default function WorkEntry({
         </div>
       </Link>
 
-      <div className={layout.body}>
+      <div data-reveal="" style={{ '--reveal-delay': '120ms' } as React.CSSProperties} className={layout.body}>
         <p className="text-2xs text-muted">
           {project.status ?? project.year} &middot; {project.role}
         </p>
@@ -89,13 +96,13 @@ export default function WorkEntry({
         <div className="mt-5">
           <TechList items={project.tech} />
         </div>
-        <Link
-          href={`/work/${project.slug}`}
-          onClick={handoff}
-          className="mt-6 inline-block text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
-        >
-          Case study
-        </Link>
+        {/* A button, centred on a phone where it stands alone under the
+            text; left with the text from sm up. */}
+        <div className="mt-6 flex max-sm:justify-center">
+          <ButtonLink href={`/work/${project.slug}`} variant="secondary" size="sm" onClick={handoff}>
+            Case study
+          </ButtonLink>
+        </div>
       </div>
     </article>
   );

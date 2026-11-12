@@ -4,14 +4,16 @@ import JsonLd from "@/components/ui/json-ld";
 import { SITE_URL } from "@/config/site-url";
 import { WEBSITE_ID, breadcrumbJsonLd, personJsonLd } from "@/lib/structured-data";
 import Image from "next/image";
-import Link from "next/link";
 import { portfolioConfig } from "@/config/site";
 import { siteExperience } from "@/content/resume";
 import { TechList } from "@/components/ui/tech";
 import StackRows from "@/features/about/stack-rows";
 import Reveals from "@/components/layout/reveals";
+import { textLinkClass } from "@/components/ui/text-link";
+import { stagger } from "@/components/layout/stagger";
 import TechGlitch from "@/components/ui/tech-glitch";
 import { ExternalLinkIcon } from "@/components/ui/icons";
+import { ButtonLink } from "@/components/ui/button";
 
 export const metadata: Metadata = pageMetadata({
   title: "About",
@@ -19,6 +21,7 @@ export const metadata: Metadata = pageMetadata({
   description:
     "Full-stack developer and AI evaluator who checks model-written code and clinical answers, with a pharmacy degree behind it. Experience, talks and stack.",
   path: "/about",
+  image: "/about/opengraph-image",
 });
 
 export default function AboutPage() {
@@ -39,26 +42,29 @@ export default function AboutPage() {
       <div className="mx-auto max-w-(--container-view)">
         <div className="grid min-w-0 gap-16 lg:grid-cols-12 lg:gap-20">
           <div className="min-w-0 lg:col-span-7">
-            <h1 data-reveal className="max-w-[20ch] text-xl text-ink md:text-2xl">
+            <h1 data-reveal="rise" className="max-w-[20ch] text-xl text-ink md:text-2xl">
               {copy.aboutHeading}
             </h1>
 
             <div className="mt-10 flex max-w-(--container-reading) flex-col gap-6 text-base text-ink">
-              {copy.aboutParagraphs.map((paragraph) => (
-                <p key={paragraph.slice(0, 40)} data-reveal>{paragraph}</p>
+              {copy.aboutParagraphs.map((paragraph, index) => (
+                <p key={paragraph.slice(0, 40)} data-reveal="" style={stagger(index)}>
+                  {paragraph}
+                </p>
               ))}
             </div>
 
-            <h2 className="mt-16 text-lg text-ink">How I got here</h2>
-            <p className="mt-3 max-w-(--container-reading) text-sm text-muted">
+            <h2 data-reveal="" className="mt-16 text-lg text-accent">How I got here</h2>
+            <p data-reveal="" className="mt-3 max-w-(--container-reading) text-sm text-muted">
               Two tracks, running at the same time rather than one replacing the
               other.
             </p>
             <ol className="mt-6 flex max-w-(--container-reading) flex-col">
-              {timeline.map((entry) => (
+              {timeline.map((entry, index) => (
                 <li
                   key={entry.label}
-                  data-reveal
+                  data-reveal=""
+                  style={stagger(index)}
                   className="grid grid-cols-[6.5rem_1fr_auto] items-baseline gap-4 border-t border-line py-4 text-sm"
                 >
                   <span className="text-2xs text-muted tabular-nums">
@@ -76,12 +82,13 @@ export default function AboutPage() {
 
             {/* The timeline's grid, so a talk reads as one more dated entry
                 on its track rather than as a separate kind of card. */}
-            <h2 className="mt-16 text-lg text-ink">Talks</h2>
+            <h2 data-reveal="" className="mt-16 text-lg text-accent">Talks</h2>
             <ol className="mt-6 flex max-w-(--container-reading) flex-col">
-              {talks.map((talk) => (
+              {talks.map((talk, index) => (
                 <li
                   key={talk.title}
-                  data-reveal
+                  data-reveal=""
+                  style={stagger(index)}
                   className="grid grid-cols-[6.5rem_1fr_auto] items-baseline gap-4 border-t border-line py-4 text-sm"
                 >
                   <span className="text-2xs text-muted tabular-nums">{talk.period}</span>
@@ -98,7 +105,7 @@ export default function AboutPage() {
                           href={href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
+                          className={`inline-flex items-center gap-1 ${textLinkClass}`}
                         >
                           {label}
                           <ExternalLinkIcon className="h-3 w-3" />
@@ -112,10 +119,10 @@ export default function AboutPage() {
               ))}
             </ol>
 
-            <h2 className="mt-16 text-lg text-ink">Experience</h2>
+            <h2 data-reveal="" className="mt-16 text-lg text-accent">Experience</h2>
             <div className="mt-6 flex max-w-(--container-reading) flex-col gap-8">
-              {siteExperience.map((role) => (
-                <article key={`${role.title}-${role.period}`} data-reveal className="border-t border-line pt-5">
+              {siteExperience.map((role, index) => (
+                <article key={`${role.title}-${role.period}`} data-reveal="" style={stagger(index)} className="border-t border-line pt-5">
                   {/* The CVs space their ranges ("Nov 2025 - Present") for
                       parsers; the site writes ranges unspaced. */}
                   <p className="text-2xs text-muted tabular-nums">{role.period.replace(" - ", "-")}</p>
@@ -150,7 +157,10 @@ export default function AboutPage() {
             {/* No frame, no border, no backing panel: the source is a clean
                 cutout, so anything behind it reads as a box the photo was
                 pasted into — and in light mode that box was white. */}
-            <div className="relative aspect-square w-full">
+            {/* On a phone the column is the full width and the portrait
+                would fill it edge to edge; it is held to a smaller square
+                and centred instead, as a photo rather than a banner. */}
+            <div className="relative aspect-square w-full max-sm:mx-auto max-sm:max-w-72">
               <Image
                 src="/portrait-clean-v2.webp"
                 alt={`${portfolioConfig.name} portrait`}
@@ -166,20 +176,11 @@ export default function AboutPage() {
               <StackRows layers={stack} />
             </div>
 
-            <div className="mt-10 flex flex-wrap items-center gap-5">
-              <Link
-                href="/resume"
-                className="text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
-              >
-                Read the resume
-              </Link>
-              <a
-                href={portfolioConfig.resumePdf}
-                download
-                className="border border-line px-3 py-1.5 text-2xs text-ink transition-colors hover:border-ink"
-              >
+            <div className="mt-10 flex flex-wrap items-center gap-3 max-sm:justify-center">
+              <ButtonLink href="/resume">Read the resume</ButtonLink>
+              <ButtonLink href={portfolioConfig.resumePdf} variant="secondary" download>
                 Download PDF
-              </a>
+              </ButtonLink>
             </div>
           </div>
         </div>

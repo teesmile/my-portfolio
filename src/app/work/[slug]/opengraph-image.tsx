@@ -1,5 +1,10 @@
 import { portfolioConfig } from "@/config/site";
-import { renderShareImage, shareImageSize } from "@/lib/share-image";
+import { renderShareImage, shareImageSize, type ShareVisual } from "@/lib/share-image";
+
+/* A case study with something to show on the right of its card. */
+const VISUAL_BY_SLUG: Record<string, ShareVisual> = {
+  "whos-on-my-ballot": "ballot-phone",
+};
 
 export const alt = "Work - Anthony Ugwuja";
 export const size = shareImageSize;
@@ -20,5 +25,6 @@ export default async function Image({
   return renderShareImage({
     title: project?.title ?? "Work",
     kicker: project ? `${project.year} · ${project.role}` : "Work",
+    visual: project ? VISUAL_BY_SLUG[project.slug] : undefined,
   });
 }

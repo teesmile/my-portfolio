@@ -17,7 +17,7 @@ export default function WritingPage() {
     <section className="px-4 sm:px-6 py-20 md:py-24">
       <Reveals />
       <div className="mx-auto max-w-(--container-view)">
-        <h1 data-reveal className="max-w-[20ch] text-xl text-ink md:text-2xl">
+        <h1 data-reveal="rise" className="max-w-[20ch] text-xl text-ink md:text-2xl">
           {portfolioConfig.copy.writingHeading}
         </h1>
         <TopicFilter entries={published} />

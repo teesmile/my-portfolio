@@ -34,13 +34,14 @@ export default function CorrectedHeadline({
   right,
   after,
   className,
+  ...rest
 }: {
   lead: string;
   wrong: string;
   right: string;
   after: string;
   className?: string;
-}) {
+} & Omit<React.HTMLAttributes<HTMLHeadingElement>, 'className' | 'children'>) {
   const scope = useRef<HTMLHeadingElement>(null);
 
   useGSAP(
@@ -68,7 +69,7 @@ export default function CorrectedHeadline({
   );
 
   return (
-    <h1 ref={scope} className={className}>
+    <h1 ref={scope} className={className} {...rest}>
       {lead}
       <span
         data-wrong=""

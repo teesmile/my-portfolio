@@ -28,7 +28,7 @@ const candidates = [
   },
   {
     id: "mono-martian",
-    text: portfolioConfig.monoLine,
+    text: portfolioConfig.heroLine,
     className: martian.className,
     leading: 1.6,
     max: { "1280": 1, "360": 3 } as Record<string, number>,

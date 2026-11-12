@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Syne, Source_Serif_4, Martian_Mono } from "next/font/google";
+import { Syne, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 
 import Navbar from "@/components/layout/navbar";
@@ -9,12 +9,6 @@ import { portfolioConfig } from "@/config/site";
 
 const display = Syne({
   variable: "--font-syne",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const mono = Martian_Mono({
-  variable: "--font-martian",
   subsets: ["latin"],
   display: "swap",
 });
@@ -65,6 +59,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
+    site: portfolioConfig.xHandle,
+    creator: portfolioConfig.xHandle,
     title: seo.title,
     description: seo.description,
   },
@@ -78,7 +74,7 @@ export default function RootLayout({
   return (
     /* The theme script adds "light" to <html> before React hydrates, so the
        class React finds differs from the one it rendered, by design. */
-    <html lang="en" className={`${display.variable} ${text.variable} ${mono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${display.variable} ${text.variable}`} suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <SmoothScroll>

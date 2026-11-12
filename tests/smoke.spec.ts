@@ -1,8 +1,9 @@
 import { test, expect, type Page } from "@playwright/test";
 
 /**
- * Smoke tests: every page the sitemap lists loads, says what it is, and fits
- * a small phone; the contact links, the feed and the CV download work.
+ * Smoke tests: every page the sitemap lists loads, says what it is, fits a
+ * small phone and has a share card that loads; the contact links, the feed
+ * and the CV download work.
  *
  * Reduced motion is on for every test (playwright.config.ts). Every
  * animation on the site has a reduced-motion path, so pages render in their
@@ -59,7 +60,7 @@ test("contact: email, and one WhatsApp button with the greeting typed", async ({
   const whatsapp = page.locator('a[href^="https://wa.me/"]');
   await expect(whatsapp).toHaveCount(1);
   await expect(whatsapp).toBeVisible();
-  await expect(whatsapp).toHaveAccessibleName("Message me on WhatsApp");
+  await expect(whatsapp).toHaveAccessibleName(/^Send a DM on WhatsApp/);
   await expect(whatsapp).toHaveAttribute("target", "_blank");
   const url = new URL((await whatsapp.getAttribute("href"))!);
   expect(url.pathname).toMatch(/^\/\d+$/);
@@ -94,6 +95,56 @@ test("the writing feed is RSS and every item links to a live piece", async ({ pa
     expect((await page.request.get(link.replace(SITE, ""))).status(), link).toBe(200);
   }
 });
+
+test("every page has a share card that loads as a 1200x630 PNG or JPEG", async ({ page }) => {
+  /* A broken card is invisible from the site itself: the page still renders,
+     and only someone sharing a link finds out. So every page in the sitemap
+     is checked the way a crawler reads it: the tags, then the image those
+     tags point at, fetched and its header parsed. */
+  for (const path of await sitemapPaths(page)) {
+    await test.step(path, async () => {
+      await page.goto(path);
+      const tag = (selector: string) => page.locator(selector).first().getAttribute("content");
+      const image = await tag('meta[property="og:image"]');
+      expect.soft(image, `${path} has no og:image`).toMatch(/^https:\/\//);
+      expect.soft(await tag('meta[name="twitter:card"]'), path).toBe("summary_large_image");
+      expect.soft(await tag('meta[name="twitter:site"]'), path).toBe("@Tonysmile_1");
+      expect.soft(await tag('meta[name="twitter:creator"]'), path).toBe("@Tonysmile_1");
+      expect.soft(await tag('meta[property="og:image:width"]'), path).toBe("1200");
+      expect.soft(await tag('meta[property="og:image:height"]'), path).toBe("630");
+      if (!image) return;
+
+      const response = await page.request.get(image.replace(SITE, ""));
+      expect.soft(response.status(), `${path} share image`).toBe(200);
+      const type = response.headers()["content-type"] ?? "";
+      expect.soft(type, `${path} share image type`).toMatch(/^image\/(png|jpeg)/);
+      const bytes = await response.body();
+      expect.soft(bytes.length, `${path} share image is empty`).toBeGreaterThan(1000);
+      const size = imageSize(bytes);
+      expect.soft(size, `${path} share image size`).toEqual({ width: 1200, height: 630 });
+    });
+  }
+});
+
+/** Width and height from a PNG's IHDR or a JPEG's first SOF marker. */
+function imageSize(bytes: Buffer): { width: number; height: number } | null {
+  if (bytes.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) {
+    return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
+  }
+  if (bytes[0] === 0xff && bytes[1] === 0xd8) {
+    let at = 2;
+    while (at + 9 < bytes.length) {
+      if (bytes[at] !== 0xff) return null;
+      const marker = bytes[at + 1];
+      const length = bytes.readUInt16BE(at + 2);
+      if (marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc) {
+        return { height: bytes.readUInt16BE(at + 5), width: bytes.readUInt16BE(at + 7) };
+      }
+      at += 2 + length;
+    }
+  }
+  return null;
+}
 
 test("the resume renders and its PDF downloads", async ({ page }) => {
   await page.goto("/resume");

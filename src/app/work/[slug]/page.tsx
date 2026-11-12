@@ -14,6 +14,9 @@ import type { Route } from "next";
 import JsonLd from "@/components/ui/json-ld";
 import { breadcrumbJsonLd } from "@/lib/structured-data";
 import { published } from "@/config/writing";
+import { ButtonLink } from "@/components/ui/button";
+import { textLinkClass } from "@/components/ui/text-link";
+import { stagger } from "@/components/layout/stagger";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -101,21 +104,25 @@ export default async function CaseStudyPage({ params }: Params) {
         <PinnedBack href="/work" label="All work" mode="covered" />
 
         <div className="mx-auto max-w-(--container-view)">
-          <div className="grid gap-12 lg:grid-cols-12">
-            <div className="lg:col-span-7">
+          {/* Three grid children, so the order on a phone is the sections,
+              then the actions (the live project and the source), then
+              "More work"; from lg up the actions take the right column
+              beside the sections and "More work" follows the sections. */}
+          <div className="grid gap-12 lg:grid-cols-12 lg:gap-y-16">
+            <div className="lg:col-span-7 lg:row-start-1">
               <p
-                data-reveal
+                data-reveal=""
                 className="max-w-(--container-reading) text-base text-ink"
               >
                 {project.description}
               </p>
 
-              <h2 data-reveal className="mt-12 text-lg text-ink">
+              <h2 data-reveal="" className="mt-12 text-lg text-accent">
                 What it does
               </h2>
               <ul className="mt-5 flex max-w-(--container-reading) flex-col gap-3 text-sm text-muted">
-                {project.highlights.map((highlight) => (
-                  <li key={highlight} data-reveal className="border-l border-line pl-4">
+                {project.highlights.map((highlight, index) => (
+                  <li key={highlight} data-reveal="" style={stagger(index)} className="border-l border-line pl-4">
                     {highlight}
                   </li>
                 ))}
@@ -123,12 +130,12 @@ export default async function CaseStudyPage({ params }: Params) {
 
               {project.hard?.length ? (
                 <>
-                  <h2 data-reveal className="mt-14 text-lg text-ink">
+                  <h2 data-reveal="" className="mt-14 text-lg text-accent">
                     What was hard
                   </h2>
                   <div className="mt-5 flex max-w-(--container-reading) flex-col gap-4 text-sm text-ink">
-                    {project.hard.map((paragraph) => (
-                      <p key={paragraph.slice(0, 40)} data-reveal>
+                    {project.hard.map((paragraph, index) => (
+                      <p key={paragraph.slice(0, 40)} data-reveal="" style={stagger(index)}>
                         {paragraph}
                       </p>
                     ))}
@@ -136,7 +143,7 @@ export default async function CaseStudyPage({ params }: Params) {
                 </>
               ) : null}
 
-              <h2 data-reveal className="mt-14 text-lg text-ink">
+              <h2 data-reveal="" className="mt-14 text-lg text-accent">
                 Architecture
               </h2>
               {project.architecture ? (
@@ -146,10 +153,11 @@ export default async function CaseStudyPage({ params }: Params) {
                     ["API", project.architecture.api],
                     ["Auth", project.architecture.auth],
                     ["Hosting", project.architecture.hosting],
-                  ].map(([label, value]) => (
+                  ].map(([label, value], index) => (
                     <div
                       key={label}
-                      data-reveal
+                      data-reveal=""
+                      style={stagger(index)}
                       className="grid grid-cols-[7rem_1fr] gap-4 border-t border-line py-4 text-sm"
                     >
                       <dt className="text-2xs text-muted">{label}</dt>
@@ -158,20 +166,43 @@ export default async function CaseStudyPage({ params }: Params) {
                   ))}
                 </dl>
               ) : (
-                <p data-reveal className="mt-4 max-w-(--container-reading) text-sm text-muted">
+                <p data-reveal="" className="mt-4 max-w-(--container-reading) text-sm text-muted">
                   Frontend only: no server, no database, no sign-in. The section
                   stays here because the next build has all three.
                 </p>
               )}
+            </div>
 
-              <nav aria-label="Related" data-reveal className="mt-16 max-w-(--container-reading) border-t border-line pt-6 text-sm">
+            <aside data-reveal="" className="lg:col-span-4 lg:col-start-9 lg:row-start-1">
+              <h2 className="text-2xs text-muted">Built with</h2>
+              <div className="mt-3">
+                <TechList items={project.tech} />
+              </div>
+
+              <div className="mt-8 flex flex-wrap items-center gap-3 max-sm:justify-center">
+                {/* Before launch the address serves a "Coming soon" page,
+                    so the button names the address rather than promising a
+                    live project. */}
+                <ButtonLink href={project.link} external>
+                  {project.status ? `Open ${new URL(project.link).host}` : "Open the live project"}
+                  <ExternalLinkIcon className="h-3.5 w-3.5" />
+                </ButtonLink>
+                {project.repo ? (
+                  <ButtonLink href={project.repo} variant="secondary" external>
+                    Read the source
+                  </ButtonLink>
+                ) : null}
+              </div>
+            </aside>
+
+            <nav aria-label="Related" data-reveal="" className="max-w-(--container-reading) border-t border-line pt-6 text-sm lg:col-span-7 lg:row-start-2">
                 {related.length ? (
                   <>
                     <p className="text-2xs text-muted">Related writing</p>
                     <ul className="mt-2 mb-6 flex flex-col gap-2">
                       {related.map((entry) => (
                         <li key={entry.slug}>
-                          <Link href={`/writing/${entry.slug}` as Route} className="text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent">
+                          <Link href={`/writing/${entry.slug}` as Route} className={textLinkClass}>
                             {entry.title}
                           </Link>
                         </li>
@@ -180,56 +211,24 @@ export default async function CaseStudyPage({ params }: Params) {
                   </>
                 ) : null}
                 <p className="text-2xs text-muted">More work</p>
-                <ul className="mt-2 flex flex-col gap-2">
+                {/* Case studies are buttons everywhere on the site. The
+                    previous/next sense is in the accessible name, where a
+                    screen reader hears it, and in the order. */}
+                <ul className="mt-3 flex flex-wrap gap-3 max-sm:justify-center">
                   {neighbours.map(({ label, item }) => (
                     <li key={item.slug}>
-                      <span className="text-2xs text-muted">{label}: </span>
-                      <Link href={`/work/${item.slug}` as Route} className="text-ink underline decoration-line underline-offset-[6px] transition-colors hover:text-accent">
+                      <ButtonLink href={`/work/${item.slug}`} variant="secondary" size="sm" aria-label={`${label}: ${item.title}`}>
                         {item.title}
-                      </Link>
+                      </ButtonLink>
                     </li>
                   ))}
                   <li>
-                    <Link href="/work/renal-dosing-task" className="text-ink underline decoration-line underline-offset-[6px] transition-colors hover:text-accent">
-                      The AI evaluation sample: renal dose check
-                    </Link>
+                    <ButtonLink href="/work/renal-dosing-task" variant="secondary" size="sm">
+                      Renal dose check (AI evaluation sample)
+                    </ButtonLink>
                   </li>
                 </ul>
               </nav>
-            </div>
-
-            <aside data-reveal className="lg:col-span-4 lg:col-start-9">
-              <h2 className="text-2xs text-muted">Built with</h2>
-              <div className="mt-3">
-                <TechList items={project.tech} />
-              </div>
-
-              <div className="mt-8 flex flex-col gap-3">
-                <a
-                  href={project.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex w-fit items-center gap-1.5 text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
-                >
-                  {/* Before launch the address serves a "Coming soon" page,
-                      so the link names the address rather than promising a
-                      live project. */}
-                  {project.status ? `Open ${new URL(project.link).host}` : "Open the live project"}
-                  <ExternalLinkIcon className="h-3.5 w-3.5" />
-                  <span className="sr-only">(opens in a new tab)</span>
-                </a>
-                {project.repo ? (
-                  <a
-                    href={project.repo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-muted underline decoration-line underline-offset-[6px] transition-colors hover:text-ink"
-                  >
-                    Read the source
-                  </a>
-                ) : null}
-              </div>
-            </aside>
           </div>
         </div>
       </div>

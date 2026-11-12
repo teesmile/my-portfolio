@@ -42,6 +42,26 @@ export const EASE = {
   in: 'power2.in',
 } as const;
 
+/**
+ * How a block arrives as it is scrolled to: it starts 48px lower and fades
+ * in over 0.7s, settling softly (--ease-out in globals.css, where the
+ * animation itself lives as CSS; these are the same numbers for anything
+ * that reads them from JavaScript). Transforms and opacity only, so
+ * nothing reflows and nothing counts as layout shift.
+ */
+export const REVEAL = {
+  distance: 48,
+  duration: 0.7,
+  /** Between blocks that arrive together, such as a row of cards. */
+  stagger: 0.09,
+} as const;
+
+/** A figure counting up to its value as it comes into view. */
+export const COUNT = {
+  duration: 1.2,
+  ease: 'power3.out',
+} as const;
+
 export const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;

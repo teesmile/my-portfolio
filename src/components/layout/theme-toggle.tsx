@@ -1,5 +1,7 @@
 'use client';
 
+import { buttonClass } from '@/components/ui/button';
+
 /* No React state and no context: the class on <html> is the source of truth,
    and CSS picks the icon. That keeps server and client markup identical, which
    is what removes the whole hydration-mismatch class of bug from theming. */
@@ -19,7 +21,7 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggle}
       aria-label="Switch between light and dark"
-      className="-m-2 p-2 text-muted transition-colors hover:text-ink"
+      className={buttonClass('icon')}
     >
       <svg
         className="block light:hidden"
