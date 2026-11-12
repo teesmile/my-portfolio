@@ -40,7 +40,11 @@ export default async function ShareImagePage({ params }: Params) {
           card on the site. */}
       <div className="absolute inset-x-0 bottom-0 h-[440px] bg-[linear-gradient(to_top,var(--surface)_0%,var(--surface)_76%,transparent_100%)]" />
       <div className="absolute inset-x-0 bottom-0 px-[60px] pb-[120px]">
-        <p className="font-text text-[22px] text-muted">Writing · {entry.topic}</p>
+        {/* The same round accent dot that opens every typeset card's top line. */}
+        <p className="flex items-center gap-[18px] font-text text-[22px] text-muted">
+          <span aria-hidden="true" className="inline-block h-4 w-4 rounded-full bg-ill-accent-fill" />
+          Writing · {entry.topic}
+        </p>
         <h1 className="mt-2 max-w-[1000px] text-balance font-display text-[50px] leading-[1.06] text-ink">{entry.title}</h1>
         <p className="mt-4 font-text text-[20px] text-muted">
           {portfolioConfig.name} · <span className="text-ill-accent">anthonyugwuja.dev</span>

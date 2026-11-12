@@ -9,6 +9,7 @@ import { siteExperience } from "@/content/resume";
 import { TechList } from "@/components/ui/tech";
 import StackRows from "@/features/about/stack-rows";
 import Reveals from "@/components/layout/reveals";
+import { textLinkClass } from "@/components/ui/text-link";
 import TechGlitch from "@/components/ui/tech-glitch";
 import { ExternalLinkIcon } from "@/components/ui/icons";
 import { ButtonLink } from "@/components/ui/button";
@@ -40,18 +41,24 @@ export default function AboutPage() {
       <div className="mx-auto max-w-(--container-view)">
         <div className="grid min-w-0 gap-16 lg:grid-cols-12 lg:gap-20">
           <div className="min-w-0 lg:col-span-7">
-            <h1 data-reveal className="max-w-[20ch] text-xl text-ink md:text-2xl">
+            <h1 data-reveal="load" className="max-w-[20ch] text-xl text-ink md:text-2xl">
               {copy.aboutHeading}
             </h1>
 
             <div className="mt-10 flex max-w-(--container-reading) flex-col gap-6 text-base text-ink">
-              {copy.aboutParagraphs.map((paragraph) => (
-                <p key={paragraph.slice(0, 40)} data-reveal>{paragraph}</p>
+              {copy.aboutParagraphs.map((paragraph, index) => (
+                <p
+                  key={paragraph.slice(0, 40)}
+                  data-reveal={index === 0 ? "load" : ""}
+                  style={index === 0 ? ({ "--reveal-delay": "100ms" } as React.CSSProperties) : undefined}
+                >
+                  {paragraph}
+                </p>
               ))}
             </div>
 
-            <h2 className="mt-16 text-lg text-accent">How I got here</h2>
-            <p className="mt-3 max-w-(--container-reading) text-sm text-muted">
+            <h2 data-reveal className="mt-16 text-lg text-accent">How I got here</h2>
+            <p data-reveal className="mt-3 max-w-(--container-reading) text-sm text-muted">
               Two tracks, running at the same time rather than one replacing the
               other.
             </p>
@@ -77,7 +84,7 @@ export default function AboutPage() {
 
             {/* The timeline's grid, so a talk reads as one more dated entry
                 on its track rather than as a separate kind of card. */}
-            <h2 className="mt-16 text-lg text-accent">Talks</h2>
+            <h2 data-reveal className="mt-16 text-lg text-accent">Talks</h2>
             <ol className="mt-6 flex max-w-(--container-reading) flex-col">
               {talks.map((talk) => (
                 <li
@@ -99,7 +106,7 @@ export default function AboutPage() {
                           href={href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
+                          className={`inline-flex items-center gap-1 ${textLinkClass}`}
                         >
                           {label}
                           <ExternalLinkIcon className="h-3 w-3" />
@@ -113,7 +120,7 @@ export default function AboutPage() {
               ))}
             </ol>
 
-            <h2 className="mt-16 text-lg text-accent">Experience</h2>
+            <h2 data-reveal className="mt-16 text-lg text-accent">Experience</h2>
             <div className="mt-6 flex max-w-(--container-reading) flex-col gap-8">
               {siteExperience.map((role) => (
                 <article key={`${role.title}-${role.period}`} data-reveal className="border-t border-line pt-5">

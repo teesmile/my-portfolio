@@ -1,7 +1,6 @@
 import { siGithub, siX } from "simple-icons";
 import { portfolioConfig } from "@/config/site";
 import { linkedin, type BrandIcon } from "@/components/ui/brand-icons";
-import { buttonClass } from "@/components/ui/button";
 
 /* The three profiles as marks only. GitHub and X are simple-icons; LinkedIn
    is not carried there, so its mark is in brand-icons.ts. */
@@ -25,12 +24,14 @@ export default function Footer() {
             return (
               <li key={social.name}>
                 {/* Icon only, 44px square so it is comfortable to tap; the
-                    name is there for a screen reader and nobody else. */}
+                    name is there for a screen reader and nobody else. No
+                    box on hover: the pointer and the mark going from muted
+                    to ink are the whole state. */}
                 <a
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={buttonClass("icon")}
+                  className="flex h-11 w-11 items-center justify-center text-muted transition-colors duration-(--duration-fast) hover:text-ink"
                 >
                   <svg viewBox={mark.viewBox ?? "0 0 24 24"} className="h-5 w-5 fill-current" aria-hidden="true">
                     <path d={mark.path} />

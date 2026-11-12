@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/metadata";
 import { portfolioConfig } from "@/config/site";
 import { MailIcon, PinIcon } from "@/components/ui/icons";
-import { buttonClass } from "@/components/ui/button";
+import { textLinkClass } from "@/components/ui/text-link";
 import LocalClock from "@/features/contact/local-clock";
 import ContactEntrance from "@/features/contact/contact-entrance";
 
@@ -10,7 +10,7 @@ export const metadata: Metadata = pageMetadata({
   title: "Contact",
   fullTitle: "Contact Anthony Ugwuja - remote full-stack and AI evaluation",
   description:
-    "Open to remote full-stack and AI evaluation work. Based in Nigeria: working hours overlap fully with the UK and Europe, partly with the US East Coast.",
+    "Email or WhatsApp for full-stack and AI evaluation work. Based in Nigeria. Open to remote roles.",
   path: "/contact",
 });
 
@@ -32,13 +32,14 @@ export default function ContactPage() {
         <div className="mt-6 grid gap-8 md:mt-8 lg:grid-cols-12 lg:items-center lg:gap-16">
           <div data-contact-left className="lg:col-span-6">
             {/* Two ways in, side by side at every width. The address on the
-                left is a plain link that opens the visitor's own mail app.
-                WhatsApp on the right is one icon button under a short label:
-                wa.me opens the app on a phone and WhatsApp Web on a desktop,
-                with the greeting already typed. The mark is WhatsApp's own
-                glyph file, unaltered (public/brand/whatsapp): white on the
-                dark theme, black on the light one, so the button stays as
-                neutral as the rest of the chrome. */}
+                left is a plain link, in the site's link style (the accent,
+                heavier, no underline), that opens the visitor's own mail
+                app. WhatsApp on the right is the glyph itself under a short
+                label, with a 56px tap area around it and no box or edge:
+                wa.me opens the app on a phone and WhatsApp Web on a
+                desktop, with the greeting already typed. The mark is
+                WhatsApp's own glyph file, unaltered (public/brand/whatsapp):
+                white on the dark theme, black on the light one. */}
             <div className="flex items-start justify-between gap-6 border-t border-line py-4 md:py-5">
               <div className="flex min-w-0 items-start gap-3">
                 <span className="mt-1 text-muted">
@@ -48,7 +49,7 @@ export default function ContactPage() {
                   <span className="block text-2xs text-muted">Email</span>
                   <a
                     href={`mailto:${portfolioConfig.email}`}
-                    className="block text-sm text-ink underline decoration-line underline-offset-[5px] transition-colors [overflow-wrap:anywhere] hover:text-accent"
+                    className={`block text-sm [overflow-wrap:anywhere] ${textLinkClass}`}
                   >
                     {portfolioConfig.email}
                   </a>
@@ -61,12 +62,12 @@ export default function ContactPage() {
                   href={whatsapp}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={buttonClass("secondary", "md", "h-14 w-14 px-0")}
+                  className="-m-2 flex h-14 w-14 items-center justify-center rounded-button transition-opacity duration-(--duration-fast) hover:opacity-70 active:opacity-55"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element -- a 1 KB brand SVG shown as-is; next/image adds nothing here */}
-                  <img src="/brand/whatsapp/Digital_Glyph_White_RGB_2026.svg" alt="" width={28} height={28} className="block h-7 w-7 light:hidden" />
+                  <img src="/brand/whatsapp/Digital_Glyph_White_RGB_2026.svg" alt="" width={32} height={32} className="block h-8 w-8 light:hidden" />
                   {/* eslint-disable-next-line @next/next/no-img-element -- as above */}
-                  <img src="/brand/whatsapp/Digital_Glyph_Black_RGB_2026.svg" alt="" width={28} height={28} className="hidden h-7 w-7 light:block" />
+                  <img src="/brand/whatsapp/Digital_Glyph_Black_RGB_2026.svg" alt="" width={32} height={32} className="hidden h-8 w-8 light:block" />
                   <span className="sr-only">Send a DM on WhatsApp (opens in a new tab)</span>
                 </a>
               </div>

@@ -97,10 +97,10 @@ export default async function TrapPage({ params }: Params) {
           {trap.kind === "trap" ? "Trap" : "Valid look-alike"} &middot; {familyLabel(trap.family)} &middot; patient{" "}
           {trap.patient_id}
         </p>
-        <h1 data-reveal className="mt-3 max-w-[22ch] text-xl text-ink md:text-2xl">
+        <h1 data-reveal="load" className="mt-3 max-w-[22ch] text-xl text-ink md:text-2xl">
           {trap.name}
         </h1>
-        <p data-reveal className="mt-6 max-w-(--container-reading) text-base text-ink">
+        <p data-reveal="load" style={{ "--reveal-delay": "100ms" } as React.CSSProperties} className="mt-6 max-w-(--container-reading) text-base text-ink">
           {trap.why}
         </p>
 

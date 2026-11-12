@@ -2,6 +2,7 @@ import { Fragment, type ReactNode } from "react";
 import Link from "next/link";
 import type { DocSection, ResumeDocument } from "@/content/resume-document";
 import { buttonClass } from "@/components/ui/button";
+import { textLinkClass } from "@/components/ui/text-link";
 
 /* Section headings carry the CV's one accent: the heading itself is set in
    it. Nothing else on the page takes it except the link buttons. */
@@ -296,7 +297,7 @@ export default function ResumeView({ doc }: { doc: ResumeDocument }) {
         <Link
           data-no-print
           href="/contact"
-          className="mt-12 inline-block text-sm text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent"
+          className={`mt-12 inline-block text-sm ${textLinkClass}`}
         >
           Get in touch
         </Link>

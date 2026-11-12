@@ -15,6 +15,7 @@ import JsonLd from "@/components/ui/json-ld";
 import { breadcrumbJsonLd } from "@/lib/structured-data";
 import { published } from "@/config/writing";
 import { ButtonLink } from "@/components/ui/button";
+import { textLinkClass } from "@/components/ui/text-link";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -102,10 +103,14 @@ export default async function CaseStudyPage({ params }: Params) {
         <PinnedBack href="/work" label="All work" mode="covered" />
 
         <div className="mx-auto max-w-(--container-view)">
-          <div className="grid gap-12 lg:grid-cols-12">
-            <div className="lg:col-span-7">
+          {/* Three grid children, so the order on a phone is the sections,
+              then the actions (the live project and the source), then
+              "More work"; from lg up the actions take the right column
+              beside the sections and "More work" follows the sections. */}
+          <div className="grid gap-12 lg:grid-cols-12 lg:gap-y-16">
+            <div className="lg:col-span-7 lg:row-start-1">
               <p
-                data-reveal
+                data-reveal="load"
                 className="max-w-(--container-reading) text-base text-ink"
               >
                 {project.description}
@@ -164,15 +169,38 @@ export default async function CaseStudyPage({ params }: Params) {
                   stays here because the next build has all three.
                 </p>
               )}
+            </div>
 
-              <nav aria-label="Related" data-reveal className="mt-16 max-w-(--container-reading) border-t border-line pt-6 text-sm">
+            <aside data-reveal className="lg:col-span-4 lg:col-start-9 lg:row-start-1">
+              <h2 className="text-2xs text-muted">Built with</h2>
+              <div className="mt-3">
+                <TechList items={project.tech} />
+              </div>
+
+              <div className="mt-8 flex flex-wrap items-center gap-3 max-sm:justify-center">
+                {/* Before launch the address serves a "Coming soon" page,
+                    so the button names the address rather than promising a
+                    live project. */}
+                <ButtonLink href={project.link} external>
+                  {project.status ? `Open ${new URL(project.link).host}` : "Open the live project"}
+                  <ExternalLinkIcon className="h-3.5 w-3.5" />
+                </ButtonLink>
+                {project.repo ? (
+                  <ButtonLink href={project.repo} variant="secondary" external>
+                    Read the source
+                  </ButtonLink>
+                ) : null}
+              </div>
+            </aside>
+
+            <nav aria-label="Related" data-reveal className="max-w-(--container-reading) border-t border-line pt-6 text-sm lg:col-span-7 lg:row-start-2">
                 {related.length ? (
                   <>
                     <p className="text-2xs text-muted">Related writing</p>
                     <ul className="mt-2 mb-6 flex flex-col gap-2">
                       {related.map((entry) => (
                         <li key={entry.slug}>
-                          <Link href={`/writing/${entry.slug}` as Route} className="text-accent underline decoration-accent/40 underline-offset-[6px] transition-[text-decoration-color] hover:decoration-accent">
+                          <Link href={`/writing/${entry.slug}` as Route} className={textLinkClass}>
                             {entry.title}
                           </Link>
                         </li>
@@ -199,29 +227,6 @@ export default async function CaseStudyPage({ params }: Params) {
                   </li>
                 </ul>
               </nav>
-            </div>
-
-            <aside data-reveal className="lg:col-span-4 lg:col-start-9">
-              <h2 className="text-2xs text-muted">Built with</h2>
-              <div className="mt-3">
-                <TechList items={project.tech} />
-              </div>
-
-              <div className="mt-8 flex flex-wrap items-center gap-3 max-sm:justify-center">
-                {/* Before launch the address serves a "Coming soon" page,
-                    so the button names the address rather than promising a
-                    live project. */}
-                <ButtonLink href={project.link} external>
-                  {project.status ? `Open ${new URL(project.link).host}` : "Open the live project"}
-                  <ExternalLinkIcon className="h-3.5 w-3.5" />
-                </ButtonLink>
-                {project.repo ? (
-                  <ButtonLink href={project.repo} variant="secondary" external>
-                    Read the source
-                  </ButtonLink>
-                ) : null}
-              </div>
-            </aside>
           </div>
         </div>
       </div>

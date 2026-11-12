@@ -43,17 +43,17 @@ export const EASE = {
 } as const;
 
 /**
- * How a block arrives as it is scrolled to: it rises and fades in, long and
- * soft at the end. power4.out is GSAP's closest built-in to
- * cubic-bezier(.22, 1, .36, 1), the settle the scroll reference uses. 32px
- * is enough to read as movement on a phone without anything travelling far
- * enough to look like it came from somewhere else. Transforms and opacity
- * only, so nothing reflows and nothing counts as layout shift.
+ * How a block arrives as it is scrolled to: it starts 40px lower and fades
+ * in over 0.6s, settling softly (--ease-out in globals.css, where the
+ * animation itself lives as CSS; these are the same numbers for anything
+ * that reads them from JavaScript). 40px reads as movement on a phone
+ * without anything travelling far enough to look like it came from
+ * somewhere else. Transforms and opacity only, so nothing reflows and
+ * nothing counts as layout shift.
  */
 export const REVEAL = {
-  distance: 32,
-  duration: 0.8,
-  ease: 'power4.out',
+  distance: 40,
+  duration: 0.6,
   /** Between blocks that arrive together, such as a row of cards. */
   stagger: 0.09,
 } as const;

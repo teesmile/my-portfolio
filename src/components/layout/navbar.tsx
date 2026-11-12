@@ -121,7 +121,7 @@ export default function Navbar() {
           aria-current={pathname === '/' ? 'page' : undefined}
           /* The one coloured thing in the bar: the name in the accent, so
              the bar has a mark rather than a row of equal words. */
-          className="relative z-50 font-display text-lg text-accent underline decoration-2 decoration-transparent underline-offset-[6px] transition-colors hover:decoration-accent"
+          className="relative z-50 font-display text-lg text-accent transition-colors hover:text-ink"
         >
           {portfolioConfig.name}
         </Link>
@@ -133,11 +133,7 @@ export default function Navbar() {
                 <Link
                   href={link.href}
                   aria-current={isActive(link.href) ? 'page' : undefined}
-                  className={`underline decoration-2 underline-offset-[6px] transition-colors ${
-                    isActive(link.href)
-                      ? 'text-ink decoration-accent'
-                      : 'text-muted decoration-transparent hover:text-ink'
-                  }`}
+                  className={`transition-colors ${isActive(link.href) ? 'text-ink' : 'text-muted hover:text-ink'}`}
                 >
                   {link.name}
                 </Link>
@@ -147,11 +143,7 @@ export default function Navbar() {
               <Link
                 href="/resume"
                 aria-current={isActive('/resume') ? 'page' : undefined}
-                className={`underline decoration-2 underline-offset-[6px] transition-colors ${
-                  isActive('/resume')
-                    ? 'text-ink decoration-accent'
-                    : 'text-muted decoration-transparent hover:text-ink'
-                }`}
+                className={`transition-colors ${isActive('/resume') ? 'text-ink' : 'text-muted hover:text-ink'}`}
               >
                 Resume
               </Link>
@@ -208,10 +200,8 @@ export default function Navbar() {
                 <Link
                   href={link.href}
                   onClick={() => setIsMenuOpen(false)}
-                  className={`block py-5 font-display text-lg underline decoration-2 underline-offset-[6px] transition-colors ${
-                    isActive(link.href)
-                      ? 'text-ink decoration-accent'
-                      : 'text-muted decoration-transparent hover:text-ink hover:decoration-accent active:text-ink active:decoration-accent'
+                  className={`block py-5 font-display text-lg transition-colors ${
+                    isActive(link.href) ? 'text-ink' : 'text-muted hover:text-ink active:text-ink'
                   }`}
                 >
                   {link.name}

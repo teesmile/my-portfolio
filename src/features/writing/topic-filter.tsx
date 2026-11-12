@@ -25,11 +25,9 @@ export default function TopicFilter({ entries }: { entries: WritingEntry[] }) {
             type="button"
             onClick={() => setActive(topic)}
             aria-pressed={active === topic}
-            className={
-              active === topic
-                ? 'underline decoration-accent decoration-2 underline-offset-[6px] text-ink'
-                : 'underline decoration-transparent decoration-2 underline-offset-[6px] text-muted transition-colors hover:text-ink'
-            }
+            /* The active tab is the one in ink; colour only, so the
+               tabs never move when one is chosen (the nav's rule). */
+            className={active === topic ? 'text-ink' : 'text-muted transition-colors hover:text-ink'}
           >
             {topic}
             <span className="ml-1.5 text-muted">
@@ -40,8 +38,8 @@ export default function TopicFilter({ entries }: { entries: WritingEntry[] }) {
       </div>
 
       <div className="flex flex-col">
-        {shown.map((entry) => (
-          <article key={entry.slug} data-reveal className="border-b border-line py-8">
+        {shown.map((entry, index) => (
+          <article key={entry.slug} data-reveal={index === 0 ? 'load' : ''} className="border-b border-line py-8">
             <p className="text-2xs text-muted tabular-nums">
               {dateOf(entry)} &middot; {readingTime(entry)} min read &middot; {entry.topic}
             </p>

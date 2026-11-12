@@ -4,6 +4,7 @@ import type { Route } from "next";
 import { portfolioConfig } from "@/config/site";
 import { published } from "@/config/writing";
 import RenalLoop from "./renal-loop";
+import { textLinkClass } from "@/components/ui/text-link";
 
 /* Three previews, three kinds of thing: the benchmark's key idea as a
    loop, the app as it looks on a phone, the latest piece as it looks when
@@ -82,7 +83,10 @@ export default function SelectedWork() {
     <section
       aria-labelledby="selected-work"
       /* Below the fold by construction (the hero is a full screen), so the
-         browser may skip its style, layout and paint until it is near. */
+         browser may skip its style, layout and paint until it is near, and
+         the reveals (data-reveal-far) take that on trust rather than
+         measuring, which would force the layout. */
+      data-reveal-far
       className="px-4 sm:px-6 py-20 [contain-intrinsic-size:auto_56rem] [content-visibility:auto] md:py-28"
     >
       <div className="mx-auto max-w-(--container-view)">
@@ -114,7 +118,7 @@ export default function SelectedWork() {
               {i > 0 ? " and " : null}
               <Link
                 href={`/writing/${entry.slug}` as Route}
-                className="text-ink underline decoration-line underline-offset-[6px] transition-colors hover:text-accent"
+                className={textLinkClass}
               >
                 {entry.title}
               </Link>

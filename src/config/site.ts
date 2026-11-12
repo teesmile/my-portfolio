@@ -247,7 +247,7 @@ export const portfolioConfig = {
   seo: {
     title: "Anthony Ugwuja - remote full-stack developer, AI evaluator",
     description:
-      "Full-stack developer (React, Next.js, TypeScript, Node.js) and AI evaluator, open to remote work with UK, European and US teams. Pharmacist by training.",
+      "Full-stack developer (React, Next.js, TypeScript, Python) and AI evaluator. I build web apps end to end and test AI models for accuracy. Open to remote roles.",
   },
   /* WhatsApp, as the international digits wa.me expects: no "+", spaces or
      leading zero. /contact links it beside the email, opening a chat with
@@ -261,7 +261,7 @@ export const portfolioConfig = {
   /* Stated once on the site, on /contact, as a fact rather than a keyword:
      where, and what that means for a team's working day. */
   location: "Based in Nigeria",
-  availability: "My working day overlaps fully with the UK and Europe, and partly with the US East Coast.",
+  availability: "Open to remote roles.",
   /* The first entry on /work, ahead of every project (the Projects rule).
      Not a Project: the real tasks are under NDA, so there is no live link
      and no screenshot. The sample is an original task built the same way,
@@ -283,13 +283,11 @@ export const portfolioConfig = {
   },
   takingWork: true,
   resumePdf: "/Anthony-Ugwuja-Resume.pdf",
-  statement:
-    "I ship across the stack and catch what AI gets wrong. Pharmacist by training, engineer by choice.",
-  /* The hero says it in two voices: the headline in Syne, the line under it
-     in monospace. The headline leads with the work; the pharmacy background
+  /* The hero: the headline in Syne, one small supporting line under it.
+     The headline leads with the work; the pharmacy background
      is the line under it, what sets the work apart rather than the title. */
   headline: "I ship across the stack and catch what AI gets wrong.",
-  monoLine: "Pharmacist by training, engineer by choice.",
+  heroLine: "Full-stack developer and AI evaluator, with a pharmacy background.",
   /* The words the headline's one-time correction lands on ("right" struck,
      "wrong" typed). Must end the headline, before its full stop. */
   headlineFlag: "what AI gets wrong",
@@ -519,8 +517,10 @@ export const portfolioConfig = {
   ] as StackLayer[],
   // Page prose lives here so it can be edited in one file.
   copy: {
-    heroSupport:
-      "Bugs from code a model wrote. I read its clinical and scientific answers the same way, looking for the mistake that survives a quick read.",
+    /* The deck of bugs, its own section under the hero. */
+    deckHeading: "Bugs from code a model wrote",
+    deckIntro:
+      "I read its clinical and scientific answers the same way, looking for the mistake that survives a quick read.",
     aboutHeading: "I read other people's code for a living. Mine included.",
     aboutParagraphs: [
       "I trained as a pharmacist at the University of Nigeria, Nsukka. I wrote my first code in 2020, partway through the degree, and kept going after it: HTML and CSS first, then JavaScript, then React.",

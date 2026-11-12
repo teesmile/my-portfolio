@@ -14,6 +14,7 @@ import JsonLd from "@/components/ui/json-ld";
 import { breadcrumbJsonLd } from "@/lib/structured-data";
 import { published } from "@/config/writing";
 import CountUp from "@/components/ui/count-up";
+import { textLinkClass } from "@/components/ui/text-link";
 
 export const metadata: Metadata = pageMetadata({
   title: "Clinical AI benchmark: renal dose check",
@@ -124,7 +125,7 @@ export default function RenalDosingPage() {
                   <span className="block text-2xs text-muted">How it was built</span>
                   <Link
                     href={`/writing/${writeUp.slug}` as Route}
-                    className="text-ink underline decoration-line underline-offset-[6px] transition-colors hover:text-accent"
+                    className={textLinkClass}
                   >
                     {writeUp.title}
                   </Link>

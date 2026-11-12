@@ -22,8 +22,7 @@ export const personJsonLd = {
   url: SITE_URL,
   image: `${SITE_URL}/portrait-clean-v2.webp`,
   jobTitle: "Full-stack developer and AI evaluator",
-  description:
-    "Full-stack developer and AI evaluator, open to remote work with UK, European and US teams. Pharmacist by training.",
+  description: portfolioConfig.seo.description,
   knowsAbout: [
     "Full-stack web development",
     "React",

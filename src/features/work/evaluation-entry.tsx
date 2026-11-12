@@ -21,10 +21,11 @@ export default function EvaluationEntry() {
   const { evaluation } = portfolioConfig;
 
   return (
-    <article data-reveal className="grid gap-8 border-t border-line pt-10 lg:grid-cols-12 lg:gap-12">
+    <article className="grid gap-8 border-t border-line pt-10 lg:grid-cols-12 lg:gap-12">
       <Link
         href="/work/renal-dosing-task"
         aria-label="See the renal dose check showcase"
+        data-reveal=""
         className="block lg:col-span-5 lg:col-start-8 lg:row-start-1"
       >
         <div className="relative flex aspect-[16/10] w-full items-center justify-center overflow-clip border border-line bg-raised p-3">
@@ -32,7 +33,7 @@ export default function EvaluationEntry() {
         </div>
       </Link>
 
-      <div className="lg:col-span-7 lg:row-start-1">
+      <div data-reveal="" className="lg:col-span-7 lg:row-start-1">
         <p className="text-2xs text-muted">
           {evaluation.period} &middot; {evaluation.role}
         </p>

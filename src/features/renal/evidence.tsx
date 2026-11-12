@@ -2,6 +2,7 @@ import Link from "next/link";
 import { renal, renalTraps } from "@/content/renal-dosing";
 import { ILL } from "@/lib/illustration";
 import { Scroller, TestName, familyLabel } from "./parts";
+import { textLinkClass } from "@/components/ui/text-link";
 
 const label = { fontSize: 9, fill: ILL.detail } as const;
 const strong = { fontSize: 9, fill: ILL.text } as const;
@@ -148,7 +149,7 @@ export function Evidence() {
                   <th scope="row" className="py-4 pr-6 text-left font-normal">
                     <Link
                       href={`/work/renal-dosing-task/${trap.slug}`}
-                      className="text-sm text-ink underline decoration-line underline-offset-[6px] transition-colors hover:text-accent hover:decoration-accent"
+                      className={`text-sm ${textLinkClass}`}
                     >
                       {trap.name}
                     </Link>

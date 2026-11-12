@@ -44,11 +44,17 @@ export default function WorkEntry({
     captureFlip(`work-${project.slug}`, Flip.getState(frameRef.current));
   };
 
+  /* The frame and the text arrive as two steps. The lead entry is on the
+     first screen: its frame is the page's largest paint and is never hidden,
+     and its text takes the entrance on load. */
+  const lead = index === 0;
+
   return (
-    <article data-reveal className="grid gap-8 border-t border-line pt-10 lg:grid-cols-12 lg:gap-12">
+    <article className="grid gap-8 border-t border-line pt-10 lg:grid-cols-12 lg:gap-12">
       <Link
         href={`/work/${project.slug}`}
         onClick={handoff}
+        data-reveal={lead ? undefined : ''}
         className={`${layout.frame} group block`}
         aria-label={`Read the ${project.title} case study`}
       >
@@ -77,7 +83,7 @@ export default function WorkEntry({
         </div>
       </Link>
 
-      <div className={layout.body}>
+      <div data-reveal={lead ? 'load' : ''} style={lead ? ({ '--reveal-delay': '120ms' } as React.CSSProperties) : undefined} className={layout.body}>
         <p className="text-2xs text-muted">
           {project.status ?? project.year} &middot; {project.role}
         </p>

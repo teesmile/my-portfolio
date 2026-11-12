@@ -32,14 +32,23 @@
   /* The wrong reading in the renal loop: text, so it needs text contrast.
      The same red in dark (6.4:1 on --raised); darker in light. */
   --wrong: #ff6b5e;
-  /* Lifted graphite rather than near-black: the same ink and muted text
-     still clear 15:1 and 7:1 on it. The near-black it replaces is kept
-     under [data-hero="0"] below, for comparison on the preview. */
-  --surface: #121417;
-  --raised: #1a1d22;
-  --line: #2a2f36;
+  /* Warm charcoal rather than near-black (the "C" background chosen on
+     the visual round): the same ink and muted text still clear 15:1 and
+     7:1 on it, and the amber accent 10:1. */
+  --surface: #141312;
+  --raised: #1c1a18;
+  --line: #2d2a27;
   --ink: #edeff2;
   --muted: #9ba3ad;
+  /* The scroll reveals (src/components/layout/reveals.tsx): the CSS half
+     of REVEAL in src/lib/motion.ts. Keep the two in step. */
+  --reveal-distance: 40px;
+  --reveal-duration: 600ms;
+  /* The light behind the home portrait: the portrait's own blue and
+     orange, sampled from the image, soft enough to fade into the surface.
+     Content colour, tied to the image, not chrome. */
+  --portrait-blue: color-mix(in oklab, #2f5fd0 42%, transparent);
+  --portrait-orange: color-mix(in oklab, #e8853a 42%, transparent);
   /* The one saturated hue: amber-gold, interaction only.
      --accent is link text, 10.43:1 on this surface.
      --accent-strong is the same bright gold in both modes, for fills and focus
@@ -93,11 +102,14 @@
 
 .light {
   color-scheme: light;
-  --surface: #f5f6f8;
-  --raised: #ffffff;
-  --line: #dbdfe5;
+  /* Warm paper, the light half of the same background. */
+  --surface: #f7f5f1;
+  --raised: #fffdf9;
+  --line: #e0dbd3;
   --ink: #14171a;
   --muted: #575f69;
+  --portrait-blue: color-mix(in oklab, #2f5fd0 18%, transparent);
+  --portrait-orange: color-mix(in oklab, #e8853a 34%, transparent);
   /* Bronze-gold for link text, 6.58:1 on light --surface. The bright gold
      stays the fill colour so a button looks identical in both modes.
      The halo exists because bright gold against a near-white surface is only
@@ -771,25 +783,14 @@
   97.5%, 100% { opacity: 0; }
 }
 
-/* The hero's surface and the page surfaces behind it.
-
-   Three candidates are on the preview, chosen with ?hero=a, ?hero=b or
-   ?hero=c (the choice is remembered for the tab; ?hero=0 is the look this
-   round replaces). A is the default. Each is designed for both themes and
-   is colour and gradients only: nothing here costs more to paint than the
-   two glows it replaces, and nothing in it moves.
-
-     a  graphite    the hero's surface fades down into the page, so there is
-                    no block and no seam; a little grain for depth
-     b  blueprint   a fine dot grid on the raised surface, fading out towards
-                    the bottom, on a cooler slate
-     c  warm wash   one soft amber wash from the top left, a third as strong
-                    as the old glows, on a warm charcoal; warm paper in light
-
-   The grain is one inline SVG turbulence, rasterised once and tiled; it
-   sits under the content and never repaints. */
+/* The hero's surface: the raised warm charcoal (warm paper in light) with a
+   hairline under it, a little grain for depth, and one soft amber wash
+   from the top left. Colour and gradients only; nothing in it moves. The
+   grain is one inline SVG turbulence, rasterised once and tiled; it sits
+   under the content and never repaints. */
 .editor-surface {
-  background: linear-gradient(to bottom, var(--raised), var(--surface));
+  background: var(--raised);
+  border-bottom: 1px solid var(--line);
   position: relative;
   isolation: isolate;
 }
@@ -799,102 +800,146 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  opacity: 0.03;
+  opacity: 0.04;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* The wash layer inside the hero (hero.tsx): empty for A. */
+/* The wash layer inside the hero (hero.tsx). */
 .hero-wash {
   position: absolute;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-}
-
-/* B: blueprint. */
-:root[data-hero='b'] {
-  --surface: #0f1216;
-  --raised: #161a20;
-  --line: #272c34;
-}
-
-:root[data-hero='b'].light {
-  --surface: #f5f6f8;
-  --raised: #ffffff;
-  --line: #dbdfe5;
-}
-
-:root[data-hero='b'] .editor-surface {
-  background: var(--raised);
-  border-bottom: 1px solid var(--line);
-}
-
-:root[data-hero='b'] .editor-surface::before {
-  content: none;
-}
-
-:root[data-hero='b'] .hero-wash {
-  background-image: radial-gradient(circle, color-mix(in oklab, var(--line) 70%, var(--muted)) 1px, transparent 1.6px);
-  background-size: 24px 24px;
-  background-position: 12px 12px;
-  mask-image: linear-gradient(to bottom, rgb(0 0 0 / 0.85) 0%, rgb(0 0 0 / 0.55) 45%, transparent 92%);
-}
-
-/* C: warm wash. */
-:root[data-hero='c'] {
-  --surface: #141312;
-  --raised: #1c1a18;
-  --line: #2d2a27;
-}
-
-:root[data-hero='c'].light {
-  --surface: #f7f5f1;
-  --raised: #fffdf9;
-  --line: #e0dbd3;
-}
-
-:root[data-hero='c'] .editor-surface {
-  background: var(--raised);
-  border-bottom: 1px solid var(--line);
-}
-
-:root[data-hero='c'] .editor-surface::before {
-  opacity: 0.04;
-}
-
-:root[data-hero='c'] .hero-wash {
   background-image: radial-gradient(75% 65% at 12% 10%, color-mix(in oklab, #f0b429 9%, transparent), transparent 72%);
 }
 
-:root[data-hero='c'].light .hero-wash {
+.light .hero-wash {
   background-image: radial-gradient(75% 65% at 12% 10%, color-mix(in oklab, #f0b429 13%, transparent), transparent 72%);
 }
 
-/* 0: the look before this round, for comparison. */
-:root[data-hero='0'] {
-  --surface: #0c0d0f;
-  --raised: #15171a;
-  --line: #23272d;
+/* The light behind the portrait (hero.tsx), in the portrait's own blue and
+   orange, fading into the surface. Two arrangements are on the preview,
+   chosen with ?hero=1 (default) or ?hero=2 and remembered for the tab;
+   the switch comes out once one is chosen.
+
+     1  halo          blue over the left shoulder and the hair, orange on
+                      the lit cheek, centred on the portrait
+     2  ground light  the orange rises from the hero's bottom edge, where
+                      the shoulders run off, and the blue sits high and
+                      to the left like a window */
+/* Each light is one radial gradient with an eased falloff (four stops
+   rather than two): a straight ramp to transparent reads as a disc with an
+   edge, and a glow has no edge. */
+.portrait-glow {
+  position: absolute;
+  inset: -28% -30% -24%;
+  z-index: -1;
+  pointer-events: none;
+  --glow-blue-mid: color-mix(in srgb, var(--portrait-blue) 55%, transparent);
+  --glow-blue-far: color-mix(in srgb, var(--portrait-blue) 18%, transparent);
+  --glow-orange-mid: color-mix(in srgb, var(--portrait-orange) 55%, transparent);
+  --glow-orange-far: color-mix(in srgb, var(--portrait-orange) 18%, transparent);
+  background-image:
+    radial-gradient(46% 44% at 40% 36%, var(--portrait-blue) 0%, var(--glow-blue-mid) 30%, var(--glow-blue-far) 58%, transparent 80%),
+    radial-gradient(44% 42% at 66% 68%, var(--portrait-orange) 0%, var(--glow-orange-mid) 30%, var(--glow-orange-far) 58%, transparent 80%);
 }
 
-:root[data-hero='0'].light {
-  --surface: #f5f6f8;
-  --raised: #ffffff;
-  --line: #dbdfe5;
+/* In the first arrangement the portrait floats, so its cut shoulders
+   dissolve into the light rather than ending in a straight edge. */
+.hero-portrait img {
+  mask-image: linear-gradient(to bottom, black 72%, transparent 100%);
 }
 
-:root[data-hero='0'] .editor-surface {
-  background: var(--raised);
-  border-bottom: 1px solid var(--line);
+:root[data-hero='2'] .hero-portrait img {
+  mask-image: none;
 }
 
-:root[data-hero='0'] .editor-surface::before {
-  opacity: 0.045;
+:root[data-hero='2'] .portrait-glow {
+  inset: -24% -34% 0;
+  background-image:
+    radial-gradient(60% 50% at 50% 100%, var(--portrait-orange) 0%, var(--glow-orange-mid) 30%, var(--glow-orange-far) 60%, transparent 82%),
+    radial-gradient(50% 46% at 42% 34%, var(--portrait-blue) 0%, var(--glow-blue-mid) 30%, var(--glow-blue-far) 58%, transparent 80%);
 }
 
-:root[data-hero='0'] .hero-wash {
-  background-image: radial-gradient(60% 55% at 22% 28%, var(--ill-glow), transparent 70%), radial-gradient(38% 45% at 82% 26%, var(--ill-glow), transparent 70%);
+/* The second arrangement pulls the portrait down to the hero's bottom
+   edge: the grid's bottom padding (hero.tsx) is cancelled on the portrait
+   alone, so the shoulders run off the edge as they do on the share card. */
+:root[data-hero='2'] .hero-portrait {
+  margin-bottom: -4rem;
 }
 
+@media (min-width: 64rem) {
+  :root[data-hero='2'] .hero-portrait {
+    margin-bottom: -5rem;
+    max-width: 30rem;
+  }
+}
 
+/* Scroll reveals (src/components/layout/reveals.tsx). Four states:
 
+     (empty)  visible, the default; the component may put it to wait
+     wait     entirely below the viewport when the page mounted: hidden,
+              lowered, until it arrives
+     in       arriving: a finite animation to opacity 1, delayed by
+              --reveal-delay for items arriving together
+     done     landed, plain again
+
+   And two entrances for the first screen, written into the markup, which
+   run from first paint with no JavaScript: "load" fades and rises, "rise"
+   only rises (for the page's largest paint, so it never starts invisible).
+   Every one of these is a finite animation that ends visible. */
+[data-reveal='wait'] {
+  opacity: 0;
+  transform: translateY(var(--reveal-distance));
+}
+
+[data-reveal='in'] {
+  animation: reveal-in var(--reveal-duration) var(--ease-out) var(--reveal-delay, 0s) both;
+}
+
+[data-reveal='load'] {
+  animation: reveal-load var(--duration-base) var(--ease-out) var(--reveal-delay, 0s) both;
+}
+
+[data-reveal='rise'] {
+  animation: reveal-rise var(--duration-base) var(--ease-out) both;
+}
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--reveal-distance));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes reveal-load {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes reveal-rise {
+  from {
+    transform: translateY(14px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}

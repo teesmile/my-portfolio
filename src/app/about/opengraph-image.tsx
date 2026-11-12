@@ -12,6 +12,6 @@ export default async function OpengraphImage() {
   return renderShareImage({
     title: portfolioConfig.copy.aboutHeading,
     kicker: "About",
-    portrait: true,
+    visual: "portrait",
   });
 }

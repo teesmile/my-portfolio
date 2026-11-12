@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 import Hero from "@/features/landing/hero";
+import BugsSection from "@/features/landing/bugs-section";
 import SelectedWork from "@/features/landing/selected-work";
 import ToolsRow from "@/features/landing/tools-row";
 import Reveals from "@/components/layout/reveals";
@@ -14,11 +15,11 @@ import { feedAlternate } from "@/lib/metadata";
    twice. */
 /* The browser's own bar (Android Chrome) takes the hero's surface on this
    page, so it continues the hero instead of drawing another seam above it.
-   The values are --raised in each theme, the top of the hero's surface. */
+   The values are --raised in each theme, the hero's surface. */
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#1a1d22" },
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#1c1a18" },
+    { media: "(prefers-color-scheme: light)", color: "#fffdf9" },
   ],
 };
 
@@ -35,7 +36,8 @@ export default function HomePage() {
     <>
       <JsonLd nodes={[personJsonLd, websiteJsonLd]} />
       <Hero />
-      <Reveals initial={0} />
+      <Reveals />
+      <BugsSection />
       <SelectedWork />
       <ToolsRow />
     </>
