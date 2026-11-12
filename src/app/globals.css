@@ -175,10 +175,6 @@
   /* System stack, not a third downloaded family: code set in a serif is
      unreadable, and a webfont for six lines of sample code is not worth it. */
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  /* A real monospace voice for the hero line. Code keeps the system stack:
-     Martian Mono is wide by design, which is good for one line and bad for
-     forty of them. */
-  --font-mono-brand: var(--font-martian), var(--font-mono);
 
 }
 
@@ -877,20 +873,27 @@
 
 /* Scroll reveals (src/components/layout/reveals.tsx). The states:
 
-     (empty)  the entrance, from first paint: the item rises 48px and fades
-              in over 0.7s as soon as it is painted, with no JavaScript.
-              A reload plays this for the first screen.
+     (empty)  the entrance, from first paint: the item rises 48px over
+              0.7s as soon as it is painted, with no JavaScript. A reload
+              plays this for the first screen. It fades from a quarter,
+              never from nothing: Chrome records the largest paint of an
+              element that starts at opacity 0 only when its fade ends
+              (measured: LCP 0.9s to 4.1s on /about), and anything on the
+              first screen can be that element.
      wait     entirely below the viewport: hidden and lowered until it
               arrives (only the component sets this, and only off screen)
-     in       arriving: the same animation, delayed by --reveal-delay for
-              items arriving together
+     in       arriving from below the screen: the full fade from nothing,
+              delayed by --reveal-delay for items arriving together
      done     landed, plain again
-     rise     the page's largest text: rises from first paint but never
-              starts invisible, so the largest paint is not delayed
+     rise     the page's largest text: rises from first paint and never
+              fades at all
 
    Every one of these is a finite animation that ends visible. */
 [data-reveal=''],
-[data-reveal='true'],
+[data-reveal='true'] {
+  animation: reveal-enter var(--reveal-duration) var(--ease-out) var(--reveal-delay, 0s) both;
+}
+
 [data-reveal='in'] {
   animation: reveal-in var(--reveal-duration) var(--ease-out) var(--reveal-delay, 0s) both;
 }
@@ -908,6 +911,17 @@
 @keyframes reveal-in {
   from {
     opacity: 0;
+    transform: translateY(var(--reveal-distance));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes reveal-enter {
+  from {
+    opacity: 0.25;
     transform: translateY(var(--reveal-distance));
   }
   to {

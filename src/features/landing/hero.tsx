@@ -57,7 +57,7 @@ export default function Hero() {
             right={fixedWord}
             after={after}
             data-reveal="rise"
-            className="max-w-[16ch] text-balance text-headline-sm text-ink lg:text-headline"
+            className="max-w-[22ch] text-balance text-headline-sm text-ink lg:max-w-[16ch] lg:text-headline"
           />
           <p
             data-reveal=""
@@ -86,7 +86,14 @@ export default function Hero() {
         <div
           data-reveal=""
           style={{ "--reveal-delay": "120ms" } as React.CSSProperties}
-          className="hero-portrait relative mx-auto w-full max-w-[17rem] self-end sm:max-w-[20rem] lg:col-span-5 lg:max-w-none lg:justify-self-end"
+          /* 11rem on a phone, not larger: at that size the headline stays
+             the page's largest paint (its painted text is about 33k px2 at
+             412px wide; a 12rem portrait is 37k). A bigger portrait becomes
+             the largest element and its download, behind the fonts on a
+             slow connection, becomes the page's LCP: measured in
+             Lighthouse's mobile simulation, 1.35s as text against 4.0s as
+             the image. */
+          className="hero-portrait relative mx-auto w-full max-w-44 self-end sm:max-w-[20rem] lg:col-span-5 lg:max-w-none lg:justify-self-end"
         >
           <div aria-hidden="true" className="portrait-glow" />
           <Portrait />
@@ -112,7 +119,7 @@ function Portrait() {
            scripts on a slow phone connection. */
         preload
         fetchPriority="high"
-        sizes="(min-width: 1024px) 28rem, (min-width: 640px) 20rem, 17rem"
+        sizes="(min-width: 1024px) 28rem, (min-width: 640px) 20rem, 11rem"
         className="object-contain"
       />
     </div>
