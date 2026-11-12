@@ -814,18 +814,11 @@
 }
 
 /* The light behind the portrait (hero.tsx), in the portrait's own blue and
-   orange, fading into the surface. Two arrangements are on the preview,
-   chosen with ?hero=1 (default) or ?hero=2 and remembered for the tab;
-   the switch comes out once one is chosen.
-
-     1  halo          blue over the left shoulder and the hair, orange on
-                      the lit cheek, centred on the portrait
-     2  ground light  the orange rises from the hero's bottom edge, where
-                      the shoulders run off, and the blue sits high and
-                      to the left like a window */
-/* Each light is one radial gradient with an eased falloff (four stops
-   rather than two): a straight ramp to transparent reads as a disc with an
-   edge, and a glow has no edge. */
+   orange, fading into the surface: blue over the left shoulder and the
+   hair, orange on the lit cheek, centred on the portrait. Each light is
+   one radial gradient with an eased falloff (four stops rather than two):
+   a straight ramp to transparent reads as a disc with an edge, and a glow
+   has no edge. */
 .portrait-glow {
   position: absolute;
   inset: -28% -30% -24%;
@@ -840,35 +833,10 @@
     radial-gradient(44% 42% at 66% 68%, var(--portrait-orange) 0%, var(--glow-orange-mid) 30%, var(--glow-orange-far) 58%, transparent 80%);
 }
 
-/* In the first arrangement the portrait floats, so its cut shoulders
-   dissolve into the light rather than ending in a straight edge. */
+/* The portrait floats, so its cut shoulders dissolve into the light
+   rather than ending in a straight edge. */
 .hero-portrait img {
   mask-image: linear-gradient(to bottom, black 72%, transparent 100%);
-}
-
-:root[data-hero='2'] .hero-portrait img {
-  mask-image: none;
-}
-
-:root[data-hero='2'] .portrait-glow {
-  inset: -24% -34% 0;
-  background-image:
-    radial-gradient(60% 50% at 50% 100%, var(--portrait-orange) 0%, var(--glow-orange-mid) 30%, var(--glow-orange-far) 60%, transparent 82%),
-    radial-gradient(50% 46% at 42% 34%, var(--portrait-blue) 0%, var(--glow-blue-mid) 30%, var(--glow-blue-far) 58%, transparent 80%);
-}
-
-/* The second arrangement pulls the portrait down to the hero's bottom
-   edge: the grid's bottom padding (hero.tsx) is cancelled on the portrait
-   alone, so the shoulders run off the edge as they do on the share card. */
-:root[data-hero='2'] .hero-portrait {
-  margin-bottom: -4rem;
-}
-
-@media (min-width: 64rem) {
-  :root[data-hero='2'] .hero-portrait {
-    margin-bottom: -5rem;
-    max-width: 30rem;
-  }
 }
 
 /* Scroll reveals (src/components/layout/reveals.tsx). The states:

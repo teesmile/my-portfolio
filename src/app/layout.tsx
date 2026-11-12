@@ -31,13 +31,8 @@ const text = Source_Serif_4({
    browser too old to say, gets light. Until the visitor uses the switch,
    the page also follows the device when it changes (an evening dark mode,
    say) without a reload. Storage that throws (blocked, private mode) reads
-   as "no choice made".
-
-   The second part is preview plumbing for choosing the home hero's
-   arrangement: ?hero=1 or ?hero=2 sets data-hero on <html>, and the choice
-   is kept for the tab so it survives navigating around the site. It comes
-   out once one is chosen. */
-const themeScript = `(function(){var d=document.documentElement,m=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)");function stored(){try{return localStorage.getItem("theme")}catch(e){return null}}function apply(){var t=stored();d.classList.toggle("light",t?t==="light":!(m&&m.matches))}apply();if(m&&m.addEventListener)m.addEventListener("change",function(){if(!stored())apply()});var h=new URLSearchParams(location.search).get("hero");try{if(h!==null)sessionStorage.setItem("hero",h);else h=sessionStorage.getItem("hero")}catch(e){}if(h&&/^[12]$/.test(h))d.dataset.hero=h})();`;
+   as "no choice made". */
+const themeScript = `(function(){var d=document.documentElement,m=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)");function stored(){try{return localStorage.getItem("theme")}catch(e){return null}}function apply(){var t=stored();d.classList.toggle("light",t?t==="light":!(m&&m.matches))}apply();if(m&&m.addEventListener)m.addEventListener("change",function(){if(!stored())apply()})})();`;
 
 /* viewport-fit: cover is what makes env(safe-area-inset-*) report anything
    other than zero on a notched phone. */

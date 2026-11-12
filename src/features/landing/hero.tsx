@@ -18,8 +18,7 @@ import CorrectedHeadline from "./corrected-line";
  *
  * The background is the hero's surface and its wash (globals.css,
  * .editor-surface and .hero-wash); the light behind the portrait is
- * .portrait-glow, in two arrangements chosen on the preview with ?hero=1
- * or ?hero=2 (layout.tsx). Nothing in the background moves.
+ * .portrait-glow. Nothing in the background moves.
  */
 export default function Hero() {
   const { headline, headlineFlag, heroLine } = portfolioConfig;
