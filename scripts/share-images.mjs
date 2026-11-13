@@ -9,13 +9,17 @@
  * 1:1 is the point: a share card rendered at another size and resampled
  * blurs its type, and this one is mostly type and hairlines. The script
  * waits for fonts and images (the portrait scene embeds /portrait-clean-v2.webp),
- * hides the site chrome, and checks each PNG's header reads 1200×630.
+ * hides the site chrome, and checks each PNG's header reads 1200×630. The
+ * capture is flattened and quantised to a 256-colour palette before it is
+ * written (a third of the size, the type as sharp), as the typeset cards
+ * are at build (src/lib/share-image.tsx).
  */
 import { startGroup, stopAll, stopOnExit } from "./lib/processes.mjs";
 import { mkdir, readFile, writeFile, stat } from "node:fs/promises";
 import { createServer } from "node:net";
 import path from "node:path";
 import { setTimeout as wait } from "node:timers/promises";
+import sharp from "sharp";
 
 const root = process.cwd();
 const outDir = path.join(root, "public", "share");
@@ -88,7 +92,10 @@ for (const slug of slugs) {
   await wait(500);
   const box = await evaluate("(() => { const r = document.querySelector('[data-share-frame]').getBoundingClientRect(); return { x: r.x, y: r.y + scrollY, w: r.width, h: r.height }; })()");
   const { data } = await send("Page.captureScreenshot", { format: "png", clip: { x: box.x, y: box.y, width: WIDTH, height: HEIGHT, scale: 1 }, captureBeyondViewport: true });
-  const png = Buffer.from(data, "base64");
+  const png = await sharp(Buffer.from(data, "base64"))
+    .flatten({ background: "#141312" })
+    .png({ palette: true, quality: 90, effort: 10, compressionLevel: 9 })
+    .toBuffer();
   const w = png.readUInt32BE(16);
   const h = png.readUInt32BE(20);
   const file = path.join(outDir, `${slug}.png`);

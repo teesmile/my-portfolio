@@ -24,7 +24,11 @@ export default function ToolsRow() {
   return (
     <section
       aria-labelledby="tools"
-      className="border-t border-line px-4 sm:px-6 py-12 [contain-intrinsic-size:auto_8rem] [content-visibility:auto] md:py-14"
+      /* Skipped until it is near, with its real content height as the
+         placeholder (one line from md up, a stacked pair below): a guessed
+         8rem made the page 49-108px taller until the row rendered, and the
+         document shrank by that much under the reader. */
+      className="border-t border-line px-4 sm:px-6 py-12 [contain-intrinsic-size:auto_5rem] [content-visibility:auto] md:py-14 md:[contain-intrinsic-size:auto_1.5rem]"
     >
       <div className="mx-auto flex max-w-(--container-view) flex-col gap-5 md:flex-row md:items-center md:gap-8">
         <h2 id="tools" className="shrink-0 font-text text-2xs text-muted">

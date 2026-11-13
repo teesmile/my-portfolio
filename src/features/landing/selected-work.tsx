@@ -7,10 +7,12 @@ import RenalLoop from "./renal-loop";
 import { textLinkClass } from "@/components/ui/text-link";
 import { stagger } from "@/components/layout/stagger";
 
-/* Three previews, three kinds of thing: the benchmark's key idea as a
-   loop, the app as it looks on a phone, the latest piece as it looks when
-   shared. They share a frame and a rule, not a template, so the row reads
-   as three pieces of work rather than three tiles.
+/* Four previews, four kinds of thing: the lead project as it looks on a
+   laptop, the benchmark's key idea as a loop, the app as it looks on a
+   phone, the latest piece as it looks when shared. They share a frame and
+   a rule, not a template, so the row reads as pieces of work rather than
+   tiles. The order is the Work page's: the ballot first, the evaluation
+   work second.
 
    Every frame is a fixed 16:10 box and every image fills it, so nothing can
    shift when an image arrives. Images are lazy: the section is below the
@@ -26,12 +28,31 @@ type Card = {
 
 export default function SelectedWork() {
   const { evaluation, projects } = portfolioConfig;
+  const ballot = projects.find((project) => project.slug === "whos-on-my-ballot")!;
   const todo = projects.find((project) => project.slug === "todo-app")!;
   /* Newest first; on a tie the config order stands (Array sort is stable). */
   const newest = [...published].sort((a, b) => Date.parse(b.published) - Date.parse(a.published));
   const latest = newest[0];
 
   const cards: Card[] = [
+    {
+      href: `/work/${ballot.slug}` as Route,
+      /* The same line as on the Work page: the launch date stands in for
+         the year until launch day (site.ts). */
+      meta: `${ballot.status ?? ballot.year} · ${ballot.role}`,
+      title: ballot.title,
+      line: "A non-partisan voter guide for Nigeria's 2027 elections: say where you vote, see every race on your ballot.",
+      preview: (
+        <Image
+          src={ballot.preview!}
+          alt={`${ballot.title} on a laptop`}
+          fill
+          sizes="(min-width: 1024px) 22vw, (min-width: 768px) 45vw, 100vw"
+          loading="lazy"
+          className="object-cover object-top"
+        />
+      ),
+    },
     {
       href: "/work/renal-dosing-task",
       meta: `AI evaluation · ${evaluation.period}`,
@@ -53,7 +74,7 @@ export default function SelectedWork() {
             src="/work/todo-app-phone.webp"
             alt={`${todo.title} on a phone: a greeting, search, filters and the Order switch, then the newest tasks`}
             fill
-            sizes="(min-width: 768px) 14vw, 46vw"
+            sizes="(min-width: 1024px) 10vw, (min-width: 768px) 21vw, 46vw"
             loading="lazy"
             className="object-cover object-top"
           />
@@ -70,7 +91,7 @@ export default function SelectedWork() {
           src={`/writing/${latest.slug}/opengraph-image`}
           alt={`Share card for “${latest.title}”`}
           fill
-          sizes="(min-width: 768px) 30vw, 100vw"
+          sizes="(min-width: 1024px) 22vw, (min-width: 768px) 45vw, 100vw"
           loading="lazy"
           /* Whole, never cropped: the card is typeset at 1200x630 with
              text near its edges, and cover cut the first letters off. */
@@ -83,18 +104,18 @@ export default function SelectedWork() {
   return (
     <section
       aria-labelledby="selected-work"
-      /* Below the fold by construction (the hero is a full screen), so the
-         browser may skip its style, layout and paint until it is near, and
-         the reveals (data-reveal-far) take that on trust rather than
-         measuring, which would force the layout. */
-      data-reveal-far
-      className="px-4 sm:px-6 py-20 [contain-intrinsic-size:auto_56rem] [content-visibility:auto] md:py-28"
+      /* Laid out with the page. It used to be content-visibility: auto with
+         a guessed placeholder height, and the page changed height by the
+         difference when the browser got round to rendering it, which moved
+         the scrollbar and the content under the reader. Four cards with
+         lazy images cost next to nothing to lay out. */
+      className="px-4 sm:px-6 py-20 md:py-28"
     >
       <div className="mx-auto max-w-(--container-view)">
         <h2 data-reveal="" id="selected-work" className="text-xl text-accent">
           Selected work
         </h2>
-        <ul className="mt-10 grid gap-12 md:grid-cols-3 md:gap-8">
+        <ul className="mt-10 grid gap-12 md:grid-cols-2 md:gap-8 lg:grid-cols-4 lg:gap-6">
           {cards.map((card, index) => (
             <li key={card.href} data-reveal="" style={stagger(index)}>
               <Link href={card.href} className="group block">

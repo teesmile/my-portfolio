@@ -1,6 +1,4 @@
 @import "tailwindcss";
-/* Lenis needs the document to size itself naturally while it interpolates. */
-@import "lenis/dist/lenis.css";
 
 /* Dark is the primary mode: the tokens below are the dark values, and `.light`
    opts out. Because every colour utility reads a token, no `dark:` variant is
@@ -240,7 +238,10 @@
   }
 
   body {
-    @apply flex min-h-dvh flex-col bg-surface font-text text-base text-ink antialiased;
+    /* svh, not dvh: on a phone the dynamic viewport grows as the URL bar
+       hides, and a body or a hero sized by it changes height under the
+       reader mid-scroll. The small viewport is the same before and after. */
+    @apply flex min-h-svh flex-col bg-surface font-text text-base text-ink antialiased;
   }
 
   h1,
@@ -447,8 +448,8 @@
     display: none !important;
   }
 
-  /* `body` is `min-h-dvh` so a short view still fills the screen. In paged
-     media `dvh` resolves against the page box, so body becomes exactly one
+  /* `body` is `min-h-svh` so a short view still fills the screen. In paged
+     media `svh` resolves against the page box, so body becomes exactly one
      page tall and the first trailing margin after it starts a second page —
      which is why a document measuring 1025px of content printed on two pages
      with 1055px available. On paper nothing is scrolled, so let it be as tall
@@ -779,24 +780,27 @@
   97.5%, 100% { opacity: 0; }
 }
 
-/* The hero's surface: the raised warm charcoal (warm paper in light) with a
-   hairline under it, a little grain for depth, and one soft amber wash
-   from the top left. Colour and gradients only; nothing in it moves. The
-   grain is one inline SVG turbulence, rasterised once and tiled; it sits
-   under the content and never repaints. */
+/* The hero's surface: the raised warm charcoal (warm paper in light) at
+   the top, where the browser's own bar meets it, running into the page's
+   surface by the bottom edge, so the hero ends nowhere and the deck below
+   stands on the same ground. It used to stop at a hard edge with a
+   hairline under it, which read as a break between the hero and the deck.
+   A little grain for depth, fading with the surface, and one soft amber
+   wash from the top left. Colour and gradients only; nothing in it moves.
+   The grain is one inline SVG turbulence, rasterised once and tiled; it
+   sits under the content and never repaints. */
 .editor-surface {
-  background: var(--raised);
-  border-bottom: 1px solid var(--line);
+  background: linear-gradient(to bottom, var(--raised) 0%, var(--raised) 40%, var(--surface) 100%);
   position: relative;
   isolation: isolate;
 }
-
 .editor-surface::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
   opacity: 0.04;
+  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
