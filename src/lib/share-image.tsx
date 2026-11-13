@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
+import sharp from "sharp";
 import { portfolioConfig } from "@/config/site";
 
 export const shareImageSize = { width: 1200, height: 630 };
@@ -66,7 +67,7 @@ export async function renderShareImage({
   const imageSrc = image ? `data:image/png;base64,${image.toString("base64")}` : null;
   const size = titleSize ?? (art ? 58 : 64);
 
-  return new ImageResponse(
+  const rendered = new ImageResponse(
     (
       <div
         style={{
@@ -129,4 +130,24 @@ export async function renderShareImage({
       fonts: [{ name: "Syne", data: display, style: "normal", weight: 700 }],
     },
   );
+
+  return lighten(Buffer.from(await rendered.arrayBuffer()));
+}
+
+/**
+ * The PNG Satori writes is 32-bit with an alpha channel no card uses: the
+ * home card came out at 322 KB, where the typeset-only card before it was
+ * 67 KB. Flattened onto the surface and quantised to a 256-colour palette
+ * it is 80 KB with the type as sharp as before: a palette keeps hard edges,
+ * where a JPEG softens them. Every card route is prerendered, so this runs
+ * at build and what ships is a static file with its length known.
+ */
+export async function lighten(png: Buffer) {
+  const light = await sharp(png)
+    .flatten({ background: SURFACE })
+    .png({ palette: true, quality: 90, effort: 10, compressionLevel: 9 })
+    .toBuffer();
+  return new Response(new Uint8Array(light), {
+    headers: { "Content-Type": "image/png", "Content-Length": String(light.length) },
+  });
 }

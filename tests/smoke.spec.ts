@@ -1,4 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 
 /**
  * Smoke tests: every page the sitemap lists loads, says what it is, fits a
@@ -11,6 +13,18 @@ import { test, expect, type Page } from "@playwright/test";
  */
 
 const SITE = "https://anthonyugwuja.dev";
+
+/* A share card is a static file made at build time, light, and quick to
+   answer: the limits a crawler's fetch has to meet, with margin. The home
+   card is about 80 KB; a card rendered on request takes most of a second. */
+const CARD_BYTES = 100 * 1024;
+const CARD_MS = 400;
+
+/** The routes `next build` prerendered: a card not in this list is built on request. */
+function prerenderedRoutes() {
+  const manifest = JSON.parse(readFileSync(path.join(process.cwd(), ".next", "prerender-manifest.json"), "utf8"));
+  return new Set(Object.keys(manifest.routes));
+}
 
 async function sitemapPaths(page: Page) {
   const response = await page.request.get("/sitemap.xml");
@@ -96,11 +110,13 @@ test("the writing feed is RSS and every item links to a live piece", async ({ pa
   }
 });
 
-test("every page has a share card that loads as a 1200x630 PNG or JPEG", async ({ page }) => {
+test("every page has a share card: a static 1200x630 PNG or JPEG, light and quick", async ({ page }) => {
   /* A broken card is invisible from the site itself: the page still renders,
      and only someone sharing a link finds out. So every page in the sitemap
      is checked the way a crawler reads it: the tags, then the image those
-     tags point at, fetched and its header parsed. */
+     tags point at, fetched and its header parsed. A card that is heavy,
+     slow, served without its length or built on request fails here. */
+  const prerendered = prerenderedRoutes();
   for (const path of await sitemapPaths(page)) {
     await test.step(path, async () => {
       await page.goto(path);
@@ -114,14 +130,25 @@ test("every page has a share card that loads as a 1200x630 PNG or JPEG", async (
       expect.soft(await tag('meta[property="og:image:height"]'), path).toBe("630");
       if (!image) return;
 
+      const started = Date.now();
       const response = await page.request.get(image.replace(SITE, ""));
+      const bytes = await response.body();
+      const took = Date.now() - started;
       expect.soft(response.status(), `${path} share image`).toBe(200);
       const type = response.headers()["content-type"] ?? "";
       expect.soft(type, `${path} share image type`).toMatch(/^image\/(png|jpeg)/);
-      const bytes = await response.body();
       expect.soft(bytes.length, `${path} share image is empty`).toBeGreaterThan(1000);
       const size = imageSize(bytes);
       expect.soft(size, `${path} share image size`).toEqual({ width: 1200, height: 630 });
+      /* `next start` streams a prerendered body in chunks and sends no
+         length; Vercel serves the same file with one. Wherever a length is
+         declared it has to be the file's. */
+      const declared = response.headers()["content-length"];
+      if (declared !== undefined) expect.soft(Number(declared), `${path} share image content-length`).toBe(bytes.length);
+      expect.soft(bytes.length, `${path} share image weighs ${Math.round(bytes.length / 1024)} KB`).toBeLessThanOrEqual(CARD_BYTES);
+      expect.soft(took, `${path} share image took ${took} ms`).toBeLessThan(CARD_MS);
+      const route = new URL(image).pathname;
+      expect.soft(prerendered.has(route), `${path} share image ${route} is built on request`).toBe(true);
     });
   }
 });

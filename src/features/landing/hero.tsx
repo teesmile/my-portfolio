@@ -18,7 +18,15 @@ import CorrectedHeadline from "./corrected-line";
  *
  * The background is the hero's surface and its wash (globals.css,
  * .editor-surface and .hero-wash); the light behind the portrait is
- * .portrait-glow. Nothing in the background moves.
+ * .portrait-glow. Nothing in the background moves. The surface runs into
+ * the page's by the bottom edge, and the section clips sideways only
+ * (overflow-x: clip, never hidden), so the light is free to carry on under
+ * the section below rather than ending at a line.
+ *
+ * Its height is svh, not dvh: the dynamic viewport grows as a phone's URL
+ * bar hides, and a hero sized by it grew by that much mid-scroll and
+ * pushed everything below it down the page. The small viewport is the
+ * same height before and after.
  */
 export default function Hero() {
   const { headline, headlineFlag, heroLine } = portfolioConfig;
@@ -38,7 +46,7 @@ export default function Hero() {
        has scrolled out of view. */
     <section
       data-home-hero
-      className="editor-surface relative -mt-(--nav-height) flex min-h-dvh flex-col justify-center overflow-hidden px-4 pt-[calc(var(--nav-height)+3rem)] sm:px-6 md:pt-[calc(var(--nav-height)+4rem)]"
+      className="editor-surface relative -mt-(--nav-height) flex min-h-svh flex-col justify-center overflow-x-clip px-4 pt-[calc(var(--nav-height)+3rem)] sm:px-6 md:pt-[calc(var(--nav-height)+4rem)]"
     >
       {/* The nav is transparent only while this is in view: the first 4px. */}
       <span data-home-top aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-1" />

@@ -4,7 +4,7 @@ import "./globals.css";
 
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
-import SmoothScroll from "@/providers/smooth-scroll";
+import ScrollSync from "@/providers/scroll-sync";
 import { portfolioConfig } from "@/config/site";
 
 const display = Syne({
@@ -77,11 +77,17 @@ export default function RootLayout({
     <html lang="en" className={`${display.variable} ${text.variable}`} suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        <SmoothScroll>
+        <ScrollSync>
           <Navbar />
-          <main className="flex flex-1 flex-col pt-(--nav-height)">{children}</main>
+          {/* overflow: clip, not hidden: it makes no scroll container, so
+              the sticky heroes still stick to the viewport. What it stops
+              is the document changing height under the reader: a scroll
+              reveal holds a waiting item 48px lower with a transform, and a
+              transformed last item below the fold made the page 48px
+              taller until it was revealed. */}
+          <main className="flex flex-1 flex-col overflow-clip pt-(--nav-height)">{children}</main>
           <Footer />
-        </SmoothScroll>
+        </ScrollSync>
       </body>
     </html>
   );

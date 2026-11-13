@@ -11,12 +11,15 @@ import DefectDeck from "./defect-deck";
  * Not content-visibility: auto like the sections further down: the deck's
  * clock and its swipe hint are keyed to whether it is on screen, and it
  * is close enough to the fold to be laid out with the page.
+ *
+ * Positioned, so it paints above the hero: the light behind the portrait
+ * runs on under this section's top, and the heading has to sit on it.
  */
 export default function BugsSection() {
   const { copy } = portfolioConfig;
 
   return (
-    <section aria-labelledby="bugs" className="px-4 sm:px-6 pt-20 pb-8 md:pt-28 md:pb-12">
+    <section aria-labelledby="bugs" className="relative px-4 sm:px-6 pt-20 pb-8 md:pt-28 md:pb-12">
       <div className="mx-auto grid max-w-(--container-view) gap-10 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-4">
           <h2 data-reveal="" id="bugs" className="text-xl text-accent">
