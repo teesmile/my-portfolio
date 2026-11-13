@@ -132,22 +132,23 @@ export default function SelectedWork() {
           ))}
         </ul>
         {/* The two newest pieces by name. The Writing card is one link, and a
-            link cannot hold others, so they sit under the cards instead. */}
-        <p data-reveal="" className="mt-12 text-sm text-muted">
-          Latest writing:{" "}
-          {newest.slice(0, 2).map((entry, i) => (
-            <span key={entry.slug}>
-              {i > 0 ? " and " : null}
-              <Link
-                href={`/writing/${entry.slug}` as Route}
-                className={textLinkClass}
-              >
-                {entry.title}
-              </Link>
-            </span>
-          ))}
-          .
-        </p>
+            link cannot hold others, so they sit under the cards instead: a
+            short list, one piece per line with its topic after it, so each
+            link is plainly its own. The label sits above the list on a
+            phone and to its left from sm up. */}
+        <div data-reveal="" className="mt-12 flex flex-col gap-3 text-sm sm:flex-row sm:gap-10">
+          <p className="shrink-0 text-muted">Latest writing</p>
+          <ul className="flex flex-col gap-2">
+            {newest.slice(0, 2).map((entry) => (
+              <li key={entry.slug}>
+                <Link href={`/writing/${entry.slug}` as Route} className={textLinkClass}>
+                  {entry.title}
+                </Link>
+                <span className="text-muted"> · {entry.topic}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );
