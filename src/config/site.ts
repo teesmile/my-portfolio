@@ -68,7 +68,7 @@ const projects: Project[] = [
     title: "Who's on my ballot?",
     status: "Live",
     seo: {
-      title: "Who's on my ballot? Every candidate on your ballot in Nigeria's 2027 elections",
+      title: "Who's on my ballot? Nigeria 2027, every candidate in every race",
       description:
         "Most voters think only about the presidential race, but governors, senators, House and State Assembly members matter as much. Every candidate in every race at your polling unit, live at whosonmyballot.ng: 27,000+ pages from INEC's candidate lists.",
     },
