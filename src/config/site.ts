@@ -58,8 +58,8 @@ const projects: Project[] = [
        (teesmile/whos-on-my-ballot at e92c9c0: data/generated/report.md, the
        built sitemap, tests and scripts) and its decision log, checked on
        11 Nov 2026; the page and ballot counts rechecked against the live
-       sitemap on 14 Nov 2026, launch day. Non-partisan by design: no party
-       or candidate is named here or anywhere on this site. Nothing is
+       sitemap on 14 Nov 2026, launch day. No party or candidate is named
+       here or anywhere on this site. Nothing is
        claimed that the notes keep open: no real-device timing, no results,
        no "no ads". */
     id: 5,
@@ -68,13 +68,13 @@ const projects: Project[] = [
     title: "Who's on my ballot?",
     status: "Live",
     seo: {
-      title: "Who's on my ballot? A non-partisan voter guide for Nigeria",
+      title: "Who's on my ballot? Every candidate on your ballot in Nigeria's 2027 elections",
       description:
-        "A free, non-partisan voter guide for Nigeria's 2027 elections, live at whosonmyballot.ng: 27,000+ pages from INEC's candidate lists and a polling-unit lookup in the browser.",
+        "Most voters think only about the presidential race, but governors, senators, House and State Assembly members matter as much. Every candidate in every race at your polling unit, live at whosonmyballot.ng: 27,000+ pages from INEC's candidate lists.",
     },
     updated: "2026-11-14",
     description:
-      "A free, non-partisan voter information site for Nigeria's 2027 elections. A voter says where they will vote and sees every race on the ballot at that polling unit, with every candidate side by side, from INEC's published candidate lists.",
+      "A free voter guide for Nigeria's 2027 elections. Most voters think only about the presidential race, but the governors, senators, House of Representatives members and State Assembly members on the same ballot matter as much. A voter says where they will vote and sees every candidate in every race at that polling unit, side by side, from INEC's published candidate lists.",
     role: "Design, data pipeline and build",
     year: "2026",
     tech: ["Next.js", "TypeScript", "Python", "pdfplumber", "esbuild", "Playwright", "Vercel"],
