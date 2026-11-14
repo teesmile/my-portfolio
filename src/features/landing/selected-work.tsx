@@ -41,7 +41,7 @@ export default function SelectedWork() {
          for the year (site.ts). */
       meta: `${ballot.status ?? ballot.year} · ${ballot.role}`,
       title: ballot.title,
-      line: "A non-partisan voter guide for Nigeria's 2027 elections: say where you vote, see every race on your ballot.",
+      line: "Nigeria's 2027 elections are more than the presidential race: say where you vote, see every candidate in every race on your ballot.",
       preview: (
         <Image
           src={ballot.preview!}
