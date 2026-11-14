@@ -18,7 +18,11 @@ export default function Footer() {
         <p>
           &copy; {new Date().getFullYear()} {portfolioConfig.name}
         </p>
-        <ul className="-mr-3 flex items-center gap-1 sm:-mr-3" aria-label="Profiles elsewhere">
+        {/* The last mark's 44px box ends 12px past its glyph, so from sm up
+            the row hangs that far past the container's edge and the glyph
+            lines up with the edge. Only from sm up: on a phone the row is
+            centred, and a negative margin there moves it off centre. */}
+        <ul className="flex items-center gap-1 sm:-mr-3" aria-label="Profiles elsewhere">
           {portfolioConfig.socials.map((social) => {
             const mark = marks[social.iconKey];
             return (
