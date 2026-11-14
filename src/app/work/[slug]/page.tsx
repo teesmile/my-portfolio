@@ -117,6 +117,16 @@ export default async function CaseStudyPage({ params }: Params) {
                 {project.description}
               </p>
 
+              {/* A live project's address, right under the opening paragraph so
+                  it is the first action on a phone, not only in the aside. A
+                  plain link in the same tab, followed by crawlers: no
+                  target, no rel. */}
+              {project.status === "Live" ? (
+                <div data-reveal="" className="mt-6 max-sm:flex max-sm:justify-center">
+                  <ButtonLink href={project.link}>Visit {new URL(project.link).host}</ButtonLink>
+                </div>
+              ) : null}
+
               <h2 data-reveal="" className="mt-12 text-lg text-accent">
                 What it does
               </h2>
@@ -180,11 +190,8 @@ export default async function CaseStudyPage({ params }: Params) {
               </div>
 
               <div className="mt-8 flex flex-wrap items-center gap-3 max-sm:justify-center">
-                {/* Before launch the address serves a "Coming soon" page,
-                    so the button names the address rather than promising a
-                    live project. */}
                 <ButtonLink href={project.link} external>
-                  {project.status ? `Open ${new URL(project.link).host}` : "Open the live project"}
+                  Open the live project
                   <ExternalLinkIcon className="h-3.5 w-3.5" />
                 </ButtonLink>
                 {project.repo ? (

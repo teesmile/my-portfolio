@@ -37,8 +37,8 @@ export default function SelectedWork() {
   const cards: Card[] = [
     {
       href: `/work/${ballot.slug}` as Route,
-      /* The same line as on the Work page: the launch date stands in for
-         the year until launch day (site.ts). */
+      /* The same line as on the Work page: the status ("Live") stands in
+         for the year (site.ts). */
       meta: `${ballot.status ?? ballot.year} · ${ballot.role}`,
       title: ballot.title,
       line: "A non-partisan voter guide for Nigeria's 2027 elections: say where you vote, see every race on your ballot.",
