@@ -569,5 +569,8 @@ export const portfolioConfig = {
 
     }
   ],
+  /* Profiles that are the same person but have no place in the footer:
+     listed in the Person's sameAs (src/lib/structured-data.ts) only. */
+  profiles: ["https://www.researchgate.net/profile/Anthony-Ugwuja"],
   projects,
 };

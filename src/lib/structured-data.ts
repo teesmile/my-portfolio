@@ -67,7 +67,7 @@ export const personJsonLd = {
       recognizedBy: { "@type": "Organization", name: "Anthropic" },
     },
   ],
-  sameAs: portfolioConfig.socials.map((social) => social.url),
+  sameAs: [...portfolioConfig.socials.map((social) => social.url), ...portfolioConfig.profiles],
 };
 
 export const websiteJsonLd = {
