@@ -394,6 +394,13 @@
 .footer-wordmark-frame {
   container-type: inline-size;
   overflow: hidden;
+  /* Centred, not left-aligned. With Syne the word fills the column and the
+     two are the same; before Syne arrives (display: swap) the fallback
+     runs about 5% narrower, and centred it keeps equal space on both sides
+     instead of a gap on the right only. A wider fallback overflows both
+     sides equally and is clipped, which is why this is not `safe center`. */
+  display: flex;
+  justify-content: center;
 }
 .footer-wordmark {
   --wordmark-em: 4.371; /* "teesmile" in Syne 700 at -0.04em tracking, measured in the browser */
