@@ -36,51 +36,49 @@ for (const width of PHONE_WIDTHS) {
 }
 
 /**
- * The oversized wordmark fills the content column: its font size is the
- * column's width divided by the word's width in ems, so with Syne loaded
- * its box meets both edges of the frame. Checked on phones and a laptop.
- * Before Syne arrives (display: swap) the fallback face runs narrower, so
- * the word is also centred in the frame: with the font blocked, the space
- * on each side is the same.
+ * The oversized wordmark fills the content column edge to edge: it is the
+ * word's outlines in an SVG that scales to the column, so nothing about
+ * fonts can change its width. Checked on four phone widths and a laptop,
+ * with the display font loaded and with every font file blocked, and the
+ * space on each side of it must be the page's own side margin: 16px on a
+ * phone. On the laptop the column is centred in the page and a desktop
+ * browser reserves a scrollbar gutter, so there the word is held to the
+ * column's own edges.
  */
-const WORDMARK_WIDTHS = [
-  { width: 320, mobile: true },
-  { width: 360, mobile: true },
-  { width: 414, mobile: true },
-  { width: 1280, mobile: false },
+const WORDMARK_CASES = [
+  { width: 320, mobile: true, margin: 16 },
+  { width: 360, mobile: true, margin: 16 },
+  { width: 390, mobile: true, margin: 16 },
+  { width: 414, mobile: true, margin: 16 },
+  { width: 1280, mobile: false, margin: null },
 ];
 
-async function wordmarkGaps(page: Page) {
+async function wordmarkEdges(page: Page) {
   await page.evaluate(() => document.fonts.ready);
   return page.evaluate(() => {
     const frame = document.querySelector(".footer-wordmark-frame")!.getBoundingClientRect();
     const mark = document.querySelector(".footer-wordmark")!.getBoundingClientRect();
-    return { left: mark.left - frame.left, right: frame.right - mark.right, frame: frame.width };
+    const viewport = document.documentElement.clientWidth;
+    return { left: mark.left, right: viewport - mark.right, frameLeft: frame.left, frameRight: viewport - frame.right, height: mark.height };
   });
 }
 
-for (const { width, mobile } of WORDMARK_WIDTHS) {
-  test(`the wordmark spans the column edge to edge at ${width}px`, async ({ browser }) => {
-    const context = await browser.newContext({ viewport: { width, height: 740 }, isMobile: mobile, hasTouch: mobile, reducedMotion: "reduce" });
-    const page = await context.newPage();
-    await page.goto("/");
-    const gaps = await wordmarkGaps(page);
-    expect(gaps.frame).toBeGreaterThan(200);
-    /* Each edge within 2.5px of the frame's: the word's width in ems is
-       measured once and rounds a little at each size; past the edge it is
-       clipped, so only the gap on each side can show. */
-    expect.soft(gaps.left, `left gap ${gaps.left.toFixed(1)}px at ${width}px`).toBeLessThanOrEqual(2.5);
-    expect.soft(gaps.right, `right gap ${gaps.right.toFixed(1)}px at ${width}px`).toBeLessThanOrEqual(2.5);
-    await context.close();
-  });
+for (const { width, mobile, margin } of WORDMARK_CASES) {
+  for (const fonts of ["loaded", "blocked"] as const) {
+    test(`the wordmark spans the column edge to edge at ${width}px with fonts ${fonts}`, async ({ browser }) => {
+      const context = await browser.newContext({ viewport: { width, height: 740 }, isMobile: mobile, hasTouch: mobile, reducedMotion: "reduce" });
+      if (fonts === "blocked") await context.route(/\.woff2?(\?|$)/, (route) => route.abort());
+      const page = await context.newPage();
+      await page.goto("/");
+      const edges = await wordmarkEdges(page);
+      expect(edges.height).toBeGreaterThan(30);
+      if (margin !== null) {
+        expect.soft(Math.abs(edges.left - margin), `left gap ${edges.left.toFixed(1)}px, margin ${margin}px`).toBeLessThanOrEqual(0.5);
+        expect.soft(Math.abs(edges.right - margin), `right gap ${edges.right.toFixed(1)}px, margin ${margin}px`).toBeLessThanOrEqual(0.5);
+      }
+      expect.soft(Math.abs(edges.left - edges.frameLeft), "the word starts where the column starts").toBeLessThanOrEqual(0.5);
+      expect.soft(Math.abs(edges.right - edges.frameRight), "the word ends where the column ends").toBeLessThanOrEqual(0.5);
+      await context.close();
+    });
+  }
 }
-
-test("the wordmark sits centred while the display font is still loading", async ({ browser }) => {
-  const context = await browser.newContext({ viewport: { width: 360, height: 740 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
-  await context.route(/\.woff2?(\?|$)/, (route) => route.abort());
-  const page = await context.newPage();
-  await page.goto("/");
-  const gaps = await wordmarkGaps(page);
-  expect(Math.abs(gaps.left - gaps.right), `gaps ${gaps.left.toFixed(1)}px and ${gaps.right.toFixed(1)}px`).toBeLessThanOrEqual(1);
-  await context.close();
-});
