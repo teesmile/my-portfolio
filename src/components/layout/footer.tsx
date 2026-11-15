@@ -1,6 +1,7 @@
 import { siGithub, siX } from "simple-icons";
 import { portfolioConfig } from "@/config/site";
 import { linkedin, type BrandIcon } from "@/components/ui/brand-icons";
+import { wordmark } from "@/components/layout/wordmark";
 
 /* The three profiles as marks only. GitHub and X are simple-icons; LinkedIn
    is not carried there, so its mark is in brand-icons.ts. */
@@ -48,12 +49,24 @@ export default function Footer() {
         </ul>
       </div>
 
-      {/* The brand word, oversized, as the last thing on every page. Purely
-          decorative: aria-hidden, nothing focusable, and too faint to carry
-          meaning, so it is held to no contrast ratio. Sizing and the fade are
-          in globals.css (.footer-wordmark). */}
+      {/* The brand word, oversized, as the last thing on every page. Drawn
+          as outlines (wordmark.ts, traced by scripts/wordmark.py) so it fills
+          the column edge to edge before any font has loaded and whatever a
+          device's fonts do. Purely decorative: aria-hidden, nothing
+          focusable, and too faint to carry meaning, so it is held to no
+          contrast ratio. Sizing is in globals.css (.footer-wordmark); the
+          fade is the gradient here, in theme tokens, from the letter tops
+          (the top of the viewBox) to the clip line at the bottom. */}
       <div aria-hidden="true" className="footer-wordmark-frame mx-auto mt-10 max-w-(--container-view) md:mt-16">
-        <p className="footer-wordmark">{portfolioConfig.brandName.toLowerCase()}</p>
+        <svg viewBox={wordmark.viewBox} className="footer-wordmark" focusable="false">
+          <defs>
+            <linearGradient id="footer-wordmark-fade" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" style={{ stopColor: "var(--surface)" }} />
+              <stop offset="1" style={{ stopColor: "color-mix(in oklab, var(--line), var(--muted))" }} />
+            </linearGradient>
+          </defs>
+          <path d={wordmark.d} fill="url(#footer-wordmark-fade)" />
+        </svg>
       </div>
     </footer>
   );
