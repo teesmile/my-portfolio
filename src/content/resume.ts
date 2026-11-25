@@ -115,7 +115,7 @@ export const resumeContent = {
      than guessing from position. One paragraph per version. */
   summary: {
     default: [
-      'Full-stack developer with a pharmacy background, building web applications end to end with React, Next.js, TypeScript, Node.js and Python. Experienced in taking products from idea to launch, including offline-first apps, data pipelines and a site with more than 26,000 pages that stays fast on slow connections. Also works as an AI evaluation and data annotation specialist, with more than 1,000 tasks completed across annotation, grading and expert task writing. Brings the care of clinical work to software: clear documentation, thorough testing and attention to what can go wrong.',
+      'Full-stack developer with a pharmacy background, building web applications end to end with React, Next.js, TypeScript, Node.js and Python. Experienced in taking products from idea to launch, including offline-first apps, data pipelines and a site with more than 27,000 pages that stays fast on slow connections. Also works as an AI evaluation and data annotation specialist, with more than 1,000 tasks completed across annotation, grading and expert task writing. Brings the care of clinical work to software: clear documentation, thorough testing and attention to what can go wrong.',
     ],
     ai: [
       'AI evaluation and data annotation specialist with a pharmacy degree and a software development background. Since 2025, has completed more than 1,000 image and video annotation, comparison and rating tasks with quality ratings mostly between 4.5 and 4.8 out of 5, and has written expert-level science tasks with about 90% approved. Also builds terminal-based benchmark tasks for AI coding agents, working in Python, TypeScript and Linux. Works carefully and consistently, and writes clear feedback.',
@@ -278,8 +278,8 @@ export const resumeContent = {
   /* Who's on my ballot? leads the developer and operations versions; the
      AI version leads with the evaluation sample, which is what that reader
      hires for (the owner's calls, 11 Nov 2026). Its figures are checked
-     against the repo (teesmile/whos-on-my-ballot at e92c9c0): 26,142 pages
-     in the built sitemap, 177,299 polling units from INEC's locator, and
+     against the repo (teesmile/whos-on-my-ballot at e92c9c0): 27,631 pages
+     in the live sitemap (14 Nov 2026), 177,299 polling units from INEC's locator, and
      LCP 2.0-2.4 s in Lighthouse's simulated slow-3G profile. Roasted stays
      on the developer version, fourth, as a one-line entry.
 
@@ -288,10 +288,10 @@ export const resumeContent = {
   projects: [
     {
       name: "Who's on my ballot? (live since November 2026), whosonmyballot.ng",
-      line: "Built a free voter information site for Nigeria's 2027 elections, with a data pipeline that turns INEC's official candidate lists into more than 26,000 static pages and a polling-unit lookup covering 177,299 units that runs in the browser, tested to show its main content in about 2 seconds on a simulated slow 3G connection.",
+      line: "Built a free voter information site for Nigeria's 2027 elections, with a data pipeline that turns INEC's official candidate lists into more than 27,000 static pages and a polling-unit lookup covering 177,299 units that runs in the browser, tested to show its main content in about 2 seconds on a simulated slow 3G connection.",
       /* Two lines on the operations version: the same facts, less of them. */
       lineFor: {
-        general: "Built a free voter information site for Nigeria's 2027 elections, with more than 26,000 pages from INEC's candidate lists and a lookup covering 177,299 polling units.",
+        general: "Built a free voter information site for Nigeria's 2027 elections, with more than 27,000 pages from INEC's candidate lists and a lookup covering 177,299 polling units.",
       },
       caseStudy: 'https://anthonyugwuja.dev/work/whos-on-my-ballot',
       url: 'https://whosonmyballot.ng',
