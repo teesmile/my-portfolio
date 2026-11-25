@@ -424,6 +424,23 @@
     --accent-strong: #101316;
   }
 
+  /* Static instances of the two faces (layout.tsx), so a PDF printed from
+     this page embeds TrueType fonts that extract with their spaces. Set on
+     the elements, not on the tokens: the font tokens are in the inline
+     theme block, so the utilities carry their values, not var() references.
+     The body instance is cut at the 11pt size; the 10.5pt text further
+     down takes the smaller one. */
+  body {
+    font-family: var(--font-source-serif-print), ui-serif, Georgia, serif !important;
+  }
+
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-syne-print), ui-sans-serif, system-ui, sans-serif !important;
+  }
+
   nav,
   footer,
   [data-no-print] {
@@ -442,8 +459,14 @@
     height: auto !important;
   }
 
+  /* On screen, main clips its overflow so a reveal rising from below cannot
+     lengthen the page. On paper that clip cut the last line of the resume
+     out of the PDF (the Languages line, in every variant) while the page
+     still looked complete in the browser's preview. Paper is not scrolled,
+     so nothing needs clipping here. */
   main {
     padding-top: 0 !important;
+    overflow: visible !important;
   }
 
   section {
@@ -519,6 +542,7 @@
   /* Link buttons hold the body-text floor and stay compact. */
   [data-cv-button] {
     font-size: 10.5pt !important;
+    font-family: var(--font-source-serif-print-small), ui-serif, Georgia, serif !important;
     line-height: 1.3 !important;
     padding: 1pt 6pt !important;
   }
@@ -561,6 +585,7 @@
   [data-fit='tight'] p,
   [data-fit='tight'] li {
     font-size: 10.5pt !important;
+    font-family: var(--font-source-serif-print-small), ui-serif, Georgia, serif !important;
     line-height: 1.32 !important;
   }
 

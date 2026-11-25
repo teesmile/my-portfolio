@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Syne, Source_Serif_4 } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 import Navbar from "@/components/layout/navbar";
@@ -22,6 +23,39 @@ const text = Source_Serif_4({
      of each page's largest image. Browsers synthesise an oblique if italic
      is ever used before the face is added back. */
   axes: ["opsz"],
+});
+
+/* The same two faces as static instances, for print only (globals.css,
+   @media print). Chrome embeds a variable font in a PDF as a Type 3 font,
+   and text extracted from one loses its spaces, which is what an applicant
+   tracking system reads from the resume; a static face is embedded as
+   TrueType and extracts cleanly. The files are cut from the variable fonts
+   above at the values the printed page uses (scripts/print-fonts.py), so
+   the page looks the same. Not preloaded: no screen ever uses them. */
+const printDisplay = localFont({
+  src: "./fonts/print/syne-400.ttf",
+  weight: "400",
+  style: "normal",
+  variable: "--font-syne-print",
+  preload: false,
+});
+
+/* One instance per optical size on the page: Chrome sets opsz to the font
+   size in CSS px, so 11pt body text is opsz 14.67 and 10.5pt is opsz 14. */
+const printText = localFont({
+  src: "./fonts/print/source-serif-4-400-opsz-14-67.ttf",
+  weight: "400",
+  style: "normal",
+  variable: "--font-source-serif-print",
+  preload: false,
+});
+
+const printTextSmall = localFont({
+  src: "./fonts/print/source-serif-4-400-opsz-14.ttf",
+  weight: "400",
+  style: "normal",
+  variable: "--font-source-serif-print-small",
+  preload: false,
 });
 
 /* Runs before first paint, so no visitor sees the wrong theme flash past.
@@ -74,7 +108,7 @@ export default function RootLayout({
   return (
     /* The theme script adds "light" to <html> before React hydrates, so the
        class React finds differs from the one it rendered, by design. */
-    <html lang="en" className={`${display.variable} ${text.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${display.variable} ${text.variable} ${printDisplay.variable} ${printText.variable} ${printTextSmall.variable}`} suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <ScrollSync>

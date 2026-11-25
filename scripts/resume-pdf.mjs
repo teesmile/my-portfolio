@@ -246,16 +246,29 @@ async function pageLines(buffer) {
    layout, before the PDF is made: letter spacing from a hundredth of an
    em tighter to half that looser (a tenth of a point at 11pt; looser than
    that and a word visibly spreads) and word spacing up to a fortieth of an
-   em tighter. Wider ranges were tried and pulled words so
+   em tighter, or a fortieth looser. Wider ranges were tried and pulled words so
    close they ran together, so lines that are too tight score against a
    setting as well as lines that are too open. The words never change, and neither does any paragraph's
    line count, so the page breaks stay where the content put them. Whichever
    setting leaves the block's lines least over-stretched wins; the
    untouched block wins ties. Done in the page, on the live layout, because that is
-   where Chrome decides the line breaks. */
+   where Chrome decides the line breaks.
+
+   One hard floor: no gap between two words may close below a fifth of the
+   font size. pdftotext in raw mode, the plainest reading of the document,
+   ignores the space glyphs Chrome draws and splits words by the gaps
+   alone, joining any two closer than that (measured on a test page in
+   this font: joined at 0.1996em, kept at 0.2023em; so the floor is one
+   percent above a fifth; "Linux.Works" was the case). A kerned pair across a space (a W drawn
+   towards the full stop before it, a word after a V) can sit under it at
+   natural spacing, so a setting that leaves any gap under the floor loses
+   to any setting that does not, and the looser word spacing is there for
+   the block that needs it. The same floor is then held on every other
+   block of text, which is set left and otherwise untouched: the smallest
+   loosening that lifts its tightest gap, or nothing. */
 const evenJustified = `(() => {
   const LETTER = ["0em", "-0.01em", "-0.005em", "0.005em"];
-  const WORD = ["0em", "-0.0125em", "-0.025em"];
+  const WORD = ["0em", "-0.0125em", "-0.025em", "0.0125em"];
   const measure = (el) => {
     const words = [];
     const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
@@ -265,33 +278,55 @@ const evenJustified = `(() => {
         range.setStart(node, match.index);
         range.setEnd(node, match.index + match[0].length);
         const rect = range.getBoundingClientRect();
-        if (rect.width) words.push(rect);
+        if (rect.width) words.push({ rect, text: match[0] });
       }
     }
     const lines = new Map();
-    for (const rect of words) {
-      const key = Math.round(rect.top);
+    for (const word of words) {
+      const key = Math.round(word.rect.top);
       if (!lines.has(key)) lines.set(key, []);
-      lines.get(key).push(rect);
+      lines.get(key).push(word);
     }
-    const ordered = [...lines.keys()].sort((a, b) => a - b).map((key) => lines.get(key).sort((a, b) => a.left - b.left));
+    const ordered = [...lines.keys()].sort((a, b) => a - b).map((key) => lines.get(key).sort((a, b) => a.rect.left - b.rect.left));
     /* A normal space in this block's own font, before any adjustment. Up
        to half as wide again is ordinary justification; beyond that a line
        reads as gappy. Below 85% of it, words start to run together, which
        is as bad, and counts four times as much. Both grow with the square
-       of the excess, so two slightly open lines beat one badly open one. */
+       of the excess, so two slightly open lines beat one badly open one.
+
+       The space is measured on a canvas, which does not pick up the face
+       the page prints in and so reads it about 13% narrow. The two
+       thresholds were tuned by eye against that figure, and the column
+       widths the documents have today follow from it, so it stays the
+       score's base. The floor below needs the real widths, which come
+       from hidden spans inside the block, in its own font. */
+    const style = getComputedStyle(el);
     const ctx = document.createElement("canvas").getContext("2d");
-    ctx.font = getComputedStyle(el).font;
+    ctx.font = style.font;
     const space = ctx.measureText(" ").width;
+    const widths = widthsIn(el, [...new Set(ordered.flatMap((line) => line.flatMap((w, i) => (i ? [line[i - 1].text, w.text, line[i - 1].text + " " + w.text] : []))))]);
+    const floor = parseFloat(style.fontSize) * 0.202;
+    /* The gap as a PDF reader sees it: from the end of one word's last
+       glyph to the start of the next, with the kerning across the space
+       (an "HIV" drawn tight to the word after it), the letter spacing
+       after the last glyph and after the space, and the word spacing. A
+       word's rectangle on the page hides that kerning inside the word,
+       and a justified line only ever opens a gap wider than this, so this
+       is the floor's measure on every line. */
+    const ls = parseFloat(style.letterSpacing) || 0;
+    const ws = parseFloat(style.wordSpacing) || 0;
+    const extracted = (a, b) => widths.get(a + " " + b) - widths.get(a) - widths.get(b) + 2 * ls + ws;
     let worst = 0;
+    let tightest = Infinity;
     let score = 0;
     ordered.forEach((line, index) => {
       let lineWorst = 0;
       let lineTightest = Infinity;
       for (let i = 1; i < line.length; i += 1) {
-        const gap = line[i].left - line[i - 1].right;
+        const gap = line[i].rect.left - line[i - 1].rect.right;
         lineWorst = Math.max(lineWorst, gap);
         lineTightest = Math.min(lineTightest, gap);
+        tightest = Math.min(tightest, extracted(line[i - 1].text, line[i].text));
       }
       /* The last line is set left, at natural spacing: it cannot be too
          open, only too tight. */
@@ -301,10 +336,25 @@ const evenJustified = `(() => {
       }
       if (lineTightest < Infinity) score += 4 * Math.max(0, space * 0.85 - lineTightest) ** 2;
     });
-    return { lines: ordered.length, worst, score };
+    return { lines: ordered.length, worst, score, fused: tightest < floor };
+  };
+  /* The width of each text in the block's own font, at its natural letter
+     and word spacing: spans out of the flow, read in one layout, removed. */
+  const widthsIn = (el, texts) => {
+    const spans = texts.map((text) => {
+      const span = document.createElement("span");
+      span.style.cssText = "position:absolute;visibility:hidden;white-space:pre;letter-spacing:0;word-spacing:0;pointer-events:none";
+      span.textContent = text;
+      el.appendChild(span);
+      return [text, span];
+    });
+    const widths = new Map(spans.map(([text, span]) => [text, span.getBoundingClientRect().width]));
+    for (const [, span] of spans) span.remove();
+    return widths;
   };
   let total = 0;
-  for (const el of document.querySelectorAll(".text-justify-body > li, p.text-justify-body")) {
+  const JUSTIFIED = ".text-justify-body > li, p.text-justify-body";
+  for (const el of document.querySelectorAll(JUSTIFIED)) {
     el.style.letterSpacing = "";
     el.style.wordSpacing = "";
     const base = measure(el);
@@ -314,13 +364,27 @@ const evenJustified = `(() => {
         el.style.letterSpacing = letter;
         el.style.wordSpacing = word;
         const m = measure(el);
-        const better = m.score < best.score - 0.01 || (m.score <= best.score && m.worst < best.worst - 0.25);
+        const evener = m.score < best.score - 0.01 || (m.score <= best.score && m.worst < best.worst - 0.25);
+        const better = best.fused ? !m.fused || evener : !m.fused && evener;
         if (m.lines <= base.lines && better) best = { ...m, letter, word };
       }
     }
     el.style.letterSpacing = best.letter;
     el.style.wordSpacing = best.word;
     total += best.score;
+  }
+  const LOOSER = ["0.0125em", "0.025em", "0.0375em", "0.05em"];
+  for (const el of document.querySelectorAll("main p, main li, main h1, main h2, main h3, main dt, main dd")) {
+    if (el.matches(JUSTIFIED) || el.closest(".text-justify-body")) continue;
+    el.style.wordSpacing = "";
+    const base = measure(el);
+    if (!base.fused) continue;
+    for (const word of LOOSER) {
+      el.style.wordSpacing = word;
+      const m = measure(el);
+      if (m.lines > base.lines) { el.style.wordSpacing = ""; break; }
+      if (!m.fused) break;
+    }
   }
   return total;
 })()`;
@@ -420,7 +484,8 @@ const renderedWords = new Set(wordsOf(renderedText));
    and a line with no letters cannot fuse with its neighbour. */
 const expectedLines = renderedLines.filter((line) => line.length >= 4 && /[a-z]{3}/i.test(line));
 
-/* Two extractors, because they disagree. pdftotext reconstructs a layout;
+/* Three readings, because they disagree. pdftotext reconstructs a layout,
+   and in raw mode reads the stream in drawing order;
    pdfjs walks the text stream the way a parser written against the PDF spec
    would. A document can look perfect in one and arrive fused in the other,
    and the fused one is what an unknown ATS might be running. */
@@ -443,6 +508,11 @@ async function extractWithPdfjs(file) {
 const txt = path.join(process.cwd(), ".capture-resume.txt");
 execFileSync("pdftotext", ["-layout", OUT, txt]);
 const layoutText = await readFile(txt, "utf8");
+/* Raw mode: the text in the order the stream draws it, words split by the
+   gaps between them alone. The least forgiving reading, and the one that
+   showed "Linux.Works". */
+execFileSync("pdftotext", ["-raw", OUT, txt]);
+const rawText = await readFile(txt, "utf8");
 const { text: streamText, pages } = await extractWithPdfjs(OUT);
 
 console.log("\n".padEnd(72, "-"));
@@ -501,6 +571,7 @@ function check(label, raw) {
 
 const failures = [
   ...check("pdftotext", layoutText),
+  ...check("pdftotext -raw", rawText),
   ...check("pdfjs", streamText),
 ];
 
@@ -521,5 +592,5 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("ATS check passed in both extractors: every line survives, no fused words, no web-only text, within the page limit.");
+console.log("ATS check passed in all three readings: every line survives, no fused words, no web-only text, within the page limit.");
 process.exit(0);
