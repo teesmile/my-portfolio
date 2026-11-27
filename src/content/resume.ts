@@ -158,11 +158,28 @@ export const resumeContent = {
         },
         {
           text: 'Wrote more than 25 expert-level science tasks built to expose model errors, with about 90% approved.',
-          place: { default: 1, ai: 1, general: 1 },
+          place: { default: 1, general: 1 },
+        },
+        {
+          /* The AI version's reading of the line above, with the science
+             benchmarking work folded in: the work behind its Scientific
+             Python, materials, earth and space and agent benchmarking
+             skills lines. Tool names only, never a client, project or task
+             name. Folded rather than a bullet of its own so the role still
+             fits under the longer skills list on page one. */
+          text: 'Wrote more than 25 expert-level science tasks that expose model errors, about 90% approved, some reproducing published agency and research software in Python, packaged in Docker with pytest verifiers.',
+          place: { ai: 1 },
         },
         {
           text: 'Built and submitted more than 10 terminal-based benchmark tasks that test AI coding agents.',
-          place: { default: 2, ai: 2, general: 3 },
+          place: { default: 2, general: 3 },
+        },
+        {
+          /* The AI version's reading of the line above, held to one line:
+             with its longer skills list, every line this role saves is
+             what keeps it whole on page one. Same fact. */
+          text: 'Built more than 10 terminal-based benchmark tasks for AI coding agents.',
+          place: { ai: 2 },
         },
         {
           /* Off the developer version: its Skills line already says
@@ -170,7 +187,12 @@ export const resumeContent = {
              "fact verification", and the three lines are what keep this
              role whole on page one there. */
           text: 'Grade and compare model responses for accuracy, instruction following, reasoning quality and safety against detailed guidelines, and verify factual claims against sources.',
-          place: { ai: 3, general: 2 },
+          place: { general: 2 },
+        },
+        {
+          /* The AI version's reading, two lines rather than three; see above. */
+          text: 'Grade and compare model responses for accuracy, instruction following, reasoning and safety against detailed guidelines, and verify claims against sources.',
+          place: { ai: 3 },
         },
         {
           /* The differentiator for health and science evaluation, and dead
@@ -393,21 +415,55 @@ export const resumeContent = {
     place: { default: 0, ai: 0, general: 0 },
   } as Line,
 
+  /* The benchmarking tools (27 Nov 2026) are tool names only: no client,
+     project or task name anywhere. The AI version carries them as four
+     lines of their own; the developer version takes Docker, pytest and
+     Ollama on its Tools line and the three scientific Python libraries
+     beside Python, and nothing else from the list; the general version is
+     unchanged. A line that differs between versions is a separate entry
+     with its own place, so no version carries an item twice. */
   skills: [
     {
       label: 'Frontend',
       items: ['React', 'Next.js', 'TypeScript', 'JavaScript', 'Tailwind CSS', 'HTML', 'CSS'],
-      place: { default: 0, ai: 1 },
+      place: { default: 0, ai: 5 },
     },
     {
       label: 'Backend',
+      items: ['Node.js', 'Python', 'NumPy', 'SciPy', 'pandas', 'Django', 'REST APIs'],
+      place: { default: 1 },
+    },
+    {
+      /* The AI version's Backend line stays as it was: its scientific
+         Python line below carries the libraries. */
+      label: 'Backend',
       items: ['Node.js', 'Python', 'Django', 'REST APIs'],
-      place: { default: 1, ai: 2 },
+      place: { ai: 6 },
     },
     {
       label: 'AI evaluation',
       items: ['LLM evaluation', 'data annotation', 'multimodal (image, video and audio) annotation', 'fact verification', 'rubric-based grading', 'side-by-side model comparison'],
       place: { default: 2, ai: 0, general: 0 },
+    },
+    {
+      label: 'Scientific Python',
+      items: ['NumPy', 'SciPy', 'pandas', 'SymPy', 'statsmodels', 'lifelines', 'xarray (NetCDF)'],
+      place: { ai: 1 },
+    },
+    {
+      label: 'Materials and chemistry',
+      items: ['pymatgen', 'ASE', 'LAMMPS', 'GSAS-II'],
+      place: { ai: 2 },
+    },
+    {
+      label: 'Earth and space science',
+      items: ['MODFLOW 6 with FloPy', 'Astropy'],
+      place: { ai: 3 },
+    },
+    {
+      label: 'Agent benchmarking',
+      items: ['Harbor', 'mini-swe-agent', 'Ollama (local models)', 'Docker', 'pytest'],
+      place: { ai: 4 },
     },
     {
       /* Frontend and Backend merged, because the general version carries
@@ -419,8 +475,15 @@ export const resumeContent = {
     },
     {
       label: 'Tools',
+      items: ['Git', 'GitHub', 'Linux', 'Docker', 'pytest', 'Ollama', 'Vercel', 'pnpm'],
+      place: { default: 3 },
+    },
+    {
+      /* The AI version's Docker, pytest and Ollama are on its Agent
+         benchmarking line; the general version takes none of them. */
+      label: 'Tools',
       items: ['Git', 'GitHub', 'Linux', 'Vercel', 'pnpm'],
-      place: { default: 3, ai: 3, general: 2 },
+      place: { ai: 7, general: 2 },
     },
   ] as SkillGroup[],
 };
