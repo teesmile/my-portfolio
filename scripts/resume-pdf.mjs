@@ -26,6 +26,7 @@ import { execFileSync } from "node:child_process";
 import { startGroup, stopAll, stopOnExit } from "./lib/processes.mjs";
 import { mkdir, readFile, readdir, writeFile, stat } from "node:fs/promises";
 import { createServer } from "node:net";
+import os from "node:os";
 import path from "node:path";
 import { setTimeout as wait } from "node:timers/promises";
 
@@ -71,11 +72,23 @@ if (!VARIANTS[variant]) {
   process.exit(1);
 }
 const fileName = VARIANTS[variant];
+/* The private copies live where the CVs are kept, one folder per audience,
+   all under the same file name (the owner's rule, 27 Nov 2026). A document
+   printed with --document names its own folder with --out. The repo's
+   gitignored private/ folder keeps a copy too. On a machine without the
+   folders (CI, a fresh clone) only the private/ copy is written. */
+const CV_HOME = path.join(os.homedir(), "Downloads", "CV");
+const CV_FOLDERS = { default: "Developer-jobs", ai: "AI-platforms", general: "Operations-roles" };
+const privateCopy = path.join(process.cwd(), "private", fileName.replace(".pdf", "-private.pdf"));
+const folderCopy = path.join(CV_HOME, CV_FOLDERS[variant], "Anthony-Ugwuja-Resume.pdf");
+const folderExists = await stat(path.dirname(folderCopy)).then((s) => s.isDirectory()).catch(() => false);
 const OUT = outArg > -1
   ? path.resolve(process.argv[outArg + 1])
   : isPrivate
-    ? path.join(process.cwd(), "private", fileName.replace(".pdf", "-private.pdf"))
+    ? (folderExists ? folderCopy : privateCopy)
     : path.join(process.cwd(), "public", fileName);
+/* The second place a private build is written, when it has one. */
+const ALSO = outArg === -1 && isPrivate && folderExists ? privateCopy : null;
 
 /* The PDF is printed from the built app, so anything newer than the build
    would print as it used to look. Checking resume.ts alone was not enough:
@@ -338,6 +351,21 @@ const evenJustified = `(() => {
     });
     return { lines: ordered.length, worst, score, fused: tightest < floor };
   };
+  /* A block that still joins a pair at every setting that keeps its line
+     count: the smallest loosening of its word spacing that parts the pair,
+     at natural letter spacing, even where that costs the block a line. A
+     readable extraction outranks a line, and the page rules are checked on
+     the printed result anyway. A citation with "HIV Treatment," (the T
+     kerned towards the V across the space) was the case. */
+  const LOOSER = ["0.0125em", "0.025em", "0.0375em", "0.05em"];
+  const loosen = (el) => {
+    el.style.letterSpacing = "";
+    for (const word of LOOSER) {
+      el.style.wordSpacing = word;
+      if (!measure(el).fused) return;
+    }
+    el.style.wordSpacing = "";
+  };
   /* The width of each text in the block's own font, at its natural letter
      and word spacing: spans out of the flow, read in one layout, removed. */
   const widthsIn = (el, texts) => {
@@ -372,19 +400,12 @@ const evenJustified = `(() => {
     el.style.letterSpacing = best.letter;
     el.style.wordSpacing = best.word;
     total += best.score;
+    if (best.fused) loosen(el);
   }
-  const LOOSER = ["0.0125em", "0.025em", "0.0375em", "0.05em"];
   for (const el of document.querySelectorAll("main p, main li, main h1, main h2, main h3, main dt, main dd")) {
     if (el.matches(JUSTIFIED) || el.closest(".text-justify-body")) continue;
     el.style.wordSpacing = "";
-    const base = measure(el);
-    if (!base.fused) continue;
-    for (const word of LOOSER) {
-      el.style.wordSpacing = word;
-      const m = measure(el);
-      if (m.lines > base.lines) { el.style.wordSpacing = ""; break; }
-      if (!m.fused) break;
-    }
+    if (measure(el).fused) loosen(el);
   }
   return total;
 })()`;
@@ -453,6 +474,10 @@ if (printed.lines.length === 2 && printed.lines[1] < MIN_SECOND_PAGE_LINES) {
 const bytes = printed.buffer;
 await mkdir(path.dirname(OUT), { recursive: true });
 await writeFile(OUT, bytes);
+if (ALSO) {
+  await mkdir(path.dirname(ALSO), { recursive: true });
+  await writeFile(ALSO, bytes);
+}
 socket.close();
 stopAll();
 
