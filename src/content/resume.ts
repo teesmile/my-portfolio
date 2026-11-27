@@ -121,7 +121,7 @@ export const resumeContent = {
       'AI evaluation and data annotation specialist with a pharmacy degree and a software development background. Since 2025, has completed more than 1,000 image and video annotation, comparison and rating tasks with quality ratings mostly between 4.5 and 4.8 out of 5, and has written expert-level science tasks with about 90% approved. Also builds terminal-based benchmark tasks for AI coding agents, working in Python, TypeScript and Linux. Works carefully and consistently, and writes clear feedback.',
     ],
     general: [
-      'AI data annotation and quality specialist with a pharmacy degree. Since 2025, has completed more than 1,000 image and video annotation, comparison and rating tasks with quality ratings mostly between 4.5 and 4.8 out of 5, and has written expert-level science tasks with about 90% approved. Completed a one-year pharmacy internship at Federal Medical Centre Keffi and now serves as a corps pharmacist at the Nasarawa State University clinic under the National Youth Service Corps, dispensing medicines and counselling patients face to face. Also has working knowledge of Python, TypeScript and Linux.',
+      'AI data annotation and quality specialist with a pharmacy degree. Since 2025, has completed more than 1,000 image and video annotation, comparison and rating tasks with quality ratings mostly between 4.5 and 4.8 out of 5, and has written expert-level science tasks with about 90% approved. Completed a one-year pharmacy internship at Federal Medical Centre Keffi and now serves as a corps pharmacist at the Nasarawa State University clinic under the National Youth Service Corps, dispensing medicines and counselling patients face to face. Also writes Python and TypeScript, and works daily on the Linux command line.',
     ],
   } as Record<Variant, string[]>,
 
@@ -161,13 +161,10 @@ export const resumeContent = {
           place: { default: 1, general: 1 },
         },
         {
-          /* The AI version's reading of the line above, with the science
-             benchmarking work folded in: the work behind its Scientific
-             Python, materials, earth and space and agent benchmarking
-             skills lines. Tool names only, never a client, project or task
-             name. Folded rather than a bullet of its own so the role still
-             fits under the longer skills list on page one. */
-          text: 'Wrote more than 25 expert-level science tasks that expose model errors, about 90% approved, some reproducing published agency and research software in Python, packaged in Docker with pytest verifiers.',
+          /* The AI version's reading of the line above, held to one line
+             so the role still fits under its longer skills list on page
+             one. Same fact. */
+          text: 'Wrote more than 25 expert-level science tasks that expose model errors, about 90% approved.',
           place: { ai: 1 },
         },
         {
@@ -175,10 +172,13 @@ export const resumeContent = {
           place: { default: 2, general: 3 },
         },
         {
-          /* The AI version's reading of the line above, held to one line:
-             with its longer skills list, every line this role saves is
-             what keeps it whole on page one. Same fact. */
-          text: 'Built more than 10 terminal-based benchmark tasks for AI coding agents.',
+          /* The AI version's reading of the line above, with the science
+             benchmarking work: the terminal tasks are the ones that
+             reproduce published software, and they are the work behind the
+             Scientific Python, materials, earth and space and agent
+             benchmarking skills lines. Tool names only, never a client,
+             project or task name. */
+          text: 'Built more than 10 terminal-based benchmark tasks for AI coding agents, reproducing published agency and research software in Python, packaged in Docker with pytest verifiers.',
           place: { ai: 2 },
         },
         {
